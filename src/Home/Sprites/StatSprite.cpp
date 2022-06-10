@@ -118,6 +118,11 @@ hsv rgb2hsv(rgb in)
 	return out;
 }
 
+const char*  StatSprite::paths[]= {
+	"/Stats/Happiness.raw",
+	"/Stats/OilLevel.raw",
+	"/Stats/Battery.raw"
+};
 
 StatSprite::StatSprite(Sprite* parent, StatSprite::Type type, uint8_t level) : sprite(parent, width, height), type(type), level(level){
 	draw();

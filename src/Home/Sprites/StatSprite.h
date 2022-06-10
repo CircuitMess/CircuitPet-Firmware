@@ -19,11 +19,7 @@ private:
 	constexpr static uint8_t height = 10;
 	constexpr static uint8_t barWidth = 34;
 	constexpr static uint8_t barOffset = height + 5;
-	constexpr static const char* paths[] = {
-			"/Stats/Happiness.raw",
-			"/Stats/OilLevel.raw",
-			"/Stats/Batter.raw"
-	};
+	static const char* paths[];
 
 	void draw();
 };
