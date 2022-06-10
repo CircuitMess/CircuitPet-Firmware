@@ -97,7 +97,7 @@ hsv rgb2hsv(rgb in)
 		out.s = (delta / max);                  // s
 	} else {
 		// if max is 0, then r = g = b = 0
-		// s = 0, h is undefined
+		// s = 0, height is undefined
 		out.s = 0.0;
 		out.h = NAN;                            // its now undefined
 		return out;
@@ -143,15 +143,15 @@ void StatSprite:: draw(){
 	sprintf(imgPath, "/StatTypes/%d.raw", type);
 	fs::File statTypeFile = SPIFFS.open(imgPath);
 	sprite.clear(TFT_TRANSPARENT);
-	sprite.drawIcon(statTypeFile, 0, 0, h, h);
+	sprite.drawIcon(statTypeFile, 0, 0, height, height);
 
-	int width = map(level,0, 100, 0, wBar);
+	int width = map(level, 0, 100, 0, barWidth);
 
 	double hue = (float)level/100.0 * 60.0/255.0*360;
 	rgb rgbColor = hsv2rgb({hue, 1.0, 1.0});
 	Serial.println(rgbColor.r);
 	uint16_t c	= lgfx::color565(rgbColor.r*255.0, rgbColor.g*255.0, rgbColor.b*255.0);
 
-	sprite.fillRect(offset, 0, width, h, c);
-	sprite.drawRoundRect(offset-1, 0, wBar+2, h, 2, TFT_BLACK);
+	sprite.fillRect(barOffset, 0, width, height, c);
+	sprite.drawRoundRect(barOffset - 1, 0, barWidth + 2, height, 2, TFT_BLACK);
 }

@@ -2,7 +2,7 @@
 #include "BgSprite.h"
 #include <SPIFFS.h>
 
-BgSprite::BgSprite(Sprite* parent, uint8_t level) : sprite(parent, w, h){
+BgSprite::BgSprite(Sprite* parent, uint8_t level) : sprite(parent, width, height){
 	setLevel(level);
 }
 

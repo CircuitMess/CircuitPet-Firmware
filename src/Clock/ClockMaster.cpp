@@ -85,7 +85,7 @@ void ClockMaster::removeListener(ClockListener* listener){
 }
 
 void ClockMaster::write(){
-	storage = SPIFFS.open("/clock.bin", "w");
+	storage = SPIFFS.open("/clock.bin", "width");
 	for(auto key : persistentListeners){
 		storage.write((uint8_t*)&key.second, sizeof(PersistentListener));
 	}

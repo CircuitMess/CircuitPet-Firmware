@@ -50,7 +50,7 @@ void StatsManager::setPaused(bool pause){
 }
 
 void StatsManager::store(){
-	File f = SPIFFS.open("/stats.bin", "w");
+	File f = SPIFFS.open("/stats.bin", "width");
 	f.write((uint8_t*)&stats, sizeof(Stats));
 	f.write(gameOverCount);
 	f.close();
