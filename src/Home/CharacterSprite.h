@@ -5,22 +5,23 @@
 #include <experimental/optional>
 
 enum class Anim : uint8_t{
-	general, scratch, lookAround, stretch, wave, dance, knock
+	General, Scratch, LookAround, Stretch, Wave, Dance, Knock
 };
 
 struct CharacterAnim{
 	uint8_t charLevel;
-	uint8_t rustLevel;
+	bool rusty;
 	Anim anim;
 };
 
-class CharacterSprite {
+class CharacterSprite : public LoopListener {
 public:
-	CharacterSprite(Sprite* parentSprite, uint8_t charLevel, uint8_t rustLevel, Anim currentAnim);
-	void loop();
+	CharacterSprite(Sprite* parentSprite, uint8_t charLevel, bool rusty, Anim currentAnim);
+	void loop(uint micros) override;
+	void push();
 
 	void setCharLevel(uint8_t charLevel);
-	void setRustLevel(bool rustLevel);
+	void setRusty(bool rusty);
 
 	void setAnim(Anim anim);
 
@@ -36,8 +37,12 @@ private:
 
 	void registerNextAnim(); //queues up nextAnim to be started when current anim ends
 	void startNextAnim(); //starts queued nextAnim, then clears it
-	File getAnimFile(uint8_t charLevel, uint8_t rustLevel, Anim anim);
+	File getAnimFile(uint8_t charLevel, bool rustLevel, Anim anim);
 
+	constexpr static uint16_t x = 30;
+	constexpr static uint16_t y = 30;
+
+	bool canChange = false;
 };
 
 
