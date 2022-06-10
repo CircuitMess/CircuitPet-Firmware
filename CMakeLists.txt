@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 project(CircuitPet-Firmware)
-set(PORT COM4)
-set(DEVICE cm:esp32:synthia)
+set(PORT /dev/ttyUSB0)
+set(DEVICE cm:esp32:chatter)
 set(CMAKE_CXX_STANDARD 11)
 
 set(ROOT ${CMAKE_SOURCE_DIR})
@@ -40,8 +40,11 @@ include_directories(${Arduino15}/packages/cm/hardware/esp32/1.4.4/libraries/SD/s
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.4.4/libraries/SPI/src)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.4.4/libraries/WiFi/src)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.4.4/libraries/SPIFFS/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.4.4/libraries/LovyanGFX/src)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.4.4/libraries/CircuitOS/src)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.4.4/libraries/Update/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.4.4/libraries/Chatter-Library/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.4.4/libraries/CircuitOS/src)
 
 # Source directories
 file(GLOB_RECURSE SOURCES "src/**.cpp" "src/**.c" "src/**.hpp" "src/**.h")
