@@ -9,17 +9,25 @@ void ResourceManager::load(const std::vector<ResDescriptor>& descriptors){
 	uint8_t copyBuffer[1024];
 
 	for(const auto& descriptor : descriptors){
-
 		if(descriptor.inRam){
-			File original = CompressedFile::open(SPIFFS.open((root + descriptor.path).c_str()), descriptor.compParams.expansion,
-												 descriptor.compParams.lookahead);
-			File output = RamFile::open(nullptr, 0, false);
+			if(descriptor.compParams){
 
-			while(size_t readBytes = original.read(copyBuffer, sizeof(copyBuffer))){
-				output.write(copyBuffer, readBytes);
+				//decode compressed file from SPIFFS to decoded RAMFile
+				File original = CompressedFile::open(SPIFFS.open((root + descriptor.path).c_str()), descriptor.compParams.expansion,
+													 descriptor.compParams.lookahead);
+				File output = RamFile::open(nullptr, 0, false);
+
+				while(size_t readBytes = original.read(copyBuffer, sizeof(copyBuffer))){
+					output.write(copyBuffer, readBytes);
+				}
+				resources[descriptor.path.c_str()] = output;
+			}else{
+				//copy file from SPIFFS to RAMFile
+				resources[descriptor.path.c_str()] = RamFile::open(SPIFFS.open((root + descriptor.path).c_str()));
 			}
-			resources[descriptor.path.c_str()] = output;
+
 		}else{
+			//use file from SPIFFS, not from RAM
 			resources[descriptor.path.c_str()] = SPIFFS.open((root + descriptor.path).c_str());
 		}
 	}
