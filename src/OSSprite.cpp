@@ -8,9 +8,8 @@ OSSprite::OSSprite(Sprite* parent, uint8_t level) : sprite(parent, w, h){
 }
 
 void OSSprite::setLevel(uint8_t level){
-	char imgPath[50];
-	sprintf(imgPath, "/Systems/%d.raw", level);
-	fs::File osFile = SPIFFS.open(imgPath);
+	String path = String("/OS/Level") + level + ".raw";
+	fs::File osFile = SPIFFS.open(path);
 	if(!osFile){printf("cant' open\n");}
 	sprite.drawIcon(osFile, 0, 0, w, h);
 }
