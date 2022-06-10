@@ -15,10 +15,15 @@ private:
 	uint8_t level;
 	Sprite sprite;
 
-	constexpr static uint8_t w = 50;
-	constexpr static uint8_t h = 10;
-	constexpr static uint8_t wBar = 34;
-	constexpr static uint8_t offset = h + 5;
+	constexpr static uint8_t width = 50;
+	constexpr static uint8_t height = 10;
+	constexpr static uint8_t barWidth = 34;
+	constexpr static uint8_t barOffset = height + 5;
+	constexpr static const char* paths[] = {
+			"/Stats/Happiness.raw",
+			"/Stats/OilLevel.raw",
+			"/Stats/Batter.raw"
+	};
 
 	void draw();
 };
