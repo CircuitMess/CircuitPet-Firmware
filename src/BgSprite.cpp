@@ -7,10 +7,9 @@ BgSprite::BgSprite(Sprite* parent, uint8_t level) : sprite(parent, w, h){
 }
 
 void BgSprite::setLevel(uint8_t level){
-	char imgPath[50];
-	sprintf(imgPath, "/Backgrounds/%d.raw", level);
-	fs::File bgFile = SPIFFS.open(imgPath);
-	sprite.drawIcon(bgFile, 0, 0, w, h);
+	String path = String("/Bg/Level") + level + ".raw";
+	fs::File bgFile = SPIFFS.open(path);
+	sprite.drawIcon(bgFile, 0, 0, width, height);
 }
 
 void BgSprite::push(){
