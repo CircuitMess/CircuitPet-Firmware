@@ -125,7 +125,6 @@ StatSprite::StatSprite(Sprite* parent, StatSprite::Type type, uint8_t level) : s
 
 void StatSprite::setLevel(uint8_t level){
 	this->level = level;
-	draw();
 }
 
 void StatSprite::push(){
@@ -134,7 +133,6 @@ void StatSprite::push(){
 
 void StatSprite::setPos(uint8_t x, uint8_t y){
 	sprite.setPos(x,y);
-	draw();
 }
 
 void StatSprite:: draw(){
@@ -149,7 +147,6 @@ void StatSprite:: draw(){
 
 	double hue = (float)level/100.0 * 60.0/255.0*360;
 	rgb rgbColor = hsv2rgb({hue, 1.0, 1.0});
-	Serial.println(rgbColor.r);
 	uint16_t c	= lgfx::color565(rgbColor.r*255.0, rgbColor.g*255.0, rgbColor.b*255.0);
 
 	sprite.fillRect(barOffset, 0, width, height, c);
