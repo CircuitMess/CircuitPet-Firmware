@@ -119,7 +119,7 @@ hsv rgb2hsv(rgb in)
 }
 
 
-StatSprite::StatSprite(Sprite* parent, StatSprite::Type type, uint8_t level) : sprite(parent, w, h), type(type), level(level){
+StatSprite::StatSprite(Sprite* parent, StatSprite::Type type, uint8_t level) : sprite(parent, width, height), type(type), level(level){
 	draw();
 }
 
@@ -137,9 +137,7 @@ void StatSprite::setPos(uint8_t x, uint8_t y){
 
 void StatSprite:: draw(){
 	//draw icon
-	char imgPath[50];
-	sprintf(imgPath, "/StatTypes/%d.raw", type);
-	fs::File statTypeFile = SPIFFS.open(imgPath);
+	fs::File statTypeFile = SPIFFS.open(paths[type]);
 	sprite.clear(TFT_TRANSPARENT);
 	sprite.drawIcon(statTypeFile, 0, 0, height, height);
 
