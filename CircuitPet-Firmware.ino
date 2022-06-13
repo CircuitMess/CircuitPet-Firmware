@@ -2,7 +2,7 @@
 #include <Chatter.h>
 #include <CircuitOS.h>
 #include <SPIFFS.h>
-#include "src/Menu/Menu.h"
+#include "src/Home/Menu/Menu.h"
 Display* display;
 Sprite* baseSprite;
 
