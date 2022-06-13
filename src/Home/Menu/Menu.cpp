@@ -16,7 +16,7 @@ Menu::Menu(Sprite* canvas, std::vector<MenuItem>& items) : canvas(canvas), items
 		item.image.setY(originY);
 	}
 
-	// repos();
+	 repos();
 }
 
 Menu::~Menu(){
