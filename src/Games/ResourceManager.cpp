@@ -20,20 +20,22 @@ void ResourceManager::load(const std::vector<ResDescriptor>& descriptors){
 				while(size_t readBytes = original.read(copyBuffer, sizeof(copyBuffer))){
 					output.write(copyBuffer, readBytes);
 				}
-				resources[descriptor.path.c_str()] = output;
+				resources[descriptor.path] = output;
 			}else{
 				//copy file from SPIFFS to RAMFile
-				resources[descriptor.path.c_str()] = RamFile::open(SPIFFS.open((root + descriptor.path).c_str()));
+				resources[descriptor.path] = RamFile::open(SPIFFS.open((root + descriptor.path).c_str()));
 			}
 
 		}else{
 			//use file from SPIFFS, not from RAM
-			resources[descriptor.path.c_str()] = SPIFFS.open((root + descriptor.path).c_str());
+			resources[descriptor.path] = SPIFFS.open((root + descriptor.path).c_str());
 		}
 	}
 }
 
-File ResourceManager::getResource(const char* path){
+File ResourceManager::getResource(std::string path){
+	if(resources.find(path) != resources.end()) return File();
+
 	return resources[path];
 }
 

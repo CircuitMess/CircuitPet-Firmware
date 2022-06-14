@@ -10,7 +10,7 @@ struct CompParams {
 	uint8_t expansion;
 
 	explicit operator bool() const{
-		return !lookahead && !expansion;
+		return !lookahead || !expansion;
 	};
 };
 
@@ -25,10 +25,10 @@ public:
 	ResourceManager(const char* root);
 	void load(const std::vector<ResDescriptor>& descriptors);
 
-	File getResource(const char* path);
+	File getResource(std::string path);
 
 private:
-	std::map<const char*, File> resources; //RamFiles
+	std::map<std::string, File> resources; //RamFiles
 	const char* root;
 };
 
