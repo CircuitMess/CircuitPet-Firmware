@@ -23,6 +23,13 @@ Menu::~Menu(){
 
 }
 
+void Menu::setOffsetY(uint8_t y){
+	offsetY = y;
+	for(auto& item : items){
+		item.image.setY(originY + offsetY);
+	}
+}
+
 void Menu::splash(float f){
 	if(items.size() < 4) return;
 
