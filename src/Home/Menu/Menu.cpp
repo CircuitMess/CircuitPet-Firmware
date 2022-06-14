@@ -122,7 +122,7 @@ uint8_t Menu::next(){
 
 void Menu::draw(){
 	if(items.size() < 4) return;
-
+	canvas->drawRoundRect(origin-1, originY+offsetY-1, width+2, width+2, 4, TFT_BLACK);
 	getCGame()->draw();
 	getRGame()->draw();
 	getLGame()->draw();
