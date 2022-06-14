@@ -52,7 +52,7 @@ private:
 	const float speed = 250;
 
 	Sprite* canvas;
-	std::vector<MenuItem>& items;
+	std::vector<MenuItem> items;
 
 	uint selectedGame = 0;
 	enum Direction { PREV, NEXT } direction;
