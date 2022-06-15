@@ -4,14 +4,23 @@
 #include "Menu.h"
 
 
-class MenuHider {
+class MenuHider : LoopListener{
 public:
-	MenuHider(Menu menu);
+	MenuHider(Menu* menu);
 	void activity();
+	void loop(uint micros) override;
 private:
-	Menu menu;
-	bool active = true;
-	const uint32_t inactivityTimeout = 10000; //ms
+	Menu* menu;
+
+	bool active = false;
+	bool transition = false;
+	const uint32_t duration = 300000; //micros
+	uint32_t durationCount = 0;
+	const uint8_t deltaY = 64;
+	unsigned long startTime;
+
+	const uint32_t inactivityTimeout = 30000000; //micros
+	uint32_t inactivityCount = 0;
 };
 
 
