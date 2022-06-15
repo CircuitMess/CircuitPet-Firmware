@@ -9,7 +9,7 @@ CharacterSprite::CharacterSprite(Sprite* parentSprite, uint8_t charLevel, bool r
 																												 charLevel(charLevel), rusty(rusty),
 																												 currentAnim(currentAnim),
 																												 sprite(std::make_unique<GIFAnimatedSprite>(parentSprite,getAnimFile(charLevel, rusty,currentAnim))){
-	sprite->setLoopMode(LoopMode::INFINITE);
+	sprite->setLoopMode(LoopMode::Infinite);
 	sprite->setXY(30, 30);
 }
 
@@ -49,7 +49,7 @@ void CharacterSprite::startNextAnim(){
 	if(!nextAnim) return;
 
 	sprite = std::make_unique<GIFAnimatedSprite>(parentSprite, getAnimFile(nextAnim->charLevel, nextAnim->rusty, nextAnim->anim));
-	sprite->setLoopMode(LoopMode::INFINITE);
+	sprite->setLoopMode(LoopMode::Infinite);
 	sprite->setXY(30, 30);
 	sprite->setLoopDoneCallback(nullptr);
 
