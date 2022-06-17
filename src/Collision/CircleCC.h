@@ -3,8 +3,9 @@
 #define CIRCUITPET_FIRMWARE_CIRCLECC_H
 
 #include <cstdint>
+#include "CollisionComponent.h"
 
-class CircleCC {
+class CircleCC : public CollisionComponent{
 public:
 	CircleCC(uint16_t radius);
 	uint16_t getRadius();

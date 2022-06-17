@@ -1,7 +1,7 @@
 
 #include "SquareCC.h"
 
-SquareCC::SquareCC(PixelDim dim){
+SquareCC::SquareCC(PixelDim dim) :  dim(dim), CollisionComponent(Type::Square){
 
 }
 

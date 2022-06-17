@@ -1,7 +1,7 @@
 
 #include "CircleCC.h"
 
-CircleCC::CircleCC(uint16_t radius): radius(radius){
+CircleCC::CircleCC(uint16_t radius): radius(radius), CollisionComponent(Type::Circle){
 
 }
 
