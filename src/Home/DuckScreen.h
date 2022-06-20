@@ -3,6 +3,7 @@
 
 #include "State.h"
 #include <Loop/LoopListener.h>
+#include <Input/InputListener.h>
 #include "Sprites/BgSprite.h"
 #include "Sprites/OSSprite.h"
 #include "Sprites/CharacterSprite.h"
@@ -10,7 +11,7 @@
 #include "Menu/Menu.h"
 #include "Menu/MenuHider.h"
 
-class DuckScreen : public LoopListener, public State{
+class DuckScreen : public LoopListener, public State, public InputListener{
 public:
 	DuckScreen(Sprite* base);
 	void loop(uint micros) override;
@@ -37,6 +38,10 @@ private:
 
 	constexpr static uint8_t statsX = 5;
 	constexpr static uint8_t statsY = 5;
+
+	constexpr static uint8_t menuY = 64;
+
+	void buttonPressed(uint i) override;
 };
 
 
