@@ -2,8 +2,8 @@
 #define CIRCUITPET_FIRMWARE_GAMEOBJECT_H
 
 #include <memory>
-#include "vec2.hpp"
-#include "RenderComponent.h"
+#include "Rendering/RenderComponent.h"
+#include "PixelDim.hpp"
 
 class GameObject {
 public:
