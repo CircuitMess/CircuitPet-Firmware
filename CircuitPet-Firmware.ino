@@ -3,8 +3,12 @@
 #include <CircuitOS.h>
 #include <SPIFFS.h>
 #include "src/Home/Menu/Menu.h"
+#include "src/Home/Menu/MenuHider.h"
+
 Display* display;
 Sprite* baseSprite;
+Menu* menu;
+MenuHider* hider;
 
 void setup(){
 	Serial.begin(115200);
@@ -46,17 +50,33 @@ void setup(){
 	items.push_back(item2);
 	items.push_back(item3);
 	items.push_back(item4);
-	items.push_back(item4);
 
-	Menu menu(baseSprite,items);
-	menu.draw();
+	menu = new Menu(baseSprite,items);
+	menu->setOffsetY(64);
+	menu->push();
+
+
+	input->setBtnPressCallback(BTN_L, [](){
+		menu->prev();
+		hider->activity();
+	});
+
+	input->setBtnPressCallback(BTN_R, [](){
+		menu->next();
+		hider->activity();
+	});
+
+	hider = new MenuHider(menu);
 
 	display->commit();
 
 }
 
 void loop(){
-LoopManager::loop();
+	baseSprite->clear(TFT_WHITE);
+	LoopManager::loop();
+	menu->push();
+	display->commit();
 }
 
 
