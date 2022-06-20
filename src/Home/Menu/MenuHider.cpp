@@ -6,13 +6,19 @@ MenuHider::MenuHider(Menu* menu): menu(menu){
 }
 
 void MenuHider::activity(){
-	if(active) return;
-	LoopManager::addListener(this);
-	active = true;
-	inactivityCount = 0;
-	if(transition) return;
-	startTime = micros();
-	transition = true;
+	switch (state){
+		case Hidden:
+			LoopManager::addListener(this);
+			state = Showing;
+		case Shown:
+			inactivityCount = 0;
+			break;
+		case Hiding:
+			state = Showing;
+			break;
+		case Showing:
+			break;
+	}
 }
 
 void MenuHider::loop(uint deltaMicros){

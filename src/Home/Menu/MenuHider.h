@@ -12,10 +12,9 @@ public:
 private:
 	Menu* menu;
 
-	bool active = false;
-	bool transition = false;
+	enum State{Shown, Hiding, Hidden, Showing} state = Hidden;
+
 	const uint32_t duration = 300000; //micros
-	uint32_t durationCount = 0;
 	const uint8_t deltaY = 64;
 	unsigned long startTime;
 
