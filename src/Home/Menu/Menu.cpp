@@ -7,20 +7,31 @@
 MenuItem::MenuItem(String text, const GameImage& image, std::function<void()> primary, std::function<void()> secondary) :
 					text(std::move(text)), image(image), primary(primary), secondary(secondary){}
 
-Menu::Menu(Sprite* canvas, std::vector<MenuItem>& items) : canvas(canvas), items(items),
-														   origin((canvas->width() - width) / 2){
 
+Menu::Menu(Sprite* canvas) : canvas(canvas), origin((canvas->width() - width) / 2){
 
-	for(auto& item : items){
-		item.image.setX(-width);
-		item.image.setY(originY);
-	}
-	setOffsetY(64); //used for hiding the menu
-	 repos();
+}
+
+Menu::Menu(Sprite* canvas, std::vector<MenuItem>& items) : Menu(canvas) {
+	setItems(items);
 }
 
 Menu::~Menu(){
 
+}
+
+void Menu::setItems(std::vector<MenuItem>& items){
+	this->items = items;
+
+	for(auto& item : this->items){
+		item.image.setX(-width);
+		item.image.setY(originY);
+	}
+
+	repos();
+	setOffsetY(64); //used for hiding the menu
+
+	selectedGame = 0;
 }
 
 void Menu::setOffsetY(uint8_t y){
@@ -233,3 +244,4 @@ void Menu::setCanvas(Sprite* canvas){
 uint Menu::getSelectedIndex() const{
 	return selectedGame;
 }
+
