@@ -22,33 +22,37 @@ void MenuHider::activity(){
 }
 
 void MenuHider::loop(uint deltaMicros){
-	if(!transition){
-		inactivityCount += deltaMicros;
-		if(inactivityCount >= inactivityTimeout){
-			active = false;
-			transition = true;
-			durationCount = 0;
-			startTime = micros();
-		}
-		return;
-	}
-	durationCount += deltaMicros;
-	float t =  (float)(micros() - startTime) /duration;
-	if(active){
-		menu->setOffsetY(deltaY*(1.0f-t));
-	}else{
-		menu->setOffsetY(deltaY*t);
-	}
+	switch(state){
+		case Shown:
+			inactivityCount += deltaMicros;
+			if(inactivityCount >= inactivityTimeout){
+				state = Hiding;
+			}
+			break;
 
-	if(durationCount >= duration){
-		transition = false;
-		if(active){
-			menu->setOffsetY(0);
-		}else{
-			menu->setOffsetY(deltaY);
-			LoopManager::removeListener(this);
-		}
-		durationCount = 0;
+		case Hidden:
+			break;
 
+		case Showing:
+			transition -= (float)deltaMicros/(float)duration;
+			menu->setOffsetY(deltaY*transition);
+			if(transition <= 0.0f){
+				transition = 0.0f;
+				menu->setOffsetY(0);
+				inactivityCount = 0;
+				state = Shown;
+			}
+			break;
+
+		case Hiding:
+			transition += (float)deltaMicros/(float)duration;
+			menu->setOffsetY(deltaY*transition);
+			if(transition >= 1.0f){
+				transition = 1.0f;
+				menu->setOffsetY(deltaY);
+				state = Hidden;
+				LoopManager::removeListener(this);
+			}
+			break;
 	}
 }
