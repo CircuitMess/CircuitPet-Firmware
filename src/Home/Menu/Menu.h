@@ -29,7 +29,7 @@ public:
 	~Menu();
 	void setCanvas(Sprite* canvas);
 
-	void draw();
+	void push();
 	void loop(uint micros);
 
 	uint8_t prev();
