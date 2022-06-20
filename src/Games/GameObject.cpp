@@ -1,6 +1,6 @@
 #include "GameObject.h"
 
-GameObject::GameObject(RenderComponent* rc) : renderComponent(rc){
+GameObject::GameObject(std::unique_ptr<RenderComponent> rc) : renderComponent(rc.release()){
 }
 
 const PixelDim& GameObject::getPos(){

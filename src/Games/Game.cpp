@@ -7,7 +7,7 @@ Game::Game(const char* root, std::vector<ResDescriptor> resources) : resMan(root
 																		 auto game = (Game*)t->arg;
 																		 game->resMan.load(game->resources);
 																		 game->loaded = true;
-																	 }){}
+																	 }, 2048, this){}
 
 void Game::load(){
 	if(loaded || loadTask.running) return;
@@ -23,10 +23,10 @@ File Game::getFile(std::string path){
 	return resMan.getResource(std::move(path));
 }
 
-void Game::addObject(const std::shared_ptr<GameObject>& obj){
+void Game::addObject(std::shared_ptr<GameObject> obj){
 	objects.insert(obj);
 }
 
-void Game::removeObject(const std::shared_ptr<GameObject>& obj){
+void Game::removeObject(std::shared_ptr<GameObject> obj){
 	objects.erase(obj);
 }

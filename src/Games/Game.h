@@ -17,8 +17,8 @@ protected:
 
 	File getFile(std::string path);
 
-	void addObject(const std::shared_ptr<GameObject>& obj);
-	void removeObject(const std::shared_ptr<GameObject>& obj);
+	void addObject(std::shared_ptr<GameObject> obj);
+	void removeObject(std::shared_ptr<GameObject> obj);
 
 private:
 	ResourceManager resMan;

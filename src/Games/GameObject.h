@@ -7,7 +7,7 @@
 
 class GameObject {
 public:
-	GameObject(RenderComponent* rc);
+	GameObject(std::unique_ptr<RenderComponent> rc);
 
 	const PixelDim& getPos();
 	void setPos(const PixelDim& pos);
