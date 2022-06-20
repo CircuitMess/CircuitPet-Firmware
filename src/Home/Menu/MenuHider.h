@@ -18,7 +18,7 @@ private:
 	const uint8_t deltaY = 64;
 	float transition = 1.0f; //0 to a 1 real quick
 
-	const uint32_t inactivityTimeout = 30000000; //micros
+	const uint32_t inactivityTimeout = 5000000; //micros
 	uint32_t inactivityCount = 0;
 };
 
