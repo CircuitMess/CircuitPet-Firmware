@@ -43,6 +43,7 @@ private:
 	int16_t x = 0, y = 0;
 
 	bool canChange = false;
+	bool firstPush = true;
 };
 
 
