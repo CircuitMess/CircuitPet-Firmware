@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include <Util/Task.h>
 #include <set>
+#include <vector>
 
 class Game {
 public:
