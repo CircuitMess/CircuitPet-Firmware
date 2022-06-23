@@ -1,7 +1,9 @@
 
 #include "CollisionComponent.h"
+#include "CircleCC.h"
+#include "SquareCC.h"
 
-CollisionComponent::CollisionComponent(Type type): type(type){
+CollisionComponent::CollisionComponent(Type type) : type(type){
 
 }
 
