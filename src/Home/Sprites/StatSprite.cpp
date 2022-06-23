@@ -156,8 +156,16 @@ void StatSprite::draw(){
 	int width = map(level, 0, 100, 0, barWidth - 4); //-4 pixels from the edge bar
 
 	double hue = (float) level / 100.0 * 60.0 / 255.0 * 360;
-	rgb rgbColor = hsv2rgb({ hue, 1.0, 1.0 });
-	uint16_t c = lgfx::color565(rgbColor.r * 255.0, rgbColor.g * 255.0, rgbColor.b * 255.0);
 
-	sprite.fillRect(iconWidth + 2, 4, width, fillHeight, c); //+2 pixels from the edge bar
+	rgb rgbColor0 = hsv2rgb({ hue, 1.0, 1.0 });
+	rgb rgbColor1 = hsv2rgb({ hue, 1.0, 0.8 });
+	rgb rgbColor2 = hsv2rgb({ hue, 1.0, 0.65 });
+
+	uint16_t c0 = lgfx::color565(rgbColor0.r * 255.0, rgbColor0.g * 255.0, rgbColor0.b * 255.0);
+	uint16_t c1 = lgfx::color565(rgbColor1.r * 255.0, rgbColor1.g * 255.0, rgbColor1.b * 255.0);
+	uint16_t c2 = lgfx::color565(rgbColor2.r * 255.0, rgbColor2.g * 255.0, rgbColor2.b * 255.0);
+
+	sprite.fillRect(iconWidth + 2, 4, width, 1, c0); //+2 pixels from the edge bar
+	sprite.fillRect(iconWidth + 2, 5, width, 1, c1); //+2 pixels from the edge bar
+	sprite.fillRect(iconWidth + 2, 6, width, 1, c2); //+2 pixels from the edge bar
 }

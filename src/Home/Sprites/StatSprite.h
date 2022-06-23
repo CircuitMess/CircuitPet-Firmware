@@ -1,11 +1,14 @@
 
 #ifndef CIRCUITPET_FIRMWARE_STATSPRITE_H
 #define CIRCUITPET_FIRMWARE_STATSPRITE_H
+
 #include <Display/Sprite.h>
 
 class StatSprite {
 public:
-	enum Type{Happiness, OilLevel, Battery};
+	enum Type {
+		Happiness, OilLevel, Battery
+	};
 	StatSprite(Sprite* parent, Type type, uint8_t level);
 	void setLevel(uint8_t level);
 	void push();
@@ -15,7 +18,7 @@ private:
 	uint8_t level;
 	Sprite sprite;
 
-	constexpr static uint8_t fillHeight = 3;
+
 	constexpr static uint8_t iconWidth = 15;
 	constexpr static uint8_t iconHeight = 10;
 	constexpr static uint8_t barWidth = 24;
