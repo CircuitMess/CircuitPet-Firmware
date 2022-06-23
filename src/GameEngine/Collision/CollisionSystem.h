@@ -2,8 +2,8 @@
 #ifndef CIRCUITPET_FIRMWARE_COLLISIONSYSTEM_H
 #define CIRCUITPET_FIRMWARE_COLLISIONSYSTEM_H
 
-#include "../Games/GameObject.h"
-#include "../Games/Game.h"
+#include "../GameObject.h"
+#include "../Game.h"
 #include <functional>
 #include <vector>
 
