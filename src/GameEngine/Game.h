@@ -6,15 +6,21 @@
 #include <Util/Task.h>
 #include <set>
 #include <vector>
+#include "../State.h"
 
-class Game {
+class Game : public State{
 public:
 	Game(const char* root, std::vector<ResDescriptor> resources);
 	void load();
 	bool isLoaded() const;
 
+	void start() final;
+	void stop() final;
+
 protected:
 	virtual void onLoad() = 0;
+	void onStart() override = 0;
+	void onStop() override = 0;
 
 	File getFile(std::string path);
 
@@ -30,7 +36,6 @@ private:
 
 
 	std::set<std::shared_ptr<GameObject>> objects;
-
 };
 
 

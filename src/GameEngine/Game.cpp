@@ -15,6 +15,16 @@ void Game::load(){
 	loadTask.start(0, 0);
 }
 
+void Game::start(){
+	if(!loaded) return;
+	State::start();
+}
+
+void Game::stop(){
+	if(!loaded) return;
+	State::stop();
+}
+
 bool Game::isLoaded() const{
 	return loaded;
 }
