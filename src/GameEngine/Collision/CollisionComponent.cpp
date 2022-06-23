@@ -3,20 +3,20 @@
 #include "CircleCC.h"
 #include "SquareCC.h"
 
-CollisionComponent::CollisionComponent(Type type) : type(type){
+CollisionComponent::CollisionComponent(CollisionType type) : type(type){
 
 }
 
-CollisionComponent::Type CollisionComponent::getType(){
+CollisionType CollisionComponent::getType() const{
 	return type;
 }
 
-CircleCC* CollisionComponent::getCircle(){
-	if(this->type != Circle) return nullptr;
-	return reinterpret_cast<CircleCC*>(this);
+const CircleCC* CollisionComponent::getCircle() const{
+	if(this->type != CollisionType::Circle) return nullptr;
+	return reinterpret_cast<const CircleCC*>(this);
 }
 
-SquareCC* CollisionComponent::getSquare(){
-	if(this->type != Square) return nullptr;
-	return reinterpret_cast<SquareCC*>(this);
+const SquareCC* CollisionComponent::getSquare() const{
+	if(this->type != CollisionType::Square) return nullptr;
+	return reinterpret_cast<const SquareCC*>(this);
 }

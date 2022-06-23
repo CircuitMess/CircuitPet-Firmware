@@ -9,16 +9,18 @@ class SquareCC;
 
 class CircleCC;
 
+enum class CollisionType {
+	Circle, Square
+};
+
 class CollisionComponent {
 protected:
-	enum Type {
-		Circle, Square
-	} type;
-	CollisionComponent(Type type);
+	CollisionType type;
+	CollisionComponent(CollisionType type);
 public:
-	Type getType();
-	CircleCC* getCircle();
-	SquareCC* getSquare();
+	CollisionType getType() const;
+	const CircleCC* getCircle() const;
+	const SquareCC* getSquare() const;
 };
 
 
