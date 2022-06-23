@@ -8,7 +8,7 @@
 class CircleCC : public CollisionComponent{
 public:
 	CircleCC(uint16_t radius);
-	uint16_t getRadius();
+	uint16_t getRadius() const;
 private:
 	uint16_t radius;
 };

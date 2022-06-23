@@ -5,6 +5,6 @@ CircleCC::CircleCC(uint16_t radius): radius(radius), CollisionComponent(Type::Ci
 
 }
 
-uint16_t CircleCC::getRadius(){
+uint16_t CircleCC::getRadius() const{
 	return radius;
 }

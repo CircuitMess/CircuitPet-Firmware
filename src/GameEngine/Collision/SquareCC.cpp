@@ -5,6 +5,6 @@ SquareCC::SquareCC(PixelDim dim) :  dim(dim), CollisionComponent(Type::Square){
 
 }
 
-PixelDim SquareCC::getDim(){
+PixelDim SquareCC::getDim() const{
 	return dim;
 }
