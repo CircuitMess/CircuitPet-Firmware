@@ -2,6 +2,7 @@
 #include "CollisionSystem.h"
 
 void CollisionSystem::addPair(std::shared_ptr<const GameObject> first, std::shared_ptr<const GameObject> second, std::function<void()> handler){
+	if(first == second) return;
 	CollisionPair CP;
 	CP.first = first;
 	CP.second = second;
