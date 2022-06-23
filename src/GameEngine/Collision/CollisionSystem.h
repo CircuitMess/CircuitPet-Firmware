@@ -25,9 +25,9 @@ private:
 	std::vector<CollisionPair> pairs;
 	void removeObject(std::shared_ptr<const GameObject> GO);
 
-	static bool circleCircle(const GameObject circle1, const GameObject circle2);
-	static bool rectRect(const GameObject square1, const GameObject square2);
-	static bool rectCircle(const GameObject rect, const GameObject circle);
+	static bool circleCircle(const GameObject& circle1, const GameObject& circle2);
+	static bool rectRect(const GameObject& square1, const GameObject& square2);
+	static bool rectCircle(const GameObject& rect, const GameObject& circle);
 };
 
 

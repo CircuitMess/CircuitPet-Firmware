@@ -40,7 +40,7 @@ void CollisionSystem::removeObject(std::shared_ptr<const GameObject> GO){
 	pairs.erase(it, pairs.end());
 }
 
-bool CollisionSystem::rectRect(const GameObject square1, const GameObject square2){
+bool CollisionSystem::rectRect(const GameObject& square1, const GameObject& square2){
 	auto collision1 = square1.getCollisionComponent()->getSquare();
 	auto collision2 = square2.getCollisionComponent()->getSquare();
 
@@ -55,10 +55,10 @@ bool CollisionSystem::rectRect(const GameObject square1, const GameObject square
 			square1.getPos().y >= bottom2 && bottom1 <= square2.getPos().y);
 }
 
-bool CollisionSystem::circleCircle(const GameObject circle1, const GameObject circle2){
+bool CollisionSystem::circleCircle(const GameObject& circle1, const GameObject& circle2){
 	return false;
 }
 
-bool CollisionSystem::rectCircle(const GameObject rect, const GameObject circle){
+bool CollisionSystem::rectCircle(const GameObject& rect, const GameObject& circle){
 	return false;
 }

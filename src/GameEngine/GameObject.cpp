@@ -4,7 +4,7 @@ GameObject::GameObject(std::unique_ptr<RenderComponent> rc, std::unique_ptr<Coll
 																									  collisionComponent(cc.release()){
 }
 
-const PixelDim& GameObject::getPos(){
+const PixelDim& GameObject::getPos() const{
 	return pos;
 }
 
