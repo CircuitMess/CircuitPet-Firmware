@@ -4,6 +4,7 @@
 
 #include <Display/Sprite.h>
 #include "StatSprite.h"
+
 class StatsSprite {
 public:
 	StatsSprite(Sprite* parent, uint8_t happiness, uint8_t oilLevel, uint8_t battery);
@@ -17,9 +18,9 @@ private:
 	StatSprite oilLevel;
 	StatSprite battery;
 
-	constexpr static uint8_t x = 5;
-	constexpr static uint8_t y = 5;
-	constexpr static uint8_t spacing = 15;
+	constexpr static uint8_t x = 0;
+	constexpr static uint8_t y = 0;
+	constexpr static uint8_t spacing = 35;
 };
 
 
