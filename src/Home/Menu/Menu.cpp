@@ -15,7 +15,7 @@ Menu::Menu(Sprite* canvas, std::vector<MenuItem>& items) : canvas(canvas), items
 		item.image.setX(-width);
 		item.image.setY(originY);
 	}
-
+	setOffsetY(64); //used for hiding the menu
 	 repos();
 }
 
@@ -129,7 +129,7 @@ uint8_t Menu::next(){
 
 void Menu::push(){
 	if(items.size() < 4) return;
-	canvas->drawRoundRect(origin-1, originY+offsetY-1, width+2, width+2, 4, TFT_BLACK);
+	canvas->drawRoundRect(origin-1, originY+offsetY-1, width+2, width+2, 2, TFT_BLACK);
 	getCGame()->draw();
 	getRGame()->draw();
 	getLGame()->draw();
