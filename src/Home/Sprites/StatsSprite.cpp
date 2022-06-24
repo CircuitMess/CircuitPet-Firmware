@@ -1,10 +1,10 @@
 
 #include "StatsSprite.h"
 
-StatsSprite::StatsSprite(Sprite* parent, uint8_t happiness, uint8_t oilLevel, uint8_t battery) :
-		happiness(parent, StatSprite::Happiness, happiness),
+StatsSprite::StatsSprite(Sprite* parent, uint8_t battery, uint8_t oilLevel, uint8_t happiness) :
+		battery(parent, StatSprite::Battery, battery),
 		oilLevel(parent, StatSprite::OilLevel, oilLevel),
-		battery(parent, StatSprite::Battery, battery){
+		happiness(parent, StatSprite::Happiness, happiness){
 
 	this->battery.setPos(x, y);
 	this->oilLevel.setPos(x + spacing, y);

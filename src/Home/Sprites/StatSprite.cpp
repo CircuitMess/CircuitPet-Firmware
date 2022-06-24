@@ -144,14 +144,16 @@ void StatSprite::draw(){
 	//draw icon
 	sprite.clear(TFT_TRANSPARENT);
 
+	sprite.fillRect(iconWidth - 3, 2, 6, barHeight, TFT_WHITE);
+
 	fs::File barFile = SPIFFS.open(barPath);
 	sprite.drawIcon(barFile, iconWidth, 2, barWidth, barHeight);
 
 	fs::File statTypeFile = SPIFFS.open(paths[type]);
 	if(type != Type::Battery){
-		sprite.drawIcon(statTypeFile, 3, 0, iconWidth, iconHeight);
+		sprite.drawIcon(statTypeFile, 4, 0, iconWidth, iconHeight);
 	}else{
-		sprite.drawIcon(statTypeFile, 0, 0, iconWidth, iconHeight);
+		sprite.drawIcon(statTypeFile, 1, 0, iconWidth, iconHeight);
 	};
 	int width = map(level, 0, 100, 0, barWidth - 4); //-4 pixels from the edge bar
 
