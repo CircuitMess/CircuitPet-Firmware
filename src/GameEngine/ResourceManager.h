@@ -10,7 +10,7 @@ struct CompParams {
 	uint8_t expansion;
 
 	explicit operator bool() const{
-		return !lookahead || !expansion;
+		return lookahead && expansion;
 	};
 };
 
