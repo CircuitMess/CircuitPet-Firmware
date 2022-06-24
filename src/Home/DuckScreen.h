@@ -11,7 +11,7 @@
 #include "Menu/Menu.h"
 #include "Menu/MenuHider.h"
 
-class DuckScreen : public LoopListener, public State, public InputListener{
+class DuckScreen : public LoopListener, public State, private InputListener {
 public:
 	DuckScreen(Sprite* base);
 	void loop(uint micros) override;
@@ -29,6 +29,8 @@ private:
 	StatsSprite statsSprite;
 	Menu menu;
 	MenuHider hider;
+
+	std::vector<MenuItem> menuItems;
 
 	constexpr static uint8_t osX = 110;
 	constexpr static uint8_t osY = 5;

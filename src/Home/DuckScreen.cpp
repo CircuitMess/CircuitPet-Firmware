@@ -3,10 +3,6 @@
 #include "../Stats/StatsManager.h"
 #include <Chatter.h>
 
-static std::vector<MenuItem> menuItems;
-
-const char* imagePaths[] = { "/MenuIcons/prilika.raw", "/MenuIcons/nesto.raw", "/MenuIcons/nesto.raw", "/MenuIcons/slika.raw" };
-
 DuckScreen::DuckScreen(Sprite* base) : State(), base(base), bgSprite(base, StatMan.getLevel()),
 									   osSprite(base, StatMan.getLevel()),
 									   characterSprite(base, StatMan.getLevel(), StatMan.get().oilLevel, Anim::General),
@@ -18,9 +14,15 @@ DuckScreen::DuckScreen(Sprite* base) : State(), base(base), bgSprite(base, StatM
 	characterSprite.setPos(characterX, characterY);
 	menu.setOffsetY(menuY);
 
-	for(auto path : imagePaths){
-		menuItems.emplace_back("Name", GameImage(base, path));
-	}
+	menuItems = {
+			{ "Oily", GameImage(base, "/MenuIcons/Icon1.raw"), {} },
+			{ "Flappy", GameImage(base, "/MenuIcons/Icon2.raw"), {} },
+			{ "Eaty", GameImage(base, "/MenuIcons/Icon3.raw"), {} },
+			{ "Jump & Duck", GameImage(base, "/MenuIcons/Icon4.raw"), {} },
+			{ "Disco danceoff", GameImage(base, "/MenuIcons/Icon5.raw"), {} },
+			{ "Space duck", GameImage(base, "/MenuIcons/Icon6.raw"), {} },
+	};
+
 	menu.setItems(menuItems);
 }
 
@@ -61,8 +63,8 @@ void DuckScreen::buttonPressed(uint i){
 			menu.next();
 			break;
 		case BTN_A:
-			//start selected game
-			break;
+			menuItems[menu.getSelectedIndex()].primary();
+			return;
 		default:
 			break;
 	}
