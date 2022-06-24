@@ -9,8 +9,8 @@ CharacterSprite::CharacterSprite(Sprite* parentSprite, uint8_t charLevel, bool r
 																												 charLevel(charLevel), rusty(rusty),
 																												 currentAnim(currentAnim),
 																												 sprite(std::make_unique<GIFAnimatedSprite>(parentSprite,getAnimFile(charLevel, rusty,currentAnim))){
-	sprite->setLoopMode(LoopMode::Infinite);
-	sprite->setXY(30, 30);
+	sprite->setLoopMode(GIF::Infinite);
+	sprite->setXY(x, y);
 }
 
 void CharacterSprite::loop(uint micros){
@@ -21,6 +21,10 @@ void CharacterSprite::loop(uint micros){
 }
 
 void CharacterSprite::push(){
+	if(firstPush){
+		firstPush = false;
+		sprite->start();
+	}
 	sprite->push();
 }
 
@@ -49,9 +53,13 @@ void CharacterSprite::startNextAnim(){
 	if(!nextAnim) return;
 
 	sprite = std::make_unique<GIFAnimatedSprite>(parentSprite, getAnimFile(nextAnim->charLevel, nextAnim->rusty, nextAnim->anim));
-	sprite->setLoopMode(LoopMode::Infinite);
-	sprite->setXY(30, 30);
+	sprite->setLoopMode(GIF::Infinite);
+	sprite->setXY(x, y);
 	sprite->setLoopDoneCallback(nullptr);
+
+	if(!firstPush){
+		sprite->start();
+	}
 
 	nextAnim = std::experimental::nullopt;
 }
@@ -60,7 +68,23 @@ File CharacterSprite::getAnimFile(uint8_t charLevel, bool rusty, Anim anim){
 	std::ostringstream path;
 	path << "level" << (int)charLevel << "_rust" << (int)rusty << "_" << animNames[(uint8_t)anim] << ".gif";
 
-	return SPIFFS.open(path.str().c_str());
+	if(charLevel == 0){
+		File file = SPIFFS.open("/big2.gif");
+		if(file) return file;
+		else{
+			Serial.println("bad file");
+			delay(5);
+		}
+	}else if(charLevel == 1){
+		File file = SPIFFS.open("/big1.gif");
+		if(file) return file;
+		else{
+			Serial.println("bad file");
+			delay(5);
+		}
+	}
+
+//	return SPIFFS.open(path.str().c_str());
 
 
 }
@@ -70,4 +94,12 @@ void CharacterSprite::registerNextAnim(){
 	sprite->setLoopDoneCallback([this](){
 		canChange = true;
 	});
+}
+
+void CharacterSprite::setPos(int16_t x, int16_t y){
+	this->x = x;
+	this->y = y;
+	if(sprite){
+		sprite->setXY(x, y);
+	}
 }

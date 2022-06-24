@@ -25,9 +25,12 @@ struct MenuItem {
 
 class Menu : public LoopListener {
 public:
+	Menu(Sprite* canvas);
 	Menu(Sprite* canvas, std::vector<MenuItem>& items);
 	~Menu();
+
 	void setCanvas(Sprite* canvas);
+	void setItems(std::vector<MenuItem>& items);
 
 	void push();
 	void loop(uint micros);

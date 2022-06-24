@@ -19,6 +19,7 @@ public:
 	CharacterSprite(Sprite* parentSprite, uint8_t charLevel, bool rusty, Anim currentAnim);
 	void loop(uint micros) override;
 	void push();
+	void setPos(int16_t x, int16_t y);
 
 	void setCharLevel(uint8_t charLevel);
 	void setRusty(bool rusty);
@@ -39,10 +40,10 @@ private:
 	void startNextAnim(); //starts queued nextAnim, then clears it
 	File getAnimFile(uint8_t charLevel, bool rustLevel, Anim anim);
 
-	constexpr static uint16_t x = 30;
-	constexpr static uint16_t y = 30;
+	int16_t x = 0, y = 0;
 
 	bool canChange = false;
+	bool firstPush = true;
 };
 
 
