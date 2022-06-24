@@ -12,8 +12,10 @@ public:
 private:
 	Sprite sprite;
 
-	constexpr static uint8_t width = 40;
-	constexpr static uint8_t height = 20;
+	constexpr static uint8_t logoWidth = 11;
+	constexpr static uint8_t logoHeight = 13;
+	constexpr static uint8_t osWidth = 22;
+	constexpr static uint8_t osHeight = 8;
 };
 
 
