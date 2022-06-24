@@ -47,7 +47,7 @@ void DuckScreen::loop(uint micros){
 	characterSprite.loop(micros);
 	characterSprite.push();
 
-	menu.draw();
+	menu.push();
 
 	base->push();
 }
