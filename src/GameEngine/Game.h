@@ -8,7 +8,8 @@
 #include <vector>
 #include "../State.h"
 
-class Game : public State{
+class Game : public State, private LoopListener {
+friend GameSystem;
 public:
 	Game(const char* root, std::vector<ResDescriptor> resources);
 	void load();

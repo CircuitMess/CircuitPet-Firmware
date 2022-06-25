@@ -39,4 +39,5 @@ void Game::addObject(std::shared_ptr<GameObject> obj){
 
 void Game::removeObject(std::shared_ptr<GameObject> obj){
 	objects.erase(obj);
+	collision.removeObject(*obj);
 }

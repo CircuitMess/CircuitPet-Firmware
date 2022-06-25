@@ -4,6 +4,20 @@
 #include "RectCC.h"
 #include "CircleCC.h"
 
+#undef abs
+
+CollisionSystem::CollisionSystem(const Game* game) : GameSystem(game), Walls({
+	 .top =  { nullptr, std::make_unique<RectCC>(glm::vec2{ 160, 1 }) },
+	 .bot =  { nullptr, std::make_unique<RectCC>(glm::vec2{ 160, 1 }) },
+	 .left =  { nullptr, std::make_unique<RectCC>(glm::vec2{ 1, 128 }) },
+	 .right =  { nullptr, std::make_unique<RectCC>(glm::vec2{ 1, 128 }) }
+}){
+	Walls.top.setPos({ 0, -1 });
+	Walls.bot.setPos({ 0, 128 });
+	Walls.left.setPos({ -1, 0 });
+	Walls.right.setPos({ 160, 0 });
+}
+
 void CollisionSystem::update(uint32_t deltaMicros){
 	for(auto& pair : pairs){
 		bool overlap = false;
@@ -21,26 +35,81 @@ void CollisionSystem::update(uint32_t deltaMicros){
 			overlap = circleCircle(*pair.first, *pair.second);
 		}
 
-		if(overlap){
+		if(overlap && !pair.colliding){
 			pair.handler();
 		}
+
+		pair.colliding = overlap;
 	}
 }
 
-void CollisionSystem::addPair(std::shared_ptr<const GameObject> first, std::shared_ptr<const GameObject> second, std::function<void()> handler){
-	if(first == second) return;
-	if(!first->getCollisionComponent() || !second->getCollisionComponent() || !handler) return;
+void CollisionSystem::addPair(const GameObject& first, const GameObject& second, std::function<void()> handler){
+	if(&first == &second) return;
+	if(!first.getCollisionComponent() || !second.getCollisionComponent()) return;
 
-	CollisionPair CP;
-	CP.first = first;
-	CP.second = second;
-	CP.handler = handler;
-	pairs.push_back(CP);
+	pairs.push_back({ &first, &second, std::move(handler) });
 }
 
-void CollisionSystem::removeObject(std::shared_ptr<const GameObject> GO){
-	auto it = remove_if(pairs.begin(), pairs.end(), [GO](CollisionPair pair) -> bool { return pair.first == GO || pair.second == GO; });
+void CollisionSystem::removePair(const GameObject& first, const GameObject& second){
+	auto it = remove_if(pairs.begin(), pairs.end(), [first, second](const Pair& pair) -> bool {
+		return (pair.first == &first && pair.second == &second) || (pair.first == &second && pair.second == &first);
+	});
+
 	pairs.erase(it, pairs.end());
+}
+
+void CollisionSystem::removeObject(const GameObject& GO){
+	auto it = remove_if(pairs.begin(), pairs.end(), [GO](const Pair& pair) -> bool { return pair.first == &GO || pair.second == &GO; });
+	pairs.erase(it, pairs.end());
+}
+
+void CollisionSystem::wallTop(const GameObject& obj, std::function<void()> handler){
+	if(handler){
+		addPair(obj, Walls.top, std::move(handler));
+	}else{
+		removePair(obj, Walls.top);
+	}
+}
+
+void CollisionSystem::wallBot(const GameObject& obj, std::function<void()> handler){
+	if(handler){
+		addPair(obj, Walls.bot, std::move(handler));
+	}else{
+		removePair(obj, Walls.bot);
+	}
+}
+
+void CollisionSystem::wallLeft(const GameObject& obj, std::function<void()> handler){
+	if(handler){
+		addPair(obj, Walls.left, std::move(handler));
+	}else{
+		removePair(obj, Walls.left);
+	}
+}
+
+void CollisionSystem::wallRight(const GameObject& obj, std::function<void()> handler){
+	if(handler){
+		addPair(obj, Walls.right, std::move(handler));
+	}else{
+		removePair(obj, Walls.right);
+	}
+}
+
+void CollisionSystem::wallsVertical(const GameObject& obj, std::function<void()> handler){
+	wallLeft(obj, handler);
+	wallRight(obj, handler);
+}
+
+void CollisionSystem::wallsHorizontal(const GameObject& obj, std::function<void()> handler){
+	wallTop(obj, handler);
+	wallBot(obj, handler);
+}
+
+void CollisionSystem::wallsAll(const GameObject& obj, std::function<void()> handler){
+	wallLeft(obj, handler);
+	wallRight(obj, handler);
+	wallTop(obj, handler);
+	wallBot(obj, handler);
 }
 
 bool CollisionSystem::rectRect(const GameObject& square1, const GameObject& square2){
@@ -82,4 +151,28 @@ bool CollisionSystem::rectCircle(const GameObject& rect, const GameObject& circl
 	int16_t cDist_sq = pow((distance.x - rDim.x/2), 2) + pow((distance.y - rDim.y/2), 2);
 
 	return glm::distance(distance, rDim * 0.5f) <= r;
+}
+
+void CollisionSystem::drawDebug(Sprite* canvas){
+	std::set<const GameObject*> drawn;
+
+	for(const auto& pair : pairs){
+		Color c = pair.colliding ? TFT_GREEN : TFT_RED;
+
+		const auto draw = [canvas, &drawn](Color c, const GameObject& obj){
+			if(drawn.count(&obj) && c != TFT_GREEN) return;
+			drawn.insert(&obj);
+
+			auto col = obj.getCollisionComponent();
+
+			if(col->getType() == CollisionType::Rect){
+				canvas->drawRect(obj.getPos().x, obj.getPos().y, col->getRect()->getDim().x, col->getRect()->getDim().y, c);
+			}else if(col->getType() == CollisionType::Circle){
+				canvas->drawCircle(obj.getPos().x, obj.getPos().y, col->getCircle()->getRadius(), c);
+			}
+		};
+
+		draw(c, *pair.first);
+		draw(c, *pair.second);
+	}
 }

@@ -6,7 +6,7 @@
 
 class RenderSystem : public GameSystem {
 public:
-	RenderSystem(const std::vector<GameObject>& objects, Sprite* canvas);
+	RenderSystem(const Game* game, Sprite* canvas);
 
 	void update(uint32_t deltaMicros) override;
 

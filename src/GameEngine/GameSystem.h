@@ -3,15 +3,22 @@
 
 #include "GameObject.h"
 #include <vector>
+#include <set>
+
+class Game;
 
 class GameSystem {
 public:
-	GameSystem(const std::vector<GameObject>& objects);
-
 	virtual void update(uint32_t deltaMicros) = 0;
 
 protected:
-	const std::vector<GameObject>& objects;
+	GameSystem(const Game* game);
+
+	std::set<std::shared_ptr<GameObject>> getObjects();
+
+private:
+	const Game* game;
+
 };
 
 
