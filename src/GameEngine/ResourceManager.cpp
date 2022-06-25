@@ -9,13 +9,18 @@ void ResourceManager::load(const std::vector<ResDescriptor>& descriptors){
 	uint8_t copyBuffer[1024];
 
 	for(const auto& descriptor : descriptors){
+
+		std::string path = root + descriptor.path;
+		auto cPath = path.c_str();
+
 		if(descriptor.inRam){
 			if(descriptor.compParams){
 
 				//decode compressed file from SPIFFS to decoded RAMFile
-				File original = CompressedFile::open(SPIFFS.open((root + descriptor.path).c_str()), descriptor.compParams.expansion,
+				File original = CompressedFile::open(SPIFFS.open(cPath), descriptor.compParams.expansion,
 													 descriptor.compParams.lookahead);
-				File output = RamFile::open(nullptr, 0, false);
+				original.seek(0);
+				File output = RamFile::create();
 
 				while(size_t readBytes = original.read(copyBuffer, sizeof(copyBuffer))){
 					output.write(copyBuffer, readBytes);
@@ -23,19 +28,20 @@ void ResourceManager::load(const std::vector<ResDescriptor>& descriptors){
 				resources[descriptor.path] = output;
 			}else{
 				//copy file from SPIFFS to RAMFile
-				resources[descriptor.path] = RamFile::open(SPIFFS.open((root + descriptor.path).c_str()));
+				resources[descriptor.path] = RamFile::open(SPIFFS.open(cPath));
 			}
 
 		}else{
 			//use file from SPIFFS, not from RAM
-			resources[descriptor.path] = SPIFFS.open((root + descriptor.path).c_str());
+			resources[descriptor.path] = SPIFFS.open(cPath);
 		}
 	}
 }
 
 File ResourceManager::getResource(std::string path){
-	if(resources.find(path) != resources.end()) return File();
-
-	return resources[path];
+	auto file = resources.find(path);
+	if(file == resources.end()) return { };
+	file->second.seek(0);
+	return file->second;
 }
 

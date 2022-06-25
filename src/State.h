@@ -7,8 +7,10 @@ public:
 	State(State* parent = nullptr);
 	virtual ~State() = default;
 
-	void start();
-	void stop();
+	virtual void start();
+	virtual void stop();
+
+	bool isStarted() const;
 
 	void push(State* parent);
 	void pop();
