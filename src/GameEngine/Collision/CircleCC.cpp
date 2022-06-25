@@ -1,10 +1,10 @@
 
 #include "CircleCC.h"
 
-CircleCC::CircleCC(uint16_t radius): radius(radius), CollisionComponent(Type::Circle){
+CircleCC::CircleCC(float radius): radius(radius), CollisionComponent(CollisionType::Circle){
 
 }
 
-uint16_t CircleCC::getRadius() const{
+float CircleCC::getRadius() const{
 	return radius;
 }

@@ -54,9 +54,32 @@ bool CollisionSystem::rectRect(const GameObject& square1, const GameObject& squa
 }
 
 bool CollisionSystem::circleCircle(const GameObject& circle1, const GameObject& circle2){
-	return false;
+	// TODO: center offsetting
+
+	auto r1 = circle1.getCollisionComponent()->getCircle()->getRadius();
+	auto r2 = circle2.getCollisionComponent()->getCircle()->getRadius();
+
+	auto pos1 = circle1.getPos();
+	auto pos2 = circle2.getPos();
+
+	return glm::distance(pos1, pos2) <= r1 + r2;
 }
 
 bool CollisionSystem::rectCircle(const GameObject& rect, const GameObject& circle){
-	return false;
+	// TODO: center offsetting
+
+	auto cPos = circle.getPos();
+	auto r = circle.getCollisionComponent()->getCircle()->getRadius();
+	auto rPos = rect.getPos();
+	auto rDim = rect.getCollisionComponent()->getRect()->getDim();
+
+	// Thank you https://www.gamedevelopment.blog/collision-detection-circles-rectangles-and-polygons/
+	auto distance = glm::abs(cPos - rPos);
+	if (distance.x > (rDim.x/2 + r)) { return false; }
+	if (distance.y > (rDim.y/2 + r)) { return false; }
+	if (distance.x <= (rDim.x/2)) { return true; }
+	if (distance.y <= (rDim.y/2)) { return true; }
+	int16_t cDist_sq = pow((distance.x - rDim.x/2), 2) + pow((distance.y - rDim.y/2), 2);
+
+	return glm::distance(distance, rDim * 0.5f) <= r;
 }
