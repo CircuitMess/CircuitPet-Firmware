@@ -1,7 +1,7 @@
 
 #include "CollisionComponent.h"
 #include "CircleCC.h"
-#include "SquareCC.h"
+#include "RectCC.h"
 
 CollisionComponent::CollisionComponent(CollisionType type) : type(type){
 
@@ -16,7 +16,7 @@ const CircleCC* CollisionComponent::getCircle() const{
 	return reinterpret_cast<const CircleCC*>(this);
 }
 
-const SquareCC* CollisionComponent::getSquare() const{
-	if(this->type != CollisionType::Square) return nullptr;
-	return reinterpret_cast<const SquareCC*>(this);
+const RectCC* CollisionComponent::getRect() const{
+	if(this->type != CollisionType::Rect) return nullptr;
+	return reinterpret_cast<const RectCC*>(this);
 }

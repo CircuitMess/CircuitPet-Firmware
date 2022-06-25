@@ -1,5 +1,8 @@
 #include "CollisionSystem.h"
-#include "SquareCC.h"
+
+#include <utility>
+#include "RectCC.h"
+#include "CircleCC.h"
 
 void CollisionSystem::collide(){
 	for(const auto& pair : pairs){
@@ -8,11 +11,11 @@ void CollisionSystem::collide(){
 		auto type1 = pair.first->getCollisionComponent()->getType();
 		auto type2 = pair.second->getCollisionComponent()->getType();
 
-		if(type1 == CollisionType::Square && type2 == CollisionType::Square){
+		if(type1 == CollisionType::Rect && type2 == CollisionType::Rect){
 			overlap = rectRect(*pair.first, *pair.second);
-		}else if(type1 == CollisionType::Square && type2 == CollisionType::Circle){
+		}else if(type1 == CollisionType::Rect && type2 == CollisionType::Circle){
 			overlap = rectCircle(*pair.first, *pair.second);
-		}else if(type1 == CollisionType::Circle && type2 == CollisionType::Square){
+		}else if(type1 == CollisionType::Circle && type2 == CollisionType::Rect){
 			overlap = rectCircle(*pair.second, *pair.first);
 		}else if(type1 == CollisionType::Circle && type2 == CollisionType::Circle){
 			overlap = circleCircle(*pair.first, *pair.second);
@@ -41,18 +44,13 @@ void CollisionSystem::removeObject(std::shared_ptr<const GameObject> GO){
 }
 
 bool CollisionSystem::rectRect(const GameObject& square1, const GameObject& square2){
-	auto collision1 = square1.getCollisionComponent()->getSquare();
-	auto collision2 = square2.getCollisionComponent()->getSquare();
+	auto pos1 = square1.getPos() - 0.5f;
+	auto pos2 = square2.getPos() - 0.5f;
+	auto dim1 = square1.getCollisionComponent()->getRect()->getDim() + 1.0f;
+	auto dim2 = square2.getCollisionComponent()->getRect()->getDim() + 1.0f;
 
-	int16_t right1 = square1.getPos().x + collision1->getDim().x;
-	int16_t right2 = square2.getPos().x + collision2->getDim().x;
-	int16_t bottom1 = square1.getPos().y + collision1->getDim().y;
-	int16_t bottom2 = square2.getPos().y + collision2->getDim().y;
-
-	//taken from https://stackoverflow.com/questions/306316/determine-if-two-rectangles-overlap-each-other
-	//changed < > to <= >= in case of touching, not overlapping
-	return (square1.getPos().x <= right2 && right1 >= square2.getPos().x &&
-			square1.getPos().y >= bottom2 && bottom1 <= square2.getPos().y);
+	return (pos1.x <= pos2.x + dim2.x && pos1.x + dim1.x >= pos2.x) &&
+		   (pos1.y <= pos2.y + dim2.y && pos1.y + dim1.y >= pos2.y);
 }
 
 bool CollisionSystem::circleCircle(const GameObject& circle1, const GameObject& circle2){

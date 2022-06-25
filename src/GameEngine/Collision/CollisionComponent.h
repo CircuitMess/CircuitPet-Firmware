@@ -5,12 +5,12 @@
 #include <memory>
 #include <iostream>
 
-class SquareCC;
+class RectCC;
 
 class CircleCC;
 
 enum class CollisionType {
-	Circle, Square
+	Circle, Rect
 };
 
 class CollisionComponent {
@@ -20,7 +20,7 @@ protected:
 public:
 	CollisionType getType() const;
 	const CircleCC* getCircle() const;
-	const SquareCC* getSquare() const;
+	const RectCC* getRect() const;
 };
 
 
