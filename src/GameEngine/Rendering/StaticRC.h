@@ -9,7 +9,7 @@ public:
 	 * @param file Raw RGB565 image file.
 	 * @param dim Width, height.
 	 */
-	StaticRC(File file, const PixelDim& dim);
+	StaticRC(File file, PixelDim dim);
 
 protected:
 	void push(Sprite* parent, PixelDim pos) const override;
