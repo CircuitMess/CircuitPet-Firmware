@@ -1,18 +1,18 @@
 #include "GameObject.h"
 
-GameObject::GameObject(std::unique_ptr<RenderComponent> rc, std::unique_ptr<CollisionComponent> cc) : renderComponent(rc.release()),
-																									  collisionComponent(cc.release()){
+GameObject::GameObject(std::unique_ptr<RenderComponent> rc, std::unique_ptr<CollisionComponent> cc) : renderComponent(std::move(rc)),
+																									  collisionComponent(std::move(cc)){
 }
 
-const PixelDim& GameObject::getPos() const{
+glm::vec2 GameObject::getPos() const{
 	return pos;
 }
 
-void GameObject::setPos(const PixelDim& pos){
+void GameObject::setPos(glm::vec2 pos){
 	GameObject::pos = pos;
 }
 
-std::shared_ptr<const RenderComponent> GameObject::getRenderComponent() const{
+std::shared_ptr<RenderComponent> GameObject::getRenderComponent() const{
 	return renderComponent;
 }
 

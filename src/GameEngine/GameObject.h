@@ -10,19 +10,20 @@ class GameObject {
 public:
 	GameObject(std::unique_ptr<RenderComponent> rc, std::unique_ptr<CollisionComponent> cc);
 
-	const PixelDim& getPos() const;
-	void setPos(const PixelDim& pos);
+	glm::vec2 getPos() const;
+	void setPos(glm::vec2 pos);
 
 	//TODO - razraditi ovo i implementirati
 	void clone();
 
-	std::shared_ptr<const RenderComponent> getRenderComponent() const;
+	std::shared_ptr<RenderComponent> getRenderComponent() const;
 	std::shared_ptr<const CollisionComponent> getCollisionComponent() const;
 
 private:
-	PixelDim pos;
+	glm::vec2 pos;
 	std::shared_ptr<RenderComponent> renderComponent;
 	std::shared_ptr<CollisionComponent> collisionComponent;
+
 };
 
 
