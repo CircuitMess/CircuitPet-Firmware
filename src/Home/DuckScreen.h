@@ -1,7 +1,7 @@
 #ifndef CIRCUITPET_FIRMWARE_DUCKSCREEN_H
 #define CIRCUITPET_FIRMWARE_DUCKSCREEN_H
 
-#include "State.h"
+#include "../State.h"
 #include <Loop/LoopListener.h>
 #include <Input/InputListener.h>
 #include "Sprites/BgSprite.h"

@@ -10,6 +10,8 @@ public:
 	virtual void start();
 	virtual void stop();
 
+	bool isStarted() const;
+
 	void push(State* parent);
 	void pop();
 

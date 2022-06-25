@@ -28,3 +28,7 @@ void State::pop(){
 	parent->start();
 	delete this;
 }
+
+bool State::isStarted() const{
+	return started;
+}
