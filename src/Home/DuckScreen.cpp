@@ -47,6 +47,7 @@ DuckScreen::DuckScreen(Sprite* base) : State(), base(base), bgSprite(base, StatM
 void DuckScreen::onStart(){
 	Input::getInstance()->addListener(this);
 	LoopManager::addListener(this); //Note - possible crash if start() is called before constructor finishes
+	hider.activity();
 }
 
 void DuckScreen::onStop(){
@@ -65,8 +66,6 @@ void DuckScreen::loop(uint micros){
 	characterSprite.push();
 
 	menu.push();
-
-	base->push();
 }
 
 void DuckScreen::buttonPressed(uint i){
@@ -79,11 +78,11 @@ void DuckScreen::buttonPressed(uint i){
 		case BTN_RIGHT:
 			menu.next();
 			break;
-		case BTN_A:
-			menuItems[menu.getSelectedIndex()].primary();
+		case BTN_A: {
+			auto func = menuItems[menu.getSelectedIndex()].primary;
+			if(func) func();
 			return;
-		default:
-			break;
+		}
 	}
 }
 
