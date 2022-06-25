@@ -1,6 +1,8 @@
 #include "Game.h"
 
 #include <utility>
+#include <Loop/LoopManager.h>
+#include <Chatter.h>
 
 Game::Game(const char* root, std::vector<ResDescriptor> resources) : resMan(root), resources(std::move(resources)),
 loadTask("loadTask", [](Task* t){
@@ -31,11 +33,13 @@ void Game::start(){
 	}
 
 	State::start();
+	LoopManager::addListener(this);
 }
 
 void Game::stop(){
 	if(!isStarted()) return;
 	State::stop();
+	LoopManager::removeListener(this);
 }
 
 bool Game::isLoaded() const{
@@ -53,4 +57,11 @@ void Game::addObject(std::shared_ptr<GameObject> obj){
 void Game::removeObject(std::shared_ptr<GameObject> obj){
 	objects.erase(obj);
 	collision.removeObject(*obj);
+}
+
+void Game::loop(uint micros){
+	collision.update(micros);
+	onLoop((float) micros / 1000000.0f);
+	render.update(micros);
+	collision.drawDebug(Chatter.getDisplay()->getBaseSprite());
 }

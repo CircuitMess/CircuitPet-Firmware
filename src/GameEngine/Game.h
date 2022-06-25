@@ -25,8 +25,7 @@ protected:
 	Game(const char* root, std::vector<ResDescriptor> resources);
 
 	virtual void onLoad() = 0;
-	void onStart() override = 0;
-	void onStop() override = 0;
+	virtual void onLoop(float deltaTime) = 0;
 
 	File getFile(std::string path);
 
@@ -45,6 +44,9 @@ private:
 	RenderSystem render;
 
 	std::set<std::shared_ptr<GameObject>> objects;
+
+	void loop(uint micros) final;
+	void loadFunc();
 };
 
 
