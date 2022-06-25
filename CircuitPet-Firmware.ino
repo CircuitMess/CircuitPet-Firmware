@@ -30,12 +30,23 @@ void setup(){
 	baseSprite->clear(TFT_BLACK);
 	display->commit();
 
+	baseSprite->setTextFont(0);
+	baseSprite->setTextSize(0);
+
 	auto duck = new DuckScreen(baseSprite);
 	duck->start();
 }
 
+uint32_t t = 0;
 void loop(){
 	LoopManager::loop();
+
+	uint32_t t2 = micros();
+	float frameTime = (float) (t2 - t) / 1000000.0f;
+	baseSprite->setCursor(1, 119);
+	baseSprite->printf("%.1fms - %.1ffps\n", frameTime * 1000.0f, 1.0f / frameTime);
+	t = t2;
+
 	display->commit();
 }
 
