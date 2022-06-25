@@ -10,14 +10,14 @@ class RenderComponent {
 	friend RenderSystem;
 
 public:
-	uint8_t getLayer() const;
-	void setLayer(uint8_t layer);
+	int8_t getLayer() const;
+	void setLayer(int8_t layer);
 
 protected:
 	virtual void push(Sprite* parent, PixelDim pos) const = 0;
 
 private:
-	uint8_t layer = 0;
+	int8_t layer = 0;
 };
 
 

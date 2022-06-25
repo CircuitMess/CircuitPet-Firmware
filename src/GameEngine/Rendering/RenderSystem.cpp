@@ -5,7 +5,7 @@
 RenderSystem::RenderSystem(const Game* game, Sprite* canvas) : GameSystem(game), canvas(canvas){}
 
 void RenderSystem::update(uint32_t deltaMicros){
-	std::set<uint8_t> layers;
+	std::set<int16_t> layers;
 	std::map<uint8_t, std::vector<std::shared_ptr<const GameObject>>> layerMap;
 
 
@@ -14,13 +14,13 @@ void RenderSystem::update(uint32_t deltaMicros){
 		auto rc = object->getRenderComponent();
 		if(!rc) continue;
 
-		uint8_t layer = rc->getLayer();
+		int16_t layer = rc->getLayer();
 		layers.insert(layer);
 		layerMap[layer].push_back(object);
 
 	}
 
-	std::vector<uint8_t> layersVec(layers.begin(), layers.end());
+	std::vector<int16_t> layersVec(layers.begin(), layers.end());
 	std::sort(layersVec.begin(), layersVec.end());
 
 	//iterate objects layer by layer
