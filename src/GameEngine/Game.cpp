@@ -3,11 +3,12 @@
 #include <utility>
 
 Game::Game(const char* root, std::vector<ResDescriptor> resources) : resMan(root), resources(std::move(resources)),
-																	 loadTask("loadTask", [](Task* t){
-																		 auto game = (Game*)t->arg;
-																		 game->resMan.load(game->resources);
-																		 game->loaded = true;
-																	 }, 2048, this){}
+loadTask("loadTask", [](Task* t){
+	 auto game = (Game*) t->arg;
+	 game->loadFunc();
+}, 4096, this), render(this, Chatter.getDisplay()->getBaseSprite()), collision(this){
+
+}
 
 void Game::load(){
 	if(loaded || loadTask.running) return;
@@ -15,13 +16,25 @@ void Game::load(){
 	loadTask.start(0, 0);
 }
 
+void Game::loadFunc(){
+	resMan.load(resources);
+	onLoad();
+	loaded = true;
+}
+
 void Game::start(){
-	if(!loaded) return;
+	if(isStarted()) return;
+
+	if(!loaded){
+		ESP_LOGE("Game", "Attempting to load game that wasn't loaded.");
+		return;
+	}
+
 	State::start();
 }
 
 void Game::stop(){
-	if(!loaded) return;
+	if(!isStarted()) return;
 	State::stop();
 }
 

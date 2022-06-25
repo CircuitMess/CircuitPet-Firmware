@@ -15,7 +15,6 @@
 class Game : public State, private LoopListener {
 friend GameSystem;
 public:
-	Game(const char* root, std::vector<ResDescriptor> resources);
 	void load();
 	bool isLoaded() const;
 
@@ -23,6 +22,8 @@ public:
 	void stop() final;
 
 protected:
+	Game(const char* root, std::vector<ResDescriptor> resources);
+
 	virtual void onLoad() = 0;
 	void onStart() override = 0;
 	void onStop() override = 0;
