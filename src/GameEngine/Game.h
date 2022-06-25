@@ -7,6 +7,10 @@
 #include <set>
 #include <vector>
 #include "../State.h"
+#include "GameSystem.h"
+#include "Collision/CollisionSystem.h"
+#include "Rendering/RenderSystem.h"
+#include <Loop/LoopListener.h>
 
 class Game : public State, private LoopListener {
 friend GameSystem;
@@ -28,6 +32,8 @@ protected:
 	void addObject(std::shared_ptr<GameObject> obj);
 	void removeObject(std::shared_ptr<GameObject> obj);
 
+	CollisionSystem collision;
+
 private:
 	ResourceManager resMan;
 	const std::vector<ResDescriptor> resources;
@@ -35,6 +41,7 @@ private:
 	bool loaded = false;
 	Task loadTask;
 
+	RenderSystem render;
 
 	std::set<std::shared_ptr<GameObject>> objects;
 };
