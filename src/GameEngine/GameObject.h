@@ -20,7 +20,7 @@ public:
 	std::shared_ptr<const CollisionComponent> getCollisionComponent() const;
 
 private:
-	glm::vec2 pos;
+	glm::vec2 pos = { 0, 0 };
 	std::shared_ptr<RenderComponent> renderComponent;
 	std::shared_ptr<CollisionComponent> collisionComponent;
 
