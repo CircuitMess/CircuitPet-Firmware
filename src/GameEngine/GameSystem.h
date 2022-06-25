@@ -8,6 +8,8 @@ class GameSystem {
 public:
 	GameSystem(const std::vector<GameObject>& objects);
 
+	virtual void update(uint32_t deltaMicros) = 0;
+
 protected:
 	const std::vector<GameObject>& objects;
 };

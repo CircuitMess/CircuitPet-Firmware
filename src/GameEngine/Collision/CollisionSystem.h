@@ -13,10 +13,8 @@ struct CollisionPair {
 	std::function<void()> handler;
 };
 
-
-class CollisionSystem {
-	friend Game;
-
+class CollisionSystem : public GameSystem {
+friend Game;
 public:
 	void collide();
 	void addPair(std::shared_ptr<const GameObject> first, std::shared_ptr<const GameObject> second, std::function<void()> handler);

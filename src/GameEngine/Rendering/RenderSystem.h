@@ -8,7 +8,8 @@ class RenderSystem : public GameSystem {
 public:
 	RenderSystem(const std::vector<GameObject>& objects, Sprite* canvas);
 
-	void render(); //iterate objects by layers and push them to the canvas
+	void update(uint32_t deltaMicros) override;
+
 private:
 	Sprite* canvas;
 };

@@ -4,7 +4,7 @@
 
 RenderSystem::RenderSystem(const std::vector<GameObject>& objects, Sprite* canvas) : GameSystem(objects), canvas(canvas){}
 
-void RenderSystem::render(){
+void RenderSystem::update(uint32_t deltaMicros){
 	std::set<uint8_t> layers;
 	std::map<uint8_t, std::vector<GameObject*>> layerMap;
 

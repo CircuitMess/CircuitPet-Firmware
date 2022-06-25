@@ -4,8 +4,8 @@
 #include "RectCC.h"
 #include "CircleCC.h"
 
-void CollisionSystem::collide(){
-	for(const auto& pair : pairs){
+void CollisionSystem::update(uint32_t deltaMicros){
+	for(auto& pair : pairs){
 		bool overlap = false;
 
 		auto type1 = pair.first->getCollisionComponent()->getType();
