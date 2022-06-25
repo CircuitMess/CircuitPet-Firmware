@@ -7,9 +7,6 @@ AnimRC::AnimRC(File file) : gif(nullptr, file){
 
 void AnimRC::setAnim(File file){
 	gif = GIFAnimatedSprite(nullptr, file);
-	if(playing){
-		gif.start();
-	}
 }
 
 void AnimRC::start(){
@@ -27,5 +24,6 @@ void AnimRC::stop(){
 }
 
 void AnimRC::push(Sprite* parent, PixelDim pos) const{
-	gif.push(parent, pos.x, pos.y);
+	// TODO - transparent pixels should be TFT_TRANSPARENT
+	gif.push(parent, pos.x, pos.y, TFT_BLACK);
 }
