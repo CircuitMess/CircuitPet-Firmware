@@ -7,8 +7,20 @@
 Display* display;
 Sprite* baseSprite;
 
+void initLog(){
+	esp_log_level_set("*", ESP_LOG_NONE);
+
+	const static auto tags = { "*" };
+
+	for(const char* tag : tags){
+		esp_log_level_set(tag, ESP_LOG_VERBOSE);
+	}
+}
+
 void setup(){
 	Serial.begin(115200);
+	initLog();
+
 	Chatter.begin();
 	Input* input = Chatter.getInput();
 
