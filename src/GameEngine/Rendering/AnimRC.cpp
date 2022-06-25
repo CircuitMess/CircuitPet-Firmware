@@ -24,6 +24,5 @@ void AnimRC::stop(){
 }
 
 void AnimRC::push(Sprite* parent, PixelDim pos) const{
-	// TODO - transparent pixels should be TFT_TRANSPARENT
-	gif.push(parent, pos.x, pos.y, TFT_BLACK);
+	gif.push(parent, pos.x, pos.y);
 }
