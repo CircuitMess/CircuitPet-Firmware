@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 project(CircuitPet-Firmware)
 set(PORT /dev/ttyUSB0)
 set(DEVICE cm:esp32:chatter)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 set(ROOT ${CMAKE_SOURCE_DIR})
 if (WIN32 OR CYGWIN)
@@ -45,6 +45,7 @@ include_directories(${Arduino15}/packages/cm/hardware/esp32/1.5.0/libraries/Circ
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.5.0/libraries/Update/src)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.5.0/libraries/Chatter-Library/src)
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.5.0/libraries/CircuitOS/src)
+include_directories(${Arduino15}/packages/cm/hardware/esp32/1.5.0/libraries/glm)
 
 include_directories(${ArduinoLibs}/CircuitPet-Library/src)
 
