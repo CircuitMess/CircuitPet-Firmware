@@ -19,7 +19,8 @@ void ResourceManager::load(const std::vector<ResDescriptor>& descriptors){
 				//decode compressed file from SPIFFS to decoded RAMFile
 				File original = CompressedFile::open(SPIFFS.open(cPath), descriptor.compParams.expansion,
 													 descriptor.compParams.lookahead);
-				File output = RamFile::open(nullptr, 0, false);
+				original.seek(0);
+				File output = RamFile::create();
 
 				while(size_t readBytes = original.read(copyBuffer, sizeof(copyBuffer))){
 					output.write(copyBuffer, readBytes);
@@ -38,8 +39,9 @@ void ResourceManager::load(const std::vector<ResDescriptor>& descriptors){
 }
 
 File ResourceManager::getResource(std::string path){
-	if(resources.find(path) != resources.end()) return File();
-
-	return resources[path];
+	auto file = resources.find(path);
+	if(file == resources.end()) return { };
+	file->second.seek(0);
+	return file->second;
 }
 
