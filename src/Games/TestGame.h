@@ -15,6 +15,7 @@ protected:
 	void onLoop(float deltaTime) override;
 	void onStart() override;
 	void onStop() override;
+	void onRender(Sprite* canvas) override;
 
 private:
 	struct Object {
