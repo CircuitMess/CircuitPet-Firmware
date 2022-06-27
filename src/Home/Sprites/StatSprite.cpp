@@ -136,7 +136,7 @@ void StatSprite::push(){
 	sprite.push();
 }
 
-void StatSprite::setPos(uint8_t x, uint8_t y){
+void StatSprite::setPos(int16_t x, int16_t y){
 	sprite.setPos(x, y);
 }
 
