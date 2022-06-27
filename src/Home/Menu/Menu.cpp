@@ -3,13 +3,14 @@
 #include <Loop/LoopManager.h>
 #include <SPIFFS.h>
 #include <SD.h>
+#include <FS/RamFile.h>
 
 MenuItem::MenuItem(String text, const GameImage& image, std::function<void()> primary, std::function<void()> secondary) :
 					text(std::move(text)), image(image), primary(primary), secondary(secondary){}
 
 
 Menu::Menu(Sprite* canvas) : canvas(canvas), origin((canvas->width() - width) / 2){
-
+	borderFile = RamFile::open(SPIFFS.open(borderPath));
 }
 
 Menu::Menu(Sprite* canvas, std::vector<MenuItem>& items) : Menu(canvas) {
@@ -140,7 +141,7 @@ uint8_t Menu::next(){
 
 void Menu::push(){
 	if(items.size() < 4) return;
-	canvas->drawRoundRect(origin-1, originY+offsetY-1, width+2, width+2, 2, TFT_BLACK);
+
 	getCGame()->draw();
 	getRGame()->draw();
 	getLGame()->draw();
@@ -152,6 +153,9 @@ void Menu::push(){
 			getLLGame()->draw();
 		}
 	}
+
+
+	canvas->drawIcon(borderFile, origin-2, originY+offsetY-2, width+4, width+4);
 }
 
 void Menu::loop(uint micros){
