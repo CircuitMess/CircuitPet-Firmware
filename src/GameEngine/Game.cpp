@@ -63,5 +63,16 @@ void Game::loop(uint micros){
 	collision.update(micros);
 	onLoop((float) micros / 1000000.0f);
 	render.update(micros);
+	onRender(Chatter.getDisplay()->getBaseSprite());
 	collision.drawDebug(Chatter.getDisplay()->getBaseSprite());
 }
+
+void Game::onStart(){ }
+
+void Game::onStop(){ }
+
+void Game::onLoad(){ }
+
+void Game::onLoop(float deltaTime){ }
+
+void Game::onRender(Sprite* canvas){ }

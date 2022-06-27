@@ -24,8 +24,11 @@ public:
 protected:
 	Game(const char* root, std::vector<ResDescriptor> resources);
 
-	virtual void onLoad() = 0;
-	virtual void onLoop(float deltaTime) = 0;
+	virtual void onStart() override;
+	virtual void onStop() override;
+	virtual void onLoad();
+	virtual void onLoop(float deltaTime);
+	virtual void onRender(Sprite* canvas);
 
 	File getFile(std::string path);
 
