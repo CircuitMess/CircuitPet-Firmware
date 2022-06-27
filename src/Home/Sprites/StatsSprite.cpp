@@ -8,9 +8,9 @@ StatsSprite::StatsSprite(Sprite* parent, uint8_t oilLevel,  uint8_t happiness, u
 }
 
 void StatsSprite::setPos(int16_t x, int16_t y){
-	oilLevel.setPos(x,y);
-	happiness.setPos(x-3 + spacing, y);
-	battery.setPos(x + 2*spacing, y);
+	oilLevel.setPos(x-7,y);
+	happiness.setPos(x - 3 + spacing, y);
+	battery.setPos(x + 2*spacing + 6, y);
 }
 
 void StatsSprite::push(){

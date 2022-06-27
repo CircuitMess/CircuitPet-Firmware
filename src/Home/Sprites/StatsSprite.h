@@ -21,7 +21,7 @@ private:
 	StatSprite oilLevel;
 	StatSprite battery;
 
-	constexpr static uint8_t spacing = 40;
+	constexpr static uint8_t spacing = 33;
 };
 
 
