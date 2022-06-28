@@ -6,7 +6,7 @@ Game1::Game1() : Game("/srd/Games/Game1", {
 		{"/OilyDone.gif", {}, false},
 		{"/OilyIdle.gif", {}, false},
 		{"/OilyJump.gif", {}, false}
-}){}
+}), indicator((Sprite*) nullptr, 7, 11){}
 
 void Game1::onStart(){
 

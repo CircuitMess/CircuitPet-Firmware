@@ -19,8 +19,8 @@ private:
 	bool goingUp = false;
 
 	Sprite indicator;
-	Sprite oilCan;
-	Sprite fillBar;
+	//Sprite oilCan;
+	//Sprite fillBar;
 
 	std::shared_ptr<GameObject> duck;
 	std::shared_ptr<GameObject> bg;
