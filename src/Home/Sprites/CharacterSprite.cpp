@@ -68,30 +68,12 @@ File CharacterSprite::getAnimFile(uint8_t charLevel, bool rusty, Anim anim){
 	std::ostringstream path;
 	path << "level" << (int)charLevel << "_rust" << (int)rusty << "_" << animNames[(uint8_t)anim] << ".gif";
 
-	if(charLevel == 0){
-		File file = SPIFFS.open("/big2.gif");
-		if(file) return file;
-		else{
-			Serial.println("bad file");
-			delay(5);
-		}
-	}else if(charLevel == 1){
-		File file = SPIFFS.open("/big1.gif");
-		if(file) return file;
-		else{
-			Serial.println("bad file");
-			delay(5);
-		}
-	}
-
-//	return SPIFFS.open(path.str().c_str());
-
-
+	return SPIFFS.open(path.str().c_str());
 }
 
 void CharacterSprite::registerNextAnim(){
 	nextAnim = CharacterAnim { charLevel, rusty, currentAnim };
-	sprite->setLoopDoneCallback([this](){
+	sprite->setLoopDoneCallback([this](uint32_t){
 		canChange = true;
 	});
 }
