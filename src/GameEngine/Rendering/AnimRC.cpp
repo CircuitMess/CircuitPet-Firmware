@@ -26,3 +26,7 @@ void AnimRC::stop(){
 void AnimRC::push(Sprite* parent, PixelDim pos) const{
 	gif.push(parent, pos.x, pos.y);
 }
+
+void AnimRC::setLoopDoneCallback(std::function<void(uint32_t)> cb){
+	gif.setLoopDoneCallback(cb);
+}
