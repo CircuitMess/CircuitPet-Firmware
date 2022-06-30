@@ -2,6 +2,7 @@
 #include <Loop/LoopManager.h>
 #include "../Stats/StatsManager.h"
 #include "../Games/TestGame.h"
+#include "../Games/Game6/Game6.h"
 #include <Chatter.h>
 
 DuckScreen::DuckScreen(Sprite* base) : State(), base(base), bgSprite(base, StatMan.getLevel()),
@@ -15,29 +16,30 @@ DuckScreen::DuckScreen(Sprite* base) : State(), base(base), bgSprite(base, StatM
 	characterSprite.setPos(characterX, characterY);
 	menu.setOffsetY(menuY);
 
+	auto pushGame = [this](Game* game){
+		game->load();
+
+		printf("Loading.");
+		while(!game->isLoaded()){
+			delay(500);
+			printf(".");
+		}
+		printf("\n");
+		printf("Free heap: %d B\n", ESP.getFreeHeap());
+
+		printf("\nStarting...\n");
+
+		LoopManager::loop();
+		game->push(this);
+	};
+
 	menuItems = {
-			{ "Oily", GameImage(base, "/MenuIcons/Icon1.raw"), [this](){
-				Game* game = new TestGame();
-				game->load();
-
-				printf("Loading.");
-				while(!game->isLoaded()){
-					delay(500);
-					printf(".");
-				}
-				printf("\n");
-				printf("Free heap: %d B\n", ESP.getFreeHeap());
-
-				printf("\nStarting...\n");
-
-				LoopManager::loop();
-				game->push(this);
-			} },
+			{ "Oily", GameImage(base, "/MenuIcons/Icon1.raw"), [](){pushGame(new Game6())}},
 			{ "Flappy", GameImage(base, "/MenuIcons/Icon2.raw"), {} },
 			{ "Eaty", GameImage(base, "/MenuIcons/Icon3.raw"), {} },
 			{ "Jump & Duck", GameImage(base, "/MenuIcons/Icon4.raw"), {} },
 			{ "Disco danceoff", GameImage(base, "/MenuIcons/Icon5.raw"), {} },
-			{ "Space duck", GameImage(base, "/MenuIcons/Icon6.raw"), {} },
+			{ "Space duck", GameImage(base, "/MenuIcons/Icon6.raw"), [](){pushGame(new Game6())}},
 	};
 
 	menu.setItems(menuItems);
