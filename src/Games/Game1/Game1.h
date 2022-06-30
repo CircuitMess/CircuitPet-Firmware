@@ -5,6 +5,7 @@
 #include <Arduino.h>
 #include <Input/InputListener.h>
 #include "../../GameEngine/Game.h"
+#include "Indicator.h"
 
 class Game1 : public Game, private InputListener {
 public:
@@ -17,27 +18,24 @@ protected:
 	void onRender(Sprite* canvas) override;
 
 private:
-	float barValue = 0.0f;
-	bool goingUp = false;
+	void buttonPressed(uint i) override;
+	void resetGoal();
+	void fillCan(int difference);
 
-	const float barMax = 1.0f;
-	const float x1 = -barMax;
-	const float x2 = barMax;
-	const int y1 = -1; //14 - (11/2)
-	const int y2 = 115; //114 - (11/2)
-	int yPos;
+	Indicator indicator;
+
 	int yGoal;
+	int fillPercent = 0;
 
-	//Sprite oilCan;
-	//Sprite goal;
+	int tries = 6;
+
+	std::shared_ptr<GameObject> indi;
+
+	std::shared_ptr<GameObject> oilCan;
 	std::shared_ptr<GameObject> goal;
-	std::shared_ptr<GameObject> indicator;
 
 	//std::shared_ptr<GameObject> duck;
 	std::shared_ptr<GameObject> bg;
-
-	void buttonPressed(uint i) override;
-	void resetGoal();
 };
 
 

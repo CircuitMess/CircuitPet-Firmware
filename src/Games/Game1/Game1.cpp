@@ -15,14 +15,14 @@ Game1::Game1() : Game("/Games/Game1", {
 }){}
 
 void Game1::onLoad(){
-	indicator = std::make_shared<GameObject>(
+	indi = std::make_shared<GameObject>(
 			std::make_unique<StaticRC>(getFile("/Arrow.raw"), PixelDim{ 7, 11 }),
 			nullptr
 	);
-	addObject(indicator);
-	indicator->getRenderComponent()->setLayer(1);
-	indicator->setPos({ 140, 59 }); //59 = 64 - (11/2)
-
+	addObject(indi);
+	indi->getRenderComponent()->setLayer(1);
+	indi->setPos({ 140, 59 }); //59 = 64 - (11/2)
+	indicator.setPointer(indi);
 
 
 	/////////////////////////////////////////////////
@@ -59,20 +59,7 @@ void Game1::onLoad(){
 }
 
 void Game1::onLoop(float deltaTime){
-	if(goingUp){
-		barValue -= deltaTime;
-	}else{
-		barValue += deltaTime;
-	}
-	if(barValue >= barMax){
-		barValue = 2 * barMax - barValue;
-		goingUp = true;
-	}else if(barValue <= -barMax){
-		barValue = -2 * barMax - barValue;
-		goingUp = false;
-	}
-	yPos = (x2 - barValue) * y1 / (x2 - x1) + (x1 - barValue) * y2 / (x1 - x2);
-	indicator->setPos({ 140, yPos });
+	indicator.move(deltaTime);
 }
 
 void Game1::onRender(Sprite* canvas){
