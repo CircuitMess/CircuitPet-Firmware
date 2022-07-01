@@ -23,18 +23,16 @@ private:
 	void buttonPressed(uint i) override;
 	void addPoints(int difference);
 
-	Indicator indicator;
+	Indicator* indicator;
 	OilCan* oilCan;
 	Bar* bar;
 
 	float fillPercent = 0.0f;
-
 	int tries = 6;
 
-	std::shared_ptr<GameObject> indi;
-
-	std::shared_ptr<GameObject> can;
-	std::shared_ptr<GameObject> goal;
+	std::shared_ptr<GameObject> indicatorGO;
+	std::shared_ptr<GameObject> oilCanGO;
+	std::shared_ptr<GameObject> barGO;
 
 	//std::shared_ptr<GameObject> duck;
 	std::shared_ptr<GameObject> bg;

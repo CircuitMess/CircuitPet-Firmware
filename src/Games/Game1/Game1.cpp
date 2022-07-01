@@ -16,14 +16,15 @@ Game1::Game1() : Game("/Games/Game1", {
 }){}
 
 void Game1::onLoad(){
-	indi = std::make_shared<GameObject>(
+	indicatorGO = std::make_shared<GameObject>(
 			std::make_unique<StaticRC>(getFile("/Arrow.raw"), PixelDim{ 7, 11 }),
 			nullptr
 	);
-	addObject(indi);
-	indi->getRenderComponent()->setLayer(1);
-	indi->setPos({ 140, 59 }); //59 = 64 - (11/2)
-	indicator.setPointer(indi);
+	addObject(indicatorGO);
+	indicatorGO->getRenderComponent()->setLayer(1);
+	indicatorGO->setPos({ 140, 59 }); //59 = 64 - (11/2)
+	indicator = new Indicator(indicatorGO);
+
 
 
 	/////////////////////////////////////////////////
@@ -43,23 +44,22 @@ void Game1::onLoad(){
 	bar->setPos()
 	addObject(bar)
 	*/
+
+	//////////////////////////////////////////////////////
 	auto spriteCan = std::make_unique<SpriteRC>(PixelDim{ 10, 15 });
 	oilCan = new OilCan(spriteCan->getSprite());
 	oilCanGO = std::make_shared<GameObject>(
 			std::move(spriteCan),
 			nullptr
-	);addObject(oilCanGO);
+	);
+	addObject(oilCanGO);
 	oilCanGO->setPos({ 100, 60 });
-
-	//////////////////////////////////////////////////////
 
 
 
 	auto spriteBar = std::make_unique<SpriteRC>(PixelDim{ 9, 120 });
-	//spriteBar->getSprite()->fillRect(0, 63, 9, 3, TFT_BLACK);
-
 	bar = new Bar(spriteBar->getSprite(), getFile("/Bar.raw"));
-
+	bar->resetGoal();
 	barGO = std::make_shared<GameObject>(
 			std::move(spriteBar),
 			nullptr
@@ -68,7 +68,6 @@ void Game1::onLoad(){
 	barGO->getRenderComponent()->setLayer(1);
 	barGO->setPos({ 150, 4 });
 
-	bar->resetGoal();
 
 	bg = std::make_shared<GameObject>(
 			std::make_unique<StaticRC>(getFile("/Level0.raw"), PixelDim({ 160, 128 })),
@@ -80,7 +79,7 @@ void Game1::onLoad(){
 }
 
 void Game1::onLoop(float deltaTime){
-	indicator.move(deltaTime);
+	indicator->move(deltaTime);
 }
 
 void Game1::onRender(Sprite* canvas){
@@ -101,7 +100,7 @@ void Game1::buttonPressed(uint i){
 	}
 	if(i == BTN_ENTER){
 		tries--;
-		if(tries < 0){pop();}
+		if(tries < 0){ pop(); }
 
 		//yPos is top of the indicator, +5 is the middle of the indicator
 		addPoints(abs((indicator->getYPos() + 5) - (bar->getY() + 1)));
@@ -116,10 +115,9 @@ void Game1::resetGoal(){
 }
 
 void Game1::addPoints(int difference){
-	int temp = 35 - 5*difference;
-	if(temp <=0) return;
-	fillPercent += (float)temp/100.0f;
-	printf("fillPercent: %f\n", fillPercent);
+	int temp = 35 - 5 * difference;
+	if(temp <= 0) return;
+	fillPercent += (float) temp / 100.0f;
 
 	oilCan->fill(fillPercent);
 
