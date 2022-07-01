@@ -8,7 +8,7 @@ public:
 	OilCan(std::shared_ptr<Sprite> sprite);
 	void fill(float fillPercent);
 private:
-	std::shared_ptr<Sprite> oilCan;
+	std::shared_ptr<Sprite> sprite;
 };
 
 
