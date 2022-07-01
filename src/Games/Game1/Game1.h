@@ -7,6 +7,7 @@
 #include "../../GameEngine/Game.h"
 #include "Indicator.h"
 #include "OilCan.h"
+#include "Bar.h"
 
 class Game1 : public Game, private InputListener {
 public:
@@ -20,12 +21,12 @@ protected:
 
 private:
 	void buttonPressed(uint i) override;
-	void resetGoal();
 	void addPoints(int difference);
 
 	Indicator indicator;
 	OilCan* oilCan;
-	int yGoal;
+	Bar* bar;
+
 	float fillPercent = 0.0f;
 
 	int tries = 6;

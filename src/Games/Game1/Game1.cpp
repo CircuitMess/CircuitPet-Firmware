@@ -6,9 +6,10 @@
 #include "../../GameEngine/Rendering/SpriteRC.h"
 
 Game1::Game1() : Game("/Games/Game1", {
-		{ "/Arrow.raw", {}, true },
-		{ "/Level0.raw", {}, true },
-		{ "/BarEdge.raw", {}, true },
+		{ "/Arrow.raw",    {}, true },
+		{ "/Level0.raw",   {}, true },
+		{ "/BarEdge.raw",  {}, true },
+		{ "/Bar.raw",      {}, true },
 		{ "/OilyDone.gif", {}, false },
 		{ "/OilyIdle.gif", {}, false },
 		{ "/OilyJump.gif", {}, false }
@@ -35,19 +36,39 @@ void Game1::onLoad(){
 
 	//addObject(gobj);
 
+	/*
+	auto rcBar = std::make_unique<SpriteRC>(PixelDim{10, 90});
+	auto barSprite = rcBar->getSprite();
+	bar = std::make_shared<GameObject>(std::move(rcBar), nullptr);
+	bar->setPos()
+	addObject(bar)
+	*/
+	auto spriteCan = std::make_unique<SpriteRC>(PixelDim{ 10, 15 });
+	oilCan = new OilCan(spriteCan->getSprite());
+	oilCanGO = std::make_shared<GameObject>(
+			std::move(spriteCan),
+			nullptr
+	);addObject(oilCanGO);
+	oilCanGO->setPos({ 100, 60 });
 
-	auto spriteRC = std::make_unique<SpriteRC>(PixelDim{9, 120});
-	//spriteRC->getSprite()->fillRect(0, 63, 9, 3, TFT_BLACK);
-	spriteRC->getSprite()->drawIcon(getFile("/Bar.raw"), 0 ,0, 9, 120);
-	goal = std::make_shared<GameObject>(
-			std::move(spriteRC),
+	//////////////////////////////////////////////////////
+
+
+
+	auto spriteBar = std::make_unique<SpriteRC>(PixelDim{ 9, 120 });
+	//spriteBar->getSprite()->fillRect(0, 63, 9, 3, TFT_BLACK);
+
+	bar = new Bar(spriteBar->getSprite(), getFile("/Bar.raw"));
+
+	barGO = std::make_shared<GameObject>(
+			std::move(spriteBar),
 			nullptr
 	);
-	addObject(goal);
-	goal->getRenderComponent()->setLayer(1);
-	goal->setPos({ 150, 4 });
-	resetGoal();
-	//////////////////////////////////////////////////////
+	addObject(barGO);
+	barGO->getRenderComponent()->setLayer(1);
+	barGO->setPos({ 150, 4 });
+
+	bar->resetGoal();
 
 	bg = std::make_shared<GameObject>(
 			std::make_unique<StaticRC>(getFile("/Level0.raw"), PixelDim({ 160, 128 })),
@@ -83,8 +104,8 @@ void Game1::buttonPressed(uint i){
 		if(tries < 0){pop();}
 
 		//yPos is top of the indicator, +5 is the middle of the indicator
-		addPoints(abs((indicator.getYPos() + 5) - (yGoal + 1)));
-		resetGoal();
+		addPoints(abs((indicator->getYPos() + 5) - (bar->getY() + 1)));
+		bar->resetGoal();
 	}
 }
 
