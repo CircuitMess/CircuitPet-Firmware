@@ -5,7 +5,10 @@
 
 class OilCan {
 public:
-	OilCan(Sprite* sprite);
+	OilCan(std::shared_ptr<Sprite> sprite);
+	void fill(float fillPercent);
+private:
+	std::shared_ptr<Sprite> oilCan;
 };
 
 

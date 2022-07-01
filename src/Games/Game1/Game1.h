@@ -6,6 +6,7 @@
 #include <Input/InputListener.h>
 #include "../../GameEngine/Game.h"
 #include "Indicator.h"
+#include "OilCan.h"
 
 class Game1 : public Game, private InputListener {
 public:
@@ -20,18 +21,18 @@ protected:
 private:
 	void buttonPressed(uint i) override;
 	void resetGoal();
-	void fillCan(int difference);
+	void addPoints(int difference);
 
 	Indicator indicator;
-
+	OilCan* oilCan;
 	int yGoal;
-	int fillPercent = 0;
+	float fillPercent = 0.0f;
 
 	int tries = 6;
 
 	std::shared_ptr<GameObject> indi;
 
-	std::shared_ptr<GameObject> oilCan;
+	std::shared_ptr<GameObject> can;
 	std::shared_ptr<GameObject> goal;
 
 	//std::shared_ptr<GameObject> duck;

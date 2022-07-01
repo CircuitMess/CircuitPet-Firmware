@@ -79,7 +79,11 @@ void Game1::buttonPressed(uint i){
 		pop();
 	}
 	if(i == BTN_ENTER){
-		printf("Inidicator: %d, Goal: %d\n", yPos + 5, yGoal+1);
+		tries--;
+		if(tries < 0){pop();}
+
+		//yPos is top of the indicator, +5 is the middle of the indicator
+		addPoints(abs((indicator.getYPos() + 5) - (yGoal + 1)));
 		resetGoal();
 	}
 }
@@ -88,4 +92,17 @@ void Game1::resetGoal(){
 	srand((unsigned) time(NULL));
 	yGoal = 14 + (rand() % 91);
 	goal->setPos(PixelDim{ 150, yGoal});
+}
+
+void Game1::addPoints(int difference){
+	int temp = 35 - 5*difference;
+	if(temp <=0) return;
+	fillPercent += (float)temp/100.0f;
+	printf("fillPercent: %f\n", fillPercent);
+
+	oilCan->fill(fillPercent);
+
+	if(fillPercent >= 1.0f){
+		printf("do the animation");
+	}
 }
