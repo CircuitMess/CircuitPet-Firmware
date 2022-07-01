@@ -8,7 +8,7 @@
 
 class Indicator {
 public:
-	void setPointer(std::shared_ptr<GameObject> indicator);
+	Indicator(std::shared_ptr<GameObject> indicator);
 	void move(float deltaTime);
 	int getYPos();
 private:

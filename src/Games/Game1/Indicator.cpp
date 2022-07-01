@@ -1,9 +1,8 @@
 
 #include "Indicator.h"
 
-void Indicator::setPointer(std::shared_ptr<GameObject> indicator){
-	this->indicator = indicator;
-}
+Indicator::Indicator(std::shared_ptr<GameObject> indicator) : indicator(indicator){}
+
 
 void Indicator::move(float deltaTime){
 	if(goingUp){
