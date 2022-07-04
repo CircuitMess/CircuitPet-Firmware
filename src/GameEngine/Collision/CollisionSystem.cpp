@@ -7,14 +7,14 @@
 #undef abs
 
 CollisionSystem::CollisionSystem(const Game* game) : GameSystem(game), Walls({
-	 .top =  { nullptr, std::make_unique<RectCC>(glm::vec2{ 160, 1 }) },
-	 .bot =  { nullptr, std::make_unique<RectCC>(glm::vec2{ 160, 1 }) },
-	 .left =  { nullptr, std::make_unique<RectCC>(glm::vec2{ 1, 128 }) },
-	 .right =  { nullptr, std::make_unique<RectCC>(glm::vec2{ 1, 128 }) }
+	 .top =  { nullptr, std::make_unique<RectCC>(glm::vec2{ 160, 100 }) },
+	 .bot =  { nullptr, std::make_unique<RectCC>(glm::vec2{ 160, 100 }) },
+	 .left =  { nullptr, std::make_unique<RectCC>(glm::vec2{ 100, 128 }) },
+	 .right =  { nullptr, std::make_unique<RectCC>(glm::vec2{ 100, 128 }) }
 }){
-	Walls.top.setPos({ 0, -1 });
+	Walls.top.setPos({ 0, -100 });
 	Walls.bot.setPos({ 0, 128 });
-	Walls.left.setPos({ -1, 0 });
+	Walls.left.setPos({ -100, 0 });
 	Walls.right.setPos({ 160, 0 });
 }
 
