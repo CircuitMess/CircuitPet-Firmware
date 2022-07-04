@@ -17,6 +17,9 @@ private:
 	int yPos;
 	int yGoal;
 	float indicatorVal = 0.0f;
+	float speed = 0.0f;
+	float speedMin = 1.0f;
+	float speedMax = 2.0f;
 	bool goingUp = false;
 	const float barMax = 1.0f;
 	const float x1 = -barMax;

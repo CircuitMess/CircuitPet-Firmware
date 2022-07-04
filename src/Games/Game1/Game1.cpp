@@ -89,6 +89,7 @@ void Game1::buttonPressed(uint i){
 		//yPos is top of the indicator, +5 is the middle of the indicator
 		addPoints(abs((indicator->getYPos() + 5) - (bar->getY() + 1)));
 		bar->resetGoal();
+		indicator->setGoal(bar->getY());
 	}
 }
 
