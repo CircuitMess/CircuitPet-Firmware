@@ -8,7 +8,7 @@
 class Bar {
 public:
 	Bar(std::shared_ptr<Sprite> sprite, File barFile);
-	int resetGoal();
+	void resetGoal();
 	int getY();
 private:
 	void draw();

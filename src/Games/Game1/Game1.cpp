@@ -16,47 +16,6 @@ Game1::Game1() : Game("/Games/Game1", {
 }){}
 
 void Game1::onLoad(){
-	indicatorGO = std::make_shared<GameObject>(
-			std::make_unique<StaticRC>(getFile("/Arrow.raw"), PixelDim{ 7, 11 }),
-			nullptr
-	);
-	addObject(indicatorGO);
-	indicatorGO->getRenderComponent()->setLayer(1);
-	indicatorGO->setPos({ 140, 59 }); //59 = 64 - (11/2)
-	indicator = new Indicator(indicatorGO);
-
-
-
-	/////////////////////////////////////////////////
-
-//	std::unique_ptr<SpriteRC> spriterc = std::make_unique<SpriteRC>(PixelDim {10, 10});
-//	customSprite = spriterc->getSprite();
-//	customSprite->fillCircle(5, 5, 4, TFT_RED);
-//	auto gobj = std::make_shared<GameObject>(std::move(spriterc), nullptr);
-//	gobj->setPos({10, 10});
-
-	//addObject(gobj);
-
-	/*
-	auto rcBar = std::make_unique<SpriteRC>(PixelDim{10, 90});
-	auto barSprite = rcBar->getSprite();
-	bar = std::make_shared<GameObject>(std::move(rcBar), nullptr);
-	bar->setPos()
-	addObject(bar)
-	*/
-
-	//////////////////////////////////////////////////////
-	auto spriteCan = std::make_unique<SpriteRC>(PixelDim{ 10, 15 });
-	oilCan = new OilCan(spriteCan->getSprite());
-	oilCanGO = std::make_shared<GameObject>(
-			std::move(spriteCan),
-			nullptr
-	);
-	addObject(oilCanGO);
-	oilCanGO->setPos({ 100, 60 });
-
-
-
 	auto spriteBar = std::make_unique<SpriteRC>(PixelDim{ 9, 120 });
 	bar = new Bar(spriteBar->getSprite(), getFile("/Bar.raw"));
 	bar->resetGoal();
@@ -68,6 +27,31 @@ void Game1::onLoad(){
 	barGO->getRenderComponent()->setLayer(1);
 	barGO->setPos({ 150, 4 });
 
+	indicatorGO = std::make_shared<GameObject>(
+			std::make_unique<StaticRC>(getFile("/Arrow.raw"), PixelDim{ 7, 11 }),
+			nullptr
+	);
+	addObject(indicatorGO);
+	indicatorGO->getRenderComponent()->setLayer(1);
+	indicatorGO->setPos({ 140, 59 }); //59 = 64 - (11/2)
+	indicator = new Indicator(indicatorGO);
+	indicator->setGoal(bar->getY());
+
+	auto spriteCan = std::make_unique<SpriteRC>(PixelDim{ 10, 15 });
+	oilCan = new OilCan(spriteCan->getSprite());
+	oilCanGO = std::make_shared<GameObject>(
+			std::move(spriteCan),
+			nullptr
+	);
+	addObject(oilCanGO);
+	oilCanGO->setPos({ 100, 60 });
+
+	duck = std::make_shared<GameObject>(
+			std::make_unique<AnimRC>(getFile("/OilyIdle.gif")),
+			nullptr
+	);
+	addObject(duck);
+	duck->setPos({ 50, 30 });
 
 	bg = std::make_shared<GameObject>(
 			std::make_unique<StaticRC>(getFile("/Level0.raw"), PixelDim({ 160, 128 })),
@@ -115,7 +99,7 @@ void Game1::resetGoal(){
 }
 
 void Game1::addPoints(int difference){
-	int temp = 35 - 5 * difference;
+	int temp = 30 - 3 * difference;
 	if(temp <= 0) return;
 	fillPercent += (float) temp / 100.0f;
 
