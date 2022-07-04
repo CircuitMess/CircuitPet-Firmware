@@ -11,16 +11,18 @@ public:
 	Indicator(std::shared_ptr<GameObject> indicator);
 	void move(float deltaTime);
 	int getYPos();
+	void setGoal(int yGoal);
 private:
 	std::shared_ptr<GameObject> indicator;
+	int yPos;
+	int yGoal;
 	float indicatorVal = 0.0f;
 	bool goingUp = false;
 	const float barMax = 1.0f;
 	const float x1 = -barMax;
 	const float x2 = barMax;
-	const int y1 = -1; //14 - (11/2)
-	const int y2 = 115; //114 - (11/2)
-	int yPos;
+	const int y1 = -2; //4 - (11/2)
+	const int y2 = 118; //124 - (11/2)
 };
 
 

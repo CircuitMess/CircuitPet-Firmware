@@ -17,10 +17,15 @@ void Indicator::move(float deltaTime){
 		indicatorVal = -2 * barMax - indicatorVal;
 		goingUp = false;
 	}
+
 	yPos = (x2 - indicatorVal) * y1 / (x2 - x1) + (x1 - indicatorVal) * y2 / (x1 - x2);
 	indicator->setPos({ 140, yPos });
 }
 
 int Indicator::getYPos(){
 	return yPos;
+}
+
+void Indicator::setGoal(int yGoal){
+	this->yGoal = yGoal;
 }
