@@ -7,6 +7,10 @@ AnimRC::AnimRC(File file) : gif(nullptr, file){
 
 void AnimRC::setAnim(File file){
 	gif = GIFAnimatedSprite(nullptr, file);
+
+	if(playing){
+		gif.start();
+	}
 }
 
 void AnimRC::start(){
