@@ -34,12 +34,12 @@ DuckScreen::DuckScreen(Sprite* base) : State(), base(base), bgSprite(base, StatM
 	};
 
 	menuItems = {
-			{ "Oily", GameImage(base, "/MenuIcons/Icon1.raw"), [](){pushGame(new Game6())}},
+			{ "Oily", GameImage(base, "/MenuIcons/Icon1.raw"), [pushGame](){pushGame(new Game6());}},
 			{ "Flappy", GameImage(base, "/MenuIcons/Icon2.raw"), {} },
 			{ "Eaty", GameImage(base, "/MenuIcons/Icon3.raw"), {} },
 			{ "Jump & Duck", GameImage(base, "/MenuIcons/Icon4.raw"), {} },
 			{ "Disco danceoff", GameImage(base, "/MenuIcons/Icon5.raw"), {} },
-			{ "Space duck", GameImage(base, "/MenuIcons/Icon6.raw"), [](){pushGame(new Game6())}},
+			{ "Space duck", GameImage(base, "/MenuIcons/Icon6.raw"), [pushGame](){pushGame(new Game6());}},
 	};
 
 	menu.setItems(menuItems);

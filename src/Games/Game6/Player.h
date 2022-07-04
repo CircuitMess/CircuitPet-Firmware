@@ -8,6 +8,8 @@ class Player{
 
 public:
 	void setObj(ObjPtr obj);
+	const ObjPtr& getObj() const;
+
 	void leftTurn(float delta);
 	void rightTurn(float delta);
 
@@ -15,7 +17,7 @@ public:
 private:
 	float angle = 0.f; //0 - 360
 
-	constexpr static float rotSpeed = 180;
+	constexpr static float rotSpeed = 50.f;
 
 	ObjPtr obj;
 };

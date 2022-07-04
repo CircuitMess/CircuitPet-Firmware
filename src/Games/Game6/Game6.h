@@ -21,6 +21,21 @@ protected:
 private:
 	Player player;
 
+	struct Bullet {
+		std::shared_ptr<GameObject> gObj;
+		glm::vec2 velocity;
+
+		bool operator==(const Bullet& other){
+			return (velocity == other.velocity) && (gObj == other.gObj);
+		}
+	};
+	constexpr static float bulletSpeed = 50.0f;
+	constexpr static uint8_t maxBullets = 4;
+
+	std::vector<Bullet> bulletPool;
+	void updateBullets(float deltaTime);
+	void shootBullet();
+
 	void buttonPressed(uint i) override;
 	void buttonReleased(uint i) override;
 

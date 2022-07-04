@@ -4,22 +4,25 @@
 #include "../../GameEngine/Rendering/StaticRC.h"
 #include "../../GameEngine/Collision/RectCC.h"
 #include "../../GameEngine/Collision/CircleCC.h"
+#include "../../GameEngine/Rendering/SpriteRC.h"
 #include <Input/Input.h>
 
 Game6::Game6() : Game("", {
-		{ "/Bg/Level6.raw", {}, true },
+		{ "/Bg/Level6.raw",       {}, true },
 		{ "/MenuIcons/Icon1.raw", {}, true }}){
 
 }
 
 void Game6::onLoad(){
-	auto pat = std::make_shared<GameObject>(std::make_unique<StaticRC>(getFile("/MenuIcons/Icon1.raw"), PixelDim{32, 32}),
+	auto pat = std::make_shared<GameObject>(std::make_unique<StaticRC>(getFile("/MenuIcons/Icon1.raw"), PixelDim { 32, 32 }),
 											std::make_unique<CircleCC>(16));
 	addObject(pat);
 	player.setObj(pat);
+	pat->setPos({ 80, 60 });
+
 
 	auto bg = std::make_shared<GameObject>(
-			std::make_unique<StaticRC>(getFile("/Bg/Level1.raw"), PixelDim { 160, 128 }),
+			std::make_unique<StaticRC>(getFile("/Bg/Level6.raw"), PixelDim { 160, 128 }),
 			nullptr
 	);
 	addObject(bg);
@@ -33,6 +36,8 @@ void Game6::onLoop(float deltaTime){
 	}else if(rightHold && !leftHold){
 		player.rightTurn(deltaTime);
 	}
+
+	updateBullets(deltaTime);
 }
 
 void Game6::onRender(Sprite* canvas){
@@ -62,7 +67,7 @@ void Game6::buttonPressed(uint i){
 			break;
 
 		case BTN_ENTER:
-			Serial.println(player.getAngle());
+			shootBullet();
 			break;
 	}
 }
@@ -77,4 +82,39 @@ void Game6::buttonReleased(uint i){
 			rightHold = false;
 			break;
 	}
+}
+
+void Game6::updateBullets(float deltaTime){
+	for(auto& bullet : bulletPool){
+		bullet.gObj->setPos(bullet.gObj->getPos() + bullet.velocity * deltaTime);
+	}
+}
+
+void Game6::shootBullet(){
+	if(bulletPool.size() >= 4) return;
+
+	auto spriteRC = std::make_unique<SpriteRC>(PixelDim { 4, 4 });
+	spriteRC->getSprite()->clear(TFT_TRANSPARENT);
+	spriteRC->getSprite()->fillRoundRect(0, 0, 4, 4, 1, TFT_WHITE);
+
+	auto bullet = std::make_shared<GameObject>(std::move(spriteRC),
+											   std::make_unique<CircleCC>(2, glm::vec2 { 2, 2 }));
+	addObject(bullet);
+
+	glm::vec2 center = player.getObj()->getPos() + 16.0f;
+	glm::vec2 direction = { cos(M_PI * (player.getAngle() - 90.f) / 180.0), sin(M_PI * (player.getAngle() - 90.f) / 180.0) };
+	glm::vec2 bulletPos = direction * 16.0f + center;
+	glm::vec2 speed = direction * bulletSpeed;
+
+	bullet->setPos(bulletPos);
+
+	Bullet b = { bullet, speed };
+	bulletPool.push_back(b);
+
+	//TODO - add collision with all asteroids
+
+	collision.wallsAll(*bullet, [this, b](){
+		bulletPool.erase(std::remove(bulletPool.begin(), bulletPool.end(), b), bulletPool.end());
+		removeObject(b.gObj);
+	});
 }
