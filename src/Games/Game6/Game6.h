@@ -19,8 +19,23 @@ protected:
 	void onRender(Sprite* canvas) override;
 
 private:
-	Player player;
 
+	//------------ Player ------------
+	Player player;
+	uint8_t life = 3;
+
+	void playerHit();
+	void updateInvincibility(float delta);
+	bool invincible = false;
+	float invincibilityTime = 0;
+	float invincibilityBlink = 0;
+	float invincibilityBlinkDuration = 0.350f;
+
+	constexpr static float invincibilityDuration = 2.0f;
+	//------------ Player end ------------
+
+
+	//------------ Bullet ------------
 	struct Bullet {
 		std::shared_ptr<GameObject> gObj;
 		glm::vec2 velocity;
@@ -29,14 +44,16 @@ private:
 			return (velocity == other.velocity) && (gObj == other.gObj);
 		}
 	};
+
 	constexpr static float bulletSpeed = 50.0f;
 	constexpr static uint8_t maxBullets = 4;
 
 	std::vector<Bullet> bulletPool;
 	void updateBullets(float deltaTime);
 	void shootBullet();
+	//------------ Bullet end ------------
 
-
+	//------------ Asteroid ------------
 	enum class AsteroidSize : uint8_t {
 		Small, Medium, Large
 	};
@@ -51,10 +68,11 @@ private:
 		}
 	};
 
-	constexpr static std::array<float, 3> asteroidSpeed = { 30.0f, 20.0f, 10.0f };
+	constexpr static std::array<float, 3> asteroidSpeed = { 25.0f, 20.0f, 12.0f };
 	constexpr static std::array<float, 3> asteroidRadius = { 5.0f, 10.0f, 20.0f };
 	std::vector<Asteroid> asteroidPool;
 
+	void asteroidHit(const Asteroid& asteroid);
 	void createAsteroid(AsteroidSize size, glm::vec2 pos);
 	void updateAsteroids(float deltaTime);
 
@@ -66,6 +84,8 @@ private:
 	} wrapWalls;
 	constexpr static glm::vec2 wrapWallsSize = { 160.0f + 4 * asteroidRadius[(uint8_t)AsteroidSize::Large] + 2,
 												 128.0f + 4 * asteroidRadius[(uint8_t)AsteroidSize::Large] + 2 };
+	//------------ Asteroid end ------------
+
 
 	void buttonPressed(uint i) override;
 	void buttonReleased(uint i) override;

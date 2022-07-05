@@ -28,7 +28,7 @@ Game6::Game6() : wrapWalls({ .top =  { nullptr, std::make_unique<RectCC>(glm::ve
 
 void Game6::onLoad(){
 	auto pat = std::make_shared<GameObject>(std::make_unique<StaticRC>(getFile("/MenuIcons/Icon1.raw"), PixelDim { 32, 32 }),
-											std::make_unique<CircleCC>(16));
+											std::make_unique<CircleCC>(16, glm::vec2{16, 16}));
 	addObject(pat);
 	player.setObj(pat);
 	pat->setPos({ 80, 60 });
@@ -50,6 +50,7 @@ void Game6::onLoop(float deltaTime){
 		player.rightTurn(deltaTime);
 	}
 
+	updateInvincibility(deltaTime);
 	updateBullets(deltaTime);
 	updateAsteroids(deltaTime);
 }
@@ -134,8 +135,7 @@ void Game6::shootBullet(){
 			bulletPool.erase(std::remove(bulletPool.begin(), bulletPool.end(), b), bulletPool.end());
 			removeObject(b.gObj);
 
-			asteroidPool.erase(std::remove(asteroidPool.begin(), asteroidPool.end(), asteroid), asteroidPool.end());
-			removeObject(asteroid.gObj);
+			asteroidHit(asteroid);
 		});
 	}
 
@@ -157,6 +157,7 @@ void Game6::createAsteroid(Game6::AsteroidSize size, glm::vec2 pos){
 	addObject(asteroid);
 	asteroid->setPos(pos);
 
+	//random direction
 	float angle = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 360.0f));
 	glm::vec2 direction = { cos(M_PI * angle / 180.0), sin(M_PI * angle / 180.0) };
 	glm::vec2 speed = direction * asteroidSpeed[(uint8_t)size];
@@ -169,13 +170,19 @@ void Game6::createAsteroid(Game6::AsteroidSize size, glm::vec2 pos){
 			bulletPool.erase(std::remove(bulletPool.begin(), bulletPool.end(), bullet), bulletPool.end());
 			removeObject(bullet.gObj);
 
-			asteroidPool.erase(std::remove(asteroidPool.begin(), asteroidPool.end(), a), asteroidPool.end());
-			removeObject(a.gObj);
+			asteroidHit(a);
 		});
 	}
 
+	collision.addPair(*asteroid, *player.getObj(), [this, a](){
+		if(invincible) return;
+
+		asteroidHit(a);
+		playerHit();
+	});
 
 
+	//wrapping around screen
 	collision.addPair(*asteroid, wrapWalls.top, [asteroid](){
 		asteroid->setPos({ asteroid->getPos().x, 128.0f });
 	});
@@ -194,4 +201,45 @@ void Game6::updateAsteroids(float deltaTime){
 	for(auto& asteroid : asteroidPool){
 		asteroid.gObj->setPos(asteroid.gObj->getPos() + asteroid.velocity * deltaTime);
 	}
+}
+
+void Game6::asteroidHit(const Game6::Asteroid& asteroid){
+	switch(asteroid.size){
+		case AsteroidSize::Large:
+			createAsteroid(AsteroidSize::Medium, asteroid.gObj->getPos() + (asteroidRadius[(uint8_t)AsteroidSize::Large] - asteroidRadius[(uint8_t)AsteroidSize::Medium]));
+			createAsteroid(AsteroidSize::Medium, asteroid.gObj->getPos() + (asteroidRadius[(uint8_t)AsteroidSize::Large] - asteroidRadius[(uint8_t)AsteroidSize::Medium]));
+			break;
+		case AsteroidSize::Medium:
+			createAsteroid(AsteroidSize::Small, asteroid.gObj->getPos() + (asteroidRadius[(uint8_t)AsteroidSize::Medium] - asteroidRadius[(uint8_t)AsteroidSize::Small]));
+			createAsteroid(AsteroidSize::Small, asteroid.gObj->getPos() + (asteroidRadius[(uint8_t)AsteroidSize::Medium] - asteroidRadius[(uint8_t)AsteroidSize::Small]));
+			break;
+		case AsteroidSize::Small:
+			break;
+
+	}
+	asteroidPool.erase(std::remove(asteroidPool.begin(), asteroidPool.end(), asteroid), asteroidPool.end());
+	removeObject(asteroid.gObj);
+}
+
+void Game6::updateInvincibility(float delta){
+	if(!invincible) return;
+
+	invincibilityTime += delta;
+
+	if((int)(invincibilityTime / invincibilityBlinkDuration) % 2 == 0){
+		player.getObj()->getRenderComponent()->setVisible(false);
+	}else{
+		player.getObj()->getRenderComponent()->setVisible(true);
+	}
+
+	if(invincibilityTime >= invincibilityDuration){
+		invincibilityTime = 0;
+		invincible = false;
+		player.getObj()->getRenderComponent()->setVisible(true);
+	}
+}
+
+void Game6::playerHit(){
+	invincible = true;
+	life--;
 }
