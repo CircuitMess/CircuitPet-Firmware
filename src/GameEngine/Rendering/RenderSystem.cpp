@@ -13,6 +13,7 @@ void RenderSystem::update(uint32_t deltaMicros){
 	for(const auto& object : getObjects()){
 		auto rc = object->getRenderComponent();
 		if(!rc) continue;
+		if(!rc->isVisible()) continue;
 
 		int16_t layer = rc->getLayer();
 		layers.insert(layer);
