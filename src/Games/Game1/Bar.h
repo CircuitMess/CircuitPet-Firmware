@@ -7,13 +7,14 @@
 
 class Bar {
 public:
-	Bar(std::shared_ptr<Sprite> sprite, File barFile);
+	Bar(std::shared_ptr<Sprite> sprite);
 	void resetGoal();
 	int getY();
 private:
 	void draw();
-	int yGoal;
-	File barFile;
+	uint8_t yGoal;
+	const uint8_t width = 9;
+	const uint8_t height = 120;
 	std::shared_ptr<Sprite> sprite;
 };
 
