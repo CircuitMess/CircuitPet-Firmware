@@ -17,7 +17,7 @@ Game1::Game1() : Game("/Games/Game1", {
 
 void Game1::onLoad(){
 	auto spriteBar = std::make_unique<SpriteRC>(PixelDim{ 9, 120 });
-	bar = new Bar(spriteBar->getSprite(), getFile("/Bar.raw"));
+	bar = new Bar(spriteBar->getSprite());
 	bar->resetGoal();
 	barGO = std::make_shared<GameObject>(
 			std::move(spriteBar),
@@ -33,20 +33,20 @@ void Game1::onLoad(){
 	);
 	addObject(indicatorGO);
 	indicatorGO->getRenderComponent()->setLayer(1);
-	indicatorGO->setPos({ 140, 59 }); //59 = 64 - (11/2)
 	indicator = new Indicator(indicatorGO);
 	indicator->setGoal(bar->getY());
 
-	auto spriteCan = std::make_unique<SpriteRC>(PixelDim{ 10, 15 });
-	oilCan = new OilCan(spriteCan->getSprite());
+	auto spriteCan = std::make_unique<SpriteRC>(PixelDim{ 24, 21 });
+	oilCan = new OilCan(spriteCan->getSprite(), getFile("/FullCan.raw"), getFile("/EmptyCan.raw"));
 	oilCanGO = std::make_shared<GameObject>(
 			std::move(spriteCan),
 			nullptr
 	);
 	addObject(oilCanGO);
 	oilCanGO->setPos({ 100, 60 });
+	oilCanGO->getRenderComponent()->setLayer(1);
 
-	duck = std::make_shared<GameObject>(
+	duckGo = std::make_shared<GameObject>(
 			std::make_unique<AnimRC>(getFile("/OilyIdle.gif")),
 			nullptr
 	);
@@ -56,7 +56,7 @@ void Game1::onLoad(){
 	duckAnim = std::static_pointer_cast<AnimRC>(duckGo->getRenderComponent());
 
 	bg = std::make_shared<GameObject>(
-			std::make_unique<StaticRC>(getFile("/Level0.raw"), PixelDim({ 160, 128 })),
+			std::make_unique<StaticRC>(getFile("/Background.raw"), PixelDim({ 160, 128 })),
 			nullptr
 	);
 	addObject(bg);
@@ -111,6 +111,8 @@ void Game1::addPoints(int difference){
 	fillPercent += multiplier * maxPoints;
 
 	oilCan->fill(fillPercent);
+//	Serial.printf("multi: %f, diff: %d\n", multiplier, difference);
+//	Serial.printf("FillPRCNT: %f\n", fillPercent);
 
 	if(fillPercent >= 0.999f){
 		Input::getInstance()->removeListener(this);

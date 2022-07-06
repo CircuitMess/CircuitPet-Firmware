@@ -35,11 +35,11 @@ private:
 	const float maxPoints = 0.33f;
 	float multiplier;
 
+	std::shared_ptr<AnimRC> duckAnim;
 	std::shared_ptr<GameObject> indicatorGO;
 	std::shared_ptr<GameObject> oilCanGO;
 	std::shared_ptr<GameObject> barGO;
-
-	//std::shared_ptr<GameObject> duck;
+	std::shared_ptr<GameObject> duckGo;
 	std::shared_ptr<GameObject> bg;
 };
 

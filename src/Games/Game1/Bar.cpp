@@ -83,7 +83,7 @@ void Bar::resetGoal(){
 }
 
 int Bar::getY(){
-	return yGoal;
+	return yGoal + 1; // + 1 to middle of the goal
 }
 
 void Bar::draw(){
@@ -96,5 +96,5 @@ void Bar::draw(){
 	}
 
 	sprite->drawRoundRect(0, 0, width, height, 0, TFT_BLACK);
-	sprite->fillRect(0, yGoal, width, 3, TFT_BLACK); //draw barGO
+	sprite->fillRect(0, yGoal, width, 3, TFT_DARKGREEN);
 }
