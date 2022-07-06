@@ -2,8 +2,7 @@
 #include <sstream>
 #include <SPIFFS.h>
 
-
-const char* animNames[] = { "general", "scratch", "lookAround", "stretch", "wave", "dance", "knock" };
+const char* animNames[] = { "general", "scratch", "look", "stretch", "wave", "dance", "knock" };
 
 CharacterSprite::CharacterSprite(Sprite* parentSprite, uint8_t charLevel, bool rusty, Anim currentAnim) : parentSprite(parentSprite),
 																												 charLevel(charLevel), rusty(rusty),
@@ -66,10 +65,13 @@ void CharacterSprite::startNextAnim(){
 }
 
 File CharacterSprite::getAnimFile(uint8_t charLevel, bool rusty, Anim anim){
-	std::ostringstream path;
-	path << "level" << (int)charLevel << "_rust" << (int)rusty << "_" << animNames[(uint8_t)anim] << ".gif";
-
-	return SPIFFS.open(path.str().c_str());
+	char path[50];
+	if(rusty){
+		sprintf(path, "/Home/%02d_r_%s.gif", charLevel, animNames[(uint8_t)anim]);
+	}else{
+		sprintf(path, "/Home/%02d_%s.gif", charLevel, animNames[(uint8_t)anim]);
+	}
+	return SPIFFS.open(path);
 }
 
 void CharacterSprite::registerNextAnim(){
