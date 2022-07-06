@@ -56,6 +56,8 @@ private:
 	const uint8_t originY = 75;
 	uint8_t offsetY = 0;
 	const float speed = 250;
+	fs::File borderFile;
+	const char* borderPath = "/MenuIcons/Border.raw";
 
 	Sprite* canvas;
 	std::vector<MenuItem> items;
