@@ -31,6 +31,9 @@ private:
 
 	float fillPercent = 0.0f;
 	int tries = 6;
+	const float length = 120.0f;
+	const float maxPoints = 0.33f;
+	float multiplier;
 
 	std::shared_ptr<GameObject> indicatorGO;
 	std::shared_ptr<GameObject> oilCanGO;

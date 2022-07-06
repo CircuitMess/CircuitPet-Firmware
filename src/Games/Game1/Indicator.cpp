@@ -5,8 +5,7 @@ Indicator::Indicator(std::shared_ptr<GameObject> indicator) : indicator(indicato
 
 
 void Indicator::move(float deltaTime){
-	speed = std::max(speedMin, speedMax - abs(yPos - yGoal)/50.0f);
-	printf("Indicator: diff: %f speed: %f\n",abs(yPos - yGoal)/50.0f, speed);
+	speed = std::max(speedMin, speedMax - abs(yPos - yGoal)/100.0f);
 	if(goingUp){
 		indicatorVal -= deltaTime * speed;
 	}else{
@@ -20,12 +19,12 @@ void Indicator::move(float deltaTime){
 		goingUp = false;
 	}
 
-	yPos = (x2 - indicatorVal) * y1 / (x2 - x1) + (x1 - indicatorVal) * y2 / (x1 - x2);
-	indicator->setPos({ 140, yPos });
+	yPos = (x2 - indicatorVal) * yBar1 / (x2 - x1) + (x1 - indicatorVal) * yBar2 / (x1 - x2);
+	indicator->setPos({ 140, yPos - offset});
 }
 
-int Indicator::getYPos(){
-	return yPos;
+int Indicator::getDifference(){
+	return abs(yPos-yGoal);
 }
 
 void Indicator::setGoal(int yGoal){

@@ -94,8 +94,7 @@ void Game1::buttonPressed(uint i){
 			resetAnim();
 		});
 
-		//yPos is top of the indicator, +5 is the middle of the indicator
-		addPoints(abs((indicator->getYPos() + 5) - (bar->getY() + 1)));
+		addPoints(indicator->getDifference());
 		bar->resetGoal();
 		indicator->setGoal(bar->getY());
 	}
@@ -107,13 +106,19 @@ void Game1::resetAnim(){
 }
 
 void Game1::addPoints(int difference){
-	int temp = 30 - 3 * difference;
-	if(temp <= 0) return;
-	fillPercent += (float) temp / 100.0f;
+	multiplier = (length-(float)difference)/length;
+	multiplier = pow(multiplier,4);
+	fillPercent += multiplier * maxPoints;
 
 	oilCan->fill(fillPercent);
 
-	if(fillPercent >= 1.0f){
-		printf("do the animation");
+	if(fillPercent >= 0.999f){
+		Input::getInstance()->removeListener(this);
+		removeObject(barGO);
+		removeObject(indicatorGO);
+		duckAnim->setAnim(getFile("/OilyDone.gif"));
+		duckGo->setPos({ 17, 16 }); //manually set for the gif to fit
+
+		duckAnim->setLoopDoneCallback([this](uint32_t i){ pop();});
 	}
 }

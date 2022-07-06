@@ -10,7 +10,7 @@ class Indicator {
 public:
 	Indicator(std::shared_ptr<GameObject> indicator);
 	void move(float deltaTime);
-	int getYPos();
+	int getDifference();
 	void setGoal(int yGoal);
 private:
 	std::shared_ptr<GameObject> indicator;
@@ -24,8 +24,9 @@ private:
 	const float barMax = 1.0f;
 	const float x1 = -barMax;
 	const float x2 = barMax;
-	const int y1 = -2; //4 - (11/2)
-	const int y2 = 118; //124 - (11/2)
+	const int yBar1 = 1;
+	const int yBar2 = 119;
+	const int offset = 1; //yBar1 + 5 - 6 // 5 is offset from top, 6 is offset to indicator
 };
 
 
