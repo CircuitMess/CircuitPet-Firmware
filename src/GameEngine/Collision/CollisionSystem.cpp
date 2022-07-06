@@ -129,8 +129,8 @@ bool CollisionSystem::circleCircle(const GameObject& circle1, const GameObject& 
 	auto r1 = circle1.getCollisionComponent()->getCircle()->getRadius();
 	auto r2 = circle2.getCollisionComponent()->getCircle()->getRadius();
 
-	auto pos1 = circle1.getPos();
-	auto pos2 = circle2.getPos();
+	auto pos1 = circle1.getPos() + circle1.getCollisionComponent()->getCircle()->getOffset();
+	auto pos2 = circle2.getPos() + circle2.getCollisionComponent()->getCircle()->getOffset();
 
 	return glm::distance(pos1, pos2) <= r1 + r2;
 }
@@ -138,10 +138,10 @@ bool CollisionSystem::circleCircle(const GameObject& circle1, const GameObject& 
 bool CollisionSystem::rectCircle(const GameObject& rect, const GameObject& circle){
 	// TODO: center offsetting
 
-	auto cPos = circle.getPos();
+	auto cPos = circle.getPos() +  circle.getCollisionComponent()->getCircle()->getOffset();;
 	auto r = circle.getCollisionComponent()->getCircle()->getRadius();
-	auto rPos = rect.getPos();
 	auto rDim = rect.getCollisionComponent()->getRect()->getDim();
+	auto rPos = rect.getPos() + 0.5f * rDim;
 
 	// Thank you https://www.gamedevelopment.blog/collision-detection-circles-rectangles-and-polygons/
 	auto distance = glm::abs(cPos - rPos);
@@ -149,7 +149,6 @@ bool CollisionSystem::rectCircle(const GameObject& rect, const GameObject& circl
 	if (distance.y > (rDim.y/2 + r)) { return false; }
 	if (distance.x <= (rDim.x/2)) { return true; }
 	if (distance.y <= (rDim.y/2)) { return true; }
-	int16_t cDist_sq = pow((distance.x - rDim.x/2), 2) + pow((distance.y - rDim.y/2), 2);
 
 	return glm::distance(distance, rDim * 0.5f) <= r;
 }
@@ -169,7 +168,9 @@ void CollisionSystem::drawDebug(Sprite* canvas){
 			if(col->getType() == CollisionType::Rect){
 				canvas->drawRect(obj.getPos().x, obj.getPos().y, col->getRect()->getDim().x, col->getRect()->getDim().y, c);
 			}else if(col->getType() == CollisionType::Circle){
-				canvas->drawCircle(obj.getPos().x, obj.getPos().y, col->getCircle()->getRadius(), c);
+				canvas->drawCircle(obj.getPos().x + obj.getCollisionComponent()->getCircle()->getOffset().x,
+								   obj.getPos().y + obj.getCollisionComponent()->getCircle()->getOffset().y,
+								   col->getCircle()->getRadius(), c);
 			}
 		};
 
