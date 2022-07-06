@@ -6,13 +6,14 @@ RenderSystem::RenderSystem(const Game* game, Sprite* canvas) : GameSystem(game),
 
 void RenderSystem::update(uint32_t deltaMicros){
 	std::set<int16_t> layers;
-	std::map<uint8_t, std::vector<std::shared_ptr<const GameObject>>> layerMap;
+	std::map<int16_t, std::vector<std::shared_ptr<const GameObject>>> layerMap;
 
 
 	//map objects to layers
 	for(const auto& object : getObjects()){
 		auto rc = object->getRenderComponent();
 		if(!rc) continue;
+		if(!rc->isVisible()) continue;
 
 		int16_t layer = rc->getLayer();
 		layers.insert(layer);
