@@ -19,7 +19,8 @@ CollisionSystem::CollisionSystem(const Game* game) : GameSystem(game), Walls({
 }
 
 void CollisionSystem::update(uint32_t deltaMicros){
-	for(auto& pair : pairs){
+	auto pairsCopy = pairs;
+	for(auto& pair : pairsCopy){
 		bool overlap = false;
 
 		auto type1 = pair.first->getCollisionComponent()->getType();
@@ -51,7 +52,7 @@ void CollisionSystem::addPair(const GameObject& first, const GameObject& second,
 }
 
 void CollisionSystem::removePair(const GameObject& first, const GameObject& second){
-	auto it = remove_if(pairs.begin(), pairs.end(), [first, second](const Pair& pair) -> bool {
+	auto it = remove_if(pairs.begin(), pairs.end(), [&first, &second](const Pair& pair) -> bool {
 		return (pair.first == &first && pair.second == &second) || (pair.first == &second && pair.second == &first);
 	});
 
@@ -59,7 +60,7 @@ void CollisionSystem::removePair(const GameObject& first, const GameObject& seco
 }
 
 void CollisionSystem::removeObject(const GameObject& GO){
-	auto it = remove_if(pairs.begin(), pairs.end(), [GO](const Pair& pair) -> bool { return pair.first == &GO || pair.second == &GO; });
+	auto it = remove_if(pairs.begin(), pairs.end(), [&GO](const Pair& pair) -> bool { return pair.first == &GO || pair.second == &GO; });
 	pairs.erase(it, pairs.end());
 }
 

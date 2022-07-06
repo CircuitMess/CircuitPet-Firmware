@@ -84,6 +84,10 @@ void TestGame::onLoop(float deltaTime){
 	}
 }
 
+void TestGame::onRender(Sprite* canvas){
+
+}
+
 void TestGame::onStart(){
 	reinterpret_cast<AnimRC*>(pat->getRenderComponent().get())->start();
 	Input::getInstance()->addListener(this);

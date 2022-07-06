@@ -13,10 +13,14 @@ public:
 	int8_t getLayer() const;
 	void setLayer(int8_t layer);
 
+	bool isVisible() const;
+	void setVisible(bool visible);
+
 protected:
 	virtual void push(Sprite* parent, PixelDim pos) const = 0;
 
 private:
+	bool visible = true;
 	int8_t layer = 0;
 };
 
