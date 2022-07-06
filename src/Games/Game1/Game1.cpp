@@ -6,13 +6,13 @@
 #include "../../GameEngine/Rendering/SpriteRC.h"
 
 Game1::Game1() : Game("/Games/Game1", {
-		{ "/Arrow.raw",    {}, true },
-		{ "/Level0.raw",   {}, true },
-		{ "/BarEdge.raw",  {}, true },
-		{ "/Bar.raw",      {}, true },
-		{ "/OilyDone.gif", {}, false },
-		{ "/OilyIdle.gif", {}, false },
-		{ "/OilyJump.gif", {}, false }
+		{ "/Arrow.raw",      {}, true },
+		{ "/Background.raw", {}, false },
+		{ "/EmptyCan.raw",   {}, true },
+		{ "/FullCan.raw",    {}, true },
+		{ "/OilyDone.gif",   {}, false },
+		{ "/OilyIdle.gif",   {}, false },
+		{ "/OilyJump.gif",   {}, false }
 }){}
 
 void Game1::onLoad(){
@@ -50,8 +50,10 @@ void Game1::onLoad(){
 			std::make_unique<AnimRC>(getFile("/OilyIdle.gif")),
 			nullptr
 	);
-	addObject(duck);
-	duck->setPos({ 50, 30 });
+	addObject(duckGo);
+	duckGo->getRenderComponent()->setLayer(1);
+	duckGo->setPos({ 50, 30 });
+	duckAnim = std::static_pointer_cast<AnimRC>(duckGo->getRenderComponent());
 
 	bg = std::make_shared<GameObject>(
 			std::make_unique<StaticRC>(getFile("/Level0.raw"), PixelDim({ 160, 128 })),
@@ -72,10 +74,12 @@ void Game1::onRender(Sprite* canvas){
 
 void Game1::onStart(){
 	Input::getInstance()->addListener(this);
+	duckAnim->start();
 }
 
 void Game1::onStop(){
 	Input::getInstance()->removeListener(this);
+	duckAnim->stop();
 }
 
 void Game1::buttonPressed(uint i){
@@ -85,6 +89,10 @@ void Game1::buttonPressed(uint i){
 	if(i == BTN_ENTER){
 		tries--;
 		if(tries < 0){ pop(); }
+		duckAnim->setAnim(getFile("/OilyJump.gif"));
+		duckAnim->setLoopDoneCallback([this](uint32_t){
+			resetAnim();
+		});
 
 		//yPos is top of the indicator, +5 is the middle of the indicator
 		addPoints(abs((indicator->getYPos() + 5) - (bar->getY() + 1)));
@@ -93,10 +101,9 @@ void Game1::buttonPressed(uint i){
 	}
 }
 
-void Game1::resetGoal(){
-	srand((unsigned) time(NULL));
-	yGoal = 14 + (rand() % 91);
-	goal->setPos(PixelDim{ 150, yGoal});
+void Game1::resetAnim(){
+	duckAnim->setAnim(getFile("/OilyIdle.gif"));
+	duckAnim->setLoopDoneCallback({});
 }
 
 void Game1::addPoints(int difference){

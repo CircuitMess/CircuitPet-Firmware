@@ -5,6 +5,7 @@
 #include <Arduino.h>
 #include <Input/InputListener.h>
 #include "../../GameEngine/Game.h"
+#include "../../GameEngine/Rendering/AnimRC.h"
 #include "Indicator.h"
 #include "OilCan.h"
 #include "Bar.h"
@@ -19,6 +20,7 @@ protected:
 	void onStop() override;
 	void onRender(Sprite* canvas) override;
 
+	void resetAnim();
 private:
 	void buttonPressed(uint i) override;
 	void addPoints(int difference);
