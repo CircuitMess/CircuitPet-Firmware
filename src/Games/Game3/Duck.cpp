@@ -1,16 +1,18 @@
 
 #include <Pins.hpp>
 #include "Duck.h"
-#include "../../GameEngine/Rendering/SpriteRC.h"
+#include "../../GameEngine/Collision/CircleCC.h"
 #include <Input/Input.h>
 
-Duck::Duck(){
+Duck::Duck(File walk, File eat) : walk(walk), eat(eat){
 	Input::getInstance()->addListener(this);
 	go = std::make_shared<GameObject>(
-			std::make_unique<SpriteRC>(PixelDim {width, height}),
-			nullptr
+			std::make_unique<AnimRC>(this->walk),
+			std::make_unique<CircleCC>(beakRadius, glm::vec2{width/2, beakRadius +12 })
 	);
-	go->setPos({(160-width)/2, 128-height-5});
+	go->setPos({(160-width)/2, 128-height});
+	anim =  std::static_pointer_cast<AnimRC>(go->getRenderComponent());
+	anim->start();
 }
 
 Duck::~Duck(){
@@ -20,7 +22,7 @@ Duck::~Duck(){
 void Duck::loop(float deltaTime){
 	float moveX = deltaTime*velocity*speed;
 	moveX += go->getPos().x;
-	if(moveX < 0 || moveX > 160 - width) return;
+	if(moveX < - width/4 || moveX > 160 - (width*3)/4) return;
 	go->setPos({moveX, go->getPos().y});
 	Serial.printf("moveX: %d, deltaTime: %f, velocity: %f\n", moveX, deltaTime, velocity);
 }

@@ -6,19 +6,21 @@
 
 #include <Input/Input.h>
 
-Game3::Game3() : Game("",{
-		{"/Bg/Level3.raw", {}, true}
+Game3::Game3() : Game("/Games/Game3", {
+		{ "/Background.raw", {}, true },
+		{ "/DuckWalk.gif",   {}, true },
+		{ "/DuckEat.gif",    {}, true }
 }){}
 
 void Game3::onLoad(){
 	bg = std::make_shared<GameObject>(
-			std::make_unique<StaticRC>(getFile("/Bg/Level3.raw"), PixelDim { 160, 128 }),
+			std::make_unique<StaticRC>(getFile("/Background.raw"), PixelDim{ 160, 128 }),
 			nullptr
 	);
 	addObject(bg);
 	bg->getRenderComponent()->setLayer(-1);
 
-	duck = new Duck();
+	duck = new Duck(getFile("/DuckWalk.gif"), getFile("/DuckEat.gif"));
 	addObject(duck->getGameObject());
 
 	test = std::make_shared<GameObject>(
