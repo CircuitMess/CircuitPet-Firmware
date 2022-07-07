@@ -2,15 +2,14 @@
 #include <sstream>
 #include <SPIFFS.h>
 
-
-const char* animNames[] = { "general", "scratch", "lookAround", "stretch", "wave", "dance", "knock" };
+const char* animNames[] = { "general", "scratch", "look", "stretch", "wave", "dance", "knock" };
 
 CharacterSprite::CharacterSprite(Sprite* parentSprite, uint8_t charLevel, bool rusty, Anim currentAnim) : parentSprite(parentSprite),
 																												 charLevel(charLevel), rusty(rusty),
 																												 currentAnim(currentAnim),
-																												 sprite(std::make_unique<GIFAnimatedSprite>(parentSprite,getAnimFile(charLevel, rusty,currentAnim))){
-	sprite->setLoopMode(GIF::Infinite);
-	sprite->setXY(x, y);
+																												 sprite(parentSprite,getAnimFile(charLevel, rusty,currentAnim)){
+	sprite.setLoopMode(GIF::Infinite);
+	sprite.setXY(x, y);
 }
 
 void CharacterSprite::loop(uint micros){
@@ -23,9 +22,9 @@ void CharacterSprite::loop(uint micros){
 void CharacterSprite::push(){
 	if(firstPush){
 		firstPush = false;
-		sprite->start();
+		sprite.start();
 	}
-	sprite->push();
+	sprite.push();
 }
 
 void CharacterSprite::setCharLevel(uint8_t charLevel){
@@ -52,28 +51,32 @@ void CharacterSprite::setAnim(Anim anim){
 void CharacterSprite::startNextAnim(){
 	if(!nextAnim) return;
 
-	sprite = std::make_unique<GIFAnimatedSprite>(parentSprite, getAnimFile(nextAnim->charLevel, nextAnim->rusty, nextAnim->anim));
-	sprite->setLoopMode(GIF::Infinite);
-	sprite->setXY(x, y);
-	sprite->setLoopDoneCallback(nullptr);
+	sprite = GIFAnimatedSprite(parentSprite, getAnimFile(nextAnim->charLevel, nextAnim->rusty, nextAnim->anim));
+
+	sprite.setLoopMode(GIF::Infinite);
+	sprite.setXY(x, y);
+	sprite.setLoopDoneCallback(nullptr);
 
 	if(!firstPush){
-		sprite->start();
+		sprite.start();
 	}
 
 	nextAnim = std::experimental::nullopt;
 }
 
 File CharacterSprite::getAnimFile(uint8_t charLevel, bool rusty, Anim anim){
-	std::ostringstream path;
-	path << "level" << (int)charLevel << "_rust" << (int)rusty << "_" << animNames[(uint8_t)anim] << ".gif";
-
-	return SPIFFS.open(path.str().c_str());
+	char path[50];
+	if(rusty){
+		sprintf(path, "/Home/%02d_r_%s.gif", charLevel, animNames[(uint8_t)anim]);
+	}else{
+		sprintf(path, "/Home/%02d_%s.gif", charLevel, animNames[(uint8_t)anim]);
+	}
+	return SPIFFS.open(path);
 }
 
 void CharacterSprite::registerNextAnim(){
 	nextAnim = CharacterAnim { charLevel, rusty, currentAnim };
-	sprite->setLoopDoneCallback([this](uint32_t){
+	sprite.setLoopDoneCallback([this](uint32_t){
 		canChange = true;
 	});
 }
@@ -81,7 +84,5 @@ void CharacterSprite::registerNextAnim(){
 void CharacterSprite::setPos(int16_t x, int16_t y){
 	this->x = x;
 	this->y = y;
-	if(sprite){
-		sprite->setXY(x, y);
-	}
+	sprite.setXY(x, y);
 }

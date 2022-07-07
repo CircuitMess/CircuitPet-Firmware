@@ -4,14 +4,17 @@
 
 #include <cstdint>
 #include "CollisionComponent.h"
+#include "../PixelDim.hpp"
 
-// TODO: add position offset
 class CircleCC : public CollisionComponent{
 public:
-	CircleCC(float radius);
+	CircleCC(float radius, glm::vec2 offset = {0, 0});
 	float getRadius() const;
+	glm::vec2 getOffset() const;
+
 private:
 	float radius;
+	glm::vec2 offset;
 };
 
 
