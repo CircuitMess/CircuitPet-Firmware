@@ -21,8 +21,16 @@ protected:
 private:
 	void buttonPressed(uint i) override;
 
+	struct Item{
+		std::shared_ptr<GameObject> gObj;
+		bool edible;
+		float fallSpeed;
+	};
+
 	Duck* duck;
 	std::shared_ptr<GameObject> bg;
+	std::shared_ptr<GameObject> test;
+	std::vector<Item> items;
 };
 
 

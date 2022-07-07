@@ -2,6 +2,8 @@
 #include "Game3.h"
 #include "../../GameEngine/Rendering/SpriteRC.h"
 #include "../../GameEngine/Rendering/StaticRC.h"
+#include "../../GameEngine/Collision/RectCC.h"
+
 #include <Input/Input.h>
 
 Game3::Game3() : Game("",{
@@ -18,6 +20,15 @@ void Game3::onLoad(){
 
 	duck = new Duck();
 	addObject(duck->getGameObject());
+
+	test = std::make_shared<GameObject>(
+			std::make_unique<SpriteRC>(PixelDim{ 10, 10 }),
+			std::make_unique<RectCC>(PixelDim{ 10, 10 })
+	);
+	//Item testItem{test, true};
+
+
+	collision.addPair(*duck->getGameObject(), *test, nullptr);
 }
 
 void Game3::onLoop(float deltaTime){
