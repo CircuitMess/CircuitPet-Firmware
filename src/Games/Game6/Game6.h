@@ -19,6 +19,11 @@ protected:
 	void onRender(Sprite* canvas) override;
 
 private:
+	uint8_t level = 0;
+	void nextLevel();
+	void gameOver();
+	void spawnRandomAsteroid();
+
 
 	//------------ Player ------------
 	Player player;
@@ -29,7 +34,7 @@ private:
 	bool invincible = false;
 	float invincibilityTime = 0;
 	float invincibilityBlink = 0;
-	float invincibilityBlinkDuration = 0.350f;
+	float invincibilityBlinkDuration = 0.2f;
 
 	constexpr static float invincibilityDuration = 2.0f;
 	//------------ Player end ------------
@@ -45,7 +50,7 @@ private:
 		}
 	};
 
-	constexpr static float bulletSpeed = 50.0f;
+	constexpr static float bulletSpeed = 80.0f;
 	constexpr static uint8_t maxBullets = 4;
 
 	std::vector<Bullet> bulletPool;

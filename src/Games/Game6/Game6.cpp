@@ -20,10 +20,10 @@ Game6::Game6() : wrapWalls({ .top =  { nullptr, std::make_unique<RectCC>(glm::ve
 						   { "/MenuIcons/Icon2.raw", {}, true }
 				 }){
 
-	wrapWalls.top.setPos(glm::vec2{ 0, -100 } - (2*asteroidRadius[(uint8_t)AsteroidSize::Large] + 1));
-	wrapWalls.bot.setPos(glm::vec2{ 0, 128 } + (2*asteroidRadius[(uint8_t)AsteroidSize::Large] + 1));
-	wrapWalls.left.setPos(glm::vec2{ -100, 0 } - (2*asteroidRadius[(uint8_t)AsteroidSize::Large] + 1));
-	wrapWalls.right.setPos(glm::vec2{ 160, 0 } + (2*asteroidRadius[(uint8_t)AsteroidSize::Large] + 1));
+	wrapWalls.top.setPos(glm::vec2 { 0, -100 } - (2 * asteroidRadius[(uint8_t)AsteroidSize::Large] + 1));
+	wrapWalls.bot.setPos(glm::vec2 { -(2 * asteroidRadius[(uint8_t)AsteroidSize::Large] + 1), 128 + (2 * asteroidRadius[(uint8_t)AsteroidSize::Large] + 1) });
+	wrapWalls.left.setPos(glm::vec2 { -100, 0 } - (2 * asteroidRadius[(uint8_t)AsteroidSize::Large] + 1));
+	wrapWalls.right.setPos(glm::vec2 { 160 + (2 * asteroidRadius[(uint8_t)AsteroidSize::Large] + 1), -(2 * asteroidRadius[(uint8_t)AsteroidSize::Large] + 1) });
 }
 
 void Game6::onLoad(){
@@ -53,6 +53,11 @@ void Game6::onLoop(float deltaTime){
 	updateInvincibility(deltaTime);
 	updateBullets(deltaTime);
 	updateAsteroids(deltaTime);
+
+
+	if(asteroidPool.empty()){
+		nextLevel();
+	}
 }
 
 void Game6::onRender(Sprite* canvas){
@@ -62,9 +67,7 @@ void Game6::onRender(Sprite* canvas){
 void Game6::onStart(){
 	Input::getInstance()->addListener(this);
 
-	createAsteroid(AsteroidSize::Large, {-(2*asteroidRadius[(uint8_t)AsteroidSize::Large]), 50});
-	createAsteroid(AsteroidSize::Medium, {160, 50});
-	createAsteroid(AsteroidSize::Small, {-(2*asteroidRadius[(uint8_t)AsteroidSize::Large]), 100});
+	nextLevel();
 }
 
 void Game6::onStop(){
@@ -147,9 +150,10 @@ void Game6::shootBullet(){
 
 void Game6::createAsteroid(Game6::AsteroidSize size, glm::vec2 pos){
 
-	auto spriteRC = std::make_unique<SpriteRC>(PixelDim { asteroidRadius[(uint8_t)size] * 2, asteroidRadius[(uint8_t)size] * 2 });
-	spriteRC->getSprite()->clear(TFT_TRANSPARENT);
-	spriteRC->getSprite()->fillCircle(asteroidRadius[(uint8_t)size], asteroidRadius[(uint8_t)size], asteroidRadius[(uint8_t)size], TFT_BROWN);
+//	auto spriteRC = std::make_unique<SpriteRC>(PixelDim { asteroidRadius[(uint8_t)size] * 2, asteroidRadius[(uint8_t)size] * 2 });
+	auto spriteRC = std::make_unique<StaticRC>(getFile("/MenuIcons/Icon2.raw"), PixelDim{32, 32});
+//	spriteRC->getSprite()->clear(TFT_TRANSPARENT);
+//	spriteRC->getSprite()->fillCircle(asteroidRadius[(uint8_t)size], asteroidRadius[(uint8_t)size], asteroidRadius[(uint8_t)size], TFT_BROWN);
 
 	auto asteroid = std::make_shared<GameObject>(std::move(spriteRC),
 												 std::make_unique<CircleCC>(asteroidRadius[(uint8_t)size],
@@ -157,8 +161,15 @@ void Game6::createAsteroid(Game6::AsteroidSize size, glm::vec2 pos){
 	addObject(asteroid);
 	asteroid->setPos(pos);
 
-	//random direction
+	//random direction, avoid right angles since they can keep the asteroids off-screen for long durations
 	float angle = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 360.0f));
+	float rightAngleOffset = 15;
+	if(fmod(angle, 90) <= rightAngleOffset){
+		angle += rightAngleOffset;
+	}else if(fmod(angle, 90) >= 90 - rightAngleOffset){
+		angle -= rightAngleOffset;
+	}
+
 	glm::vec2 direction = { cos(M_PI * angle / 180.0), sin(M_PI * angle / 180.0) };
 	glm::vec2 speed = direction * asteroidSpeed[(uint8_t)size];
 
@@ -240,6 +251,58 @@ void Game6::updateInvincibility(float delta){
 }
 
 void Game6::playerHit(){
-	invincible = true;
 	life--;
+	if(life == 0){
+		gameOver();
+	}
+	invincible = true;
+}
+
+void Game6::nextLevel(){
+	level++;
+
+	for(uint8_t i = 0; i < level; i++){
+		spawnRandomAsteroid();
+	}
+}
+
+void Game6::spawnRandomAsteroid(){
+	glm::vec2 pos;
+	//New asteroids will only be spawned barely outside the screen area:
+	//x in range (-2*asteroidRadius[Large], 160), y either -2*asteroidRadius[Large] or 128
+	//y in range (-2*asteroidRadius[Large], 128), x either -2*asteroidRadius[Large] or 160
+
+	//top left corner of rectangle outside of the screen, wider by 2*radius[Large] than screen
+	glm::vec2 topLeft = {-2*asteroidRadius[(uint8_t)AsteroidSize::Large], -2*asteroidRadius[(uint8_t)AsteroidSize::Large]};
+
+	//pick border for asteroid to spawn on
+	enum class Border : uint8_t {
+		Up, Down, Left, Right
+	} side = static_cast<Border>(rand() % 4);
+
+	if(side == Border::Up || side == Border::Down){
+		float xpos = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (160.0f  - topLeft.x)));
+
+		if(side == Border::Up){
+			pos = {topLeft.x + xpos, topLeft.y};
+		}else if(side == Border::Down){
+			pos = {topLeft.x + xpos, 128.0f};
+		}
+	}else if(side == Border::Left ||side == Border::Right){
+		float ypos = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (128.0f  - topLeft.y)));
+
+		if(side == Border::Left){
+			pos = {topLeft.x, topLeft.y + ypos};
+		}else if(side == Border::Right){
+			pos = {160.0f, topLeft.y + ypos};
+		}
+	}
+
+	createAsteroid(AsteroidSize::Large, pos);
+}
+
+void Game6::gameOver(){
+	//play anim
+//	pop();
+
 }
