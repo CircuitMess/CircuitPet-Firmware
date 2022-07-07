@@ -17,7 +17,7 @@ public:
 private:
 	float angle = 0.f; //0 - 360
 
-	constexpr static float rotSpeed = 50.f;
+	constexpr static float rotSpeed = 100.f;
 
 	ObjPtr obj;
 };
