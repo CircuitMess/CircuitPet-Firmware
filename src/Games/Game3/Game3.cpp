@@ -16,15 +16,12 @@ void Game3::onLoad(){
 	addObject(bg);
 	bg->getRenderComponent()->setLayer(-1);
 
-	duckGO = std::make_shared<GameObject>(
-			std::make_unique<SpriteRC>(PixelDim {40, 60}),
-			nullptr
-	);
-	addObject(duckGO);
-	duckGO->setPos({60, 60});
+	duck = new Duck();
+	addObject(duck->getGameObject());
 }
 
 void Game3::onLoop(float deltaTime){
+	duck->loop(deltaTime);
 }
 
 void Game3::onStart(){
@@ -42,4 +39,6 @@ void Game3::buttonPressed(uint i){
 	if(i == BTN_BACK){
 		pop();
 	}
+
 }
+

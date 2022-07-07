@@ -5,6 +5,7 @@
 
 #include <Input/InputListener.h>
 #include "../../GameEngine/Game.h"
+#include "Duck.h"
 
 class Game3 : public Game, private InputListener {
 public:
@@ -18,9 +19,9 @@ protected:
 	void onRender(Sprite* canvas) override;
 
 private:
-	void buttonPressed(uint i)override;
+	void buttonPressed(uint i) override;
 
-	std::shared_ptr<GameObject> duckGO;
+	Duck* duck;
 	std::shared_ptr<GameObject> bg;
 };
 
