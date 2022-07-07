@@ -14,7 +14,7 @@ void OSSprite::setLevel(uint8_t level){
 
 	sprite.clear(TFT_TRANSPARENT);
 	sprite.drawIcon(logoFile, 0, 0, logoWidth, logoHeight);
-	sprite.drawIcon(osFile, logoWidth + 1, 2, osWidth, osHeight);
+	sprite.drawIcon(osFile, logoWidth + 1, 1, osWidth, osHeight);
 }
 
 void OSSprite::setPos(uint8_t x, uint8_t y){

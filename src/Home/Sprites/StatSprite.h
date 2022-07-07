@@ -12,7 +12,7 @@ public:
 	StatSprite(Sprite* parent, Type type, uint8_t level);
 	void setLevel(uint8_t level);
 	void push();
-	void setPos(uint8_t x, uint8_t y);
+	void setPos(int16_t x, int16_t y);
 private:
 	Type type;
 	uint8_t level;

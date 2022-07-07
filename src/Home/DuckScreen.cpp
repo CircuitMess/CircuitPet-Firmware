@@ -8,7 +8,7 @@
 DuckScreen::DuckScreen(Sprite* base) : State(), base(base), bgSprite(base, StatMan.getLevel()),
 									   osSprite(base, StatMan.getLevel()),
 									   characterSprite(base, StatMan.getLevel(), StatMan.get().oilLevel, Anim::General),
-									   statsSprite(base, StatMan.get().happiness, StatMan.get().oilLevel, 100), //TODO - set battery level instead of '100' placeholder
+									   statsSprite(base, StatMan.get().oilLevel,  StatMan.get().happiness, 100), //TODO - set battery level instead of '100' placeholder
 									   menu(base), hider(&menu){
 
 	osSprite.setPos(osX, osY);
