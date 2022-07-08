@@ -36,7 +36,7 @@ void Game3::onLoad(){
 	items[2].go->setPos({30,60});
 	items[3].go->setPos({20,60});
 
-	collision.addPair(*duck->getGameObject(), *test, nullptr);
+
 }
 
 void Game3::onLoop(float deltaTime){
@@ -68,7 +68,13 @@ void Game3::addItem(std::string file, bool edible, int value, PixelDim dim){
 	addObject(go);
 	Item item {go, edible, 0.0f, value};
 	items.push_back(item);
+	collision.addPair(*duck->getGameObject(), *item.go,  [this, item](){ collisionHandler(item);});
 }
 
+
+void Game3::collisionHandler(Item item){
+	removeObject(item.go);
+	duck->startEating();
+	Serial.printf("collision happened %d \n", item.value);
 }
 

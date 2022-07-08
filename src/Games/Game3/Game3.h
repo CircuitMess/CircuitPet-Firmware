@@ -28,6 +28,8 @@ private:
 		float fallSpeed; //will be changed via spawner
 		int value; 		 //used not only for score, but for the rarity of the spawns
 	};
+	void collisionHandler(Item item);
+
 
 	Duck* duck;
 	std::shared_ptr<GameObject> bg;
