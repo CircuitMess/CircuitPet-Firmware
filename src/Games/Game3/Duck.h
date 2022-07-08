@@ -14,15 +14,17 @@ public:
 	~Duck();
 	std::shared_ptr<GameObject> getGameObject();
 	void loop(float deltaTime);
+	void startEating();
 private:
 	void buttonPressed(uint i) override;
 	void buttonReleased(uint i) override;
-
+	void finishEating();
 	const uint16_t width = 48;
 	const uint16_t height = 77;
 	float velocity = 0.0f;
 	const float speed = 30.0f;
 	const float beakRadius = (float)width/4;
+	bool eating = false;
 
 	File walk;
 	File eat;

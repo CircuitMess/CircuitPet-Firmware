@@ -24,7 +24,21 @@ void Duck::loop(float deltaTime){
 	moveX += go->getPos().x;
 	if(moveX < - width/4 || moveX > 160 - (width*3)/4) return;
 	go->setPos({moveX, go->getPos().y});
-	Serial.printf("moveX: %d, deltaTime: %f, velocity: %f\n", moveX, deltaTime, velocity);
+}
+
+void Duck::startEating(){
+	velocity = 0.0f;
+	eating = true;
+	anim->setAnim(eat);
+	anim->setLoopDoneCallback([this](uint32_t t){
+		finishEating();
+	});
+}
+
+void Duck::finishEating(){
+	anim->setAnim(walk);
+	anim->setLoopDoneCallback({});
+	eating = false;
 }
 
 std::shared_ptr<GameObject> Duck::getGameObject(){
@@ -32,6 +46,7 @@ std::shared_ptr<GameObject> Duck::getGameObject(){
 }
 
 void Duck::buttonPressed(uint i){
+	if(eating) return; //player will have to click and hold after eating is over
 	if(i == BTN_LEFT){
 		velocity = -1.0f;
 	}
