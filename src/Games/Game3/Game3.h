@@ -20,16 +20,17 @@ protected:
 
 private:
 	void buttonPressed(uint i) override;
+	void addItem(std::string file, bool edible, int value, PixelDim dim);
 
 	struct Item{
-		std::shared_ptr<GameObject> gObj;
+		std::shared_ptr<GameObject> go;
 		bool edible;
-		float fallSpeed;
+		float fallSpeed; //will be changed via spawner
+		int value; 		 //used not only for score, but for the rarity of the spawns
 	};
 
 	Duck* duck;
 	std::shared_ptr<GameObject> bg;
-	std::shared_ptr<GameObject> test;
 	std::vector<Item> items;
 };
 

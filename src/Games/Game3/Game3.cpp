@@ -3,11 +3,14 @@
 #include "../../GameEngine/Rendering/SpriteRC.h"
 #include "../../GameEngine/Rendering/StaticRC.h"
 #include "../../GameEngine/Collision/RectCC.h"
-
 #include <Input/Input.h>
 
 Game3::Game3() : Game("/Games/Game3", {
 		{ "/Background.raw", {}, true },
+		{ "/Bomb.raw",       {}, true },
+		{ "/Dynamite.raw",   {}, true },
+		{ "/Nut.raw",        {}, true },
+		{ "/Screw.raw",      {}, true },
 		{ "/DuckWalk.gif",   {}, true },
 		{ "/DuckEat.gif",    {}, true }
 }){}
@@ -23,12 +26,15 @@ void Game3::onLoad(){
 	duck = new Duck(getFile("/DuckWalk.gif"), getFile("/DuckEat.gif"));
 	addObject(duck->getGameObject());
 
-	test = std::make_shared<GameObject>(
-			std::make_unique<SpriteRC>(PixelDim{ 10, 10 }),
-			std::make_unique<RectCC>(PixelDim{ 10, 10 })
-	);
-	//Item testItem{test, true};
+	addItem("/Nut.raw", true, 15, PixelDim{13 , 13});
+	addItem("/Screw.raw", true, 5, PixelDim{5 , 15});
+	addItem("/Bomb.raw", false, 30, PixelDim{14 , 22});
+	addItem("/Dynamite.raw", false, 20, PixelDim{5 , 20});
 
+	items[0].go->setPos({70,50});
+	items[1].go->setPos({60,50});
+	items[2].go->setPos({30,60});
+	items[3].go->setPos({20,60});
 
 	collision.addPair(*duck->getGameObject(), *test, nullptr);
 }
@@ -52,6 +58,17 @@ void Game3::buttonPressed(uint i){
 	if(i == BTN_BACK){
 		pop();
 	}
+}
+
+void Game3::addItem(std::string file, bool edible, int value, PixelDim dim){
+	auto go = std::make_shared<GameObject>(
+			std::make_unique<StaticRC>(getFile(file), dim),
+			std::make_unique<RectCC>(dim)
+	);
+	addObject(go);
+	Item item {go, edible, 0.0f, value};
+	items.push_back(item);
+}
 
 }
 
