@@ -4,6 +4,7 @@
 #include "../../GameEngine/Rendering/StaticRC.h"
 #include "../../GameEngine/Collision/RectCC.h"
 #include <Input/Input.h>
+#include <time.h>
 
 Game3::Game3() : Game("/Games/Game3", {
 		{ "/Background.raw", {}, true },
@@ -16,6 +17,8 @@ Game3::Game3() : Game("/Games/Game3", {
 }){}
 
 void Game3::onLoad(){
+	srand (time(NULL));
+
 	bg = std::make_shared<GameObject>(
 			std::make_unique<StaticRC>(getFile("/Background.raw"), PixelDim{ 160, 128 }),
 			nullptr
@@ -61,6 +64,27 @@ void Game3::addTemplate(std::string file, PixelDim dim, int value){
 	}else{
 		bombs.push_back(temp);
 	}
+}
+
+void Game3::spawnRandom(){
+	int randNum = rand()%(101);
+	if(randNum <= 70){
+		spawnItem(foods[0]);
+	}else{
+		spawnItem(bombs[0]);
+	}
+}
+
+void Game3::spawnItem(Game3::Template temp){
+	int randPos = rand()%(161- temp.dim.x);
+	auto go = std::make_shared<GameObject>(
+			std::make_unique<StaticRC>(getFile(temp.path),temp.dim ),
+			std::make_unique<RectCC>(temp.dim)
+	);
+	addObject(go);
+	go->setPos({randPos,0});
+	Item item{go,foods[0].value};
+	collision.addPair(*duck->getGameObject(), *item.go,  [this, item](){ collisionHandler(item);});
 }
 
 void Game3::collisionHandler(Item item){

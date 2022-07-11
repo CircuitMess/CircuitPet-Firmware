@@ -21,6 +21,7 @@ protected:
 private:
 	void buttonPressed(uint i) override;
 	void addTemplate(std::string file, PixelDim dim, int value);
+	void spawnRandom();
 
 	struct Item{
 		std::shared_ptr<GameObject> go;
@@ -34,6 +35,7 @@ private:
 		PixelDim dim;
 		int value;
 	};
+	void spawnItem(Template temp);
 	void collisionHandler(Item item);
 
 	int hugerMeter = 200;
