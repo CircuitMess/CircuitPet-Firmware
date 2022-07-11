@@ -31,12 +31,6 @@ void Game3::onLoad(){
 	addTemplate("/Bomb.raw", PixelDim{ 14, 22 }, 0);
 	addTemplate("/Dynamite.raw", PixelDim{ 5, 20 }, 0);
 
-	items[0].go->setPos({70,50});
-	items[1].go->setPos({60,50});
-	items[2].go->setPos({30,60});
-	items[3].go->setPos({20,60});
-
-
 }
 
 void Game3::onLoop(float deltaTime){
@@ -72,6 +66,11 @@ void Game3::addTemplate(std::string file, PixelDim dim, int value){
 void Game3::collisionHandler(Item item){
 	removeObject(item.go);
 	duck->startEating();
-	Serial.printf("collision happened %d \n", item.value);
+	if(item.value > 0){
+		hugerMeter -= item.value;
+	}else{
+		lives--;
+	}
+	Serial.printf("lives: %d\thunger: %d\n", lives, hugerMeter);
 }
 

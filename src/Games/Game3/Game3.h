@@ -36,6 +36,8 @@ private:
 	};
 	void collisionHandler(Item item);
 
+	int hugerMeter = 200;
+	int lives = 3;
 
 	Duck* duck;
 	std::shared_ptr<GameObject> bg;
