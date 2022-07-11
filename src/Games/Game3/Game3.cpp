@@ -26,10 +26,10 @@ void Game3::onLoad(){
 	duck = new Duck(getFile("/DuckWalk.gif"), getFile("/DuckEat.gif"));
 	addObject(duck->getGameObject());
 
-	addItem("/Nut.raw", true, 15, PixelDim{13 , 13});
-	addItem("/Screw.raw", true, 5, PixelDim{5 , 15});
-	addItem("/Bomb.raw", false, 30, PixelDim{14 , 22});
-	addItem("/Dynamite.raw", false, 20, PixelDim{5 , 20});
+	addTemplate("/Nut.raw", PixelDim{ 13, 13 }, 15);
+	addTemplate("/Screw.raw", PixelDim{ 5, 15 }, 5);
+	addTemplate("/Bomb.raw", PixelDim{ 14, 22 }, 0);
+	addTemplate("/Dynamite.raw", PixelDim{ 5, 20 }, 0);
 
 	items[0].go->setPos({70,50});
 	items[1].go->setPos({60,50});
@@ -60,17 +60,14 @@ void Game3::buttonPressed(uint i){
 	}
 }
 
-void Game3::addItem(std::string file, bool edible, int value, PixelDim dim){
-	auto go = std::make_shared<GameObject>(
-			std::make_unique<StaticRC>(getFile(file), dim),
-			std::make_unique<RectCC>(dim)
-	);
-	addObject(go);
-	Item item {go, edible, 0.0f, value};
-	items.push_back(item);
-	collision.addPair(*duck->getGameObject(), *item.go,  [this, item](){ collisionHandler(item);});
+void Game3::addTemplate(std::string file, PixelDim dim, int value){
+	Template temp{ file, dim, value };
+	if(value > 0){
+		foods.push_back(temp);
+	}else{
+		bombs.push_back(temp);
+	}
 }
-
 
 void Game3::collisionHandler(Item item){
 	removeObject(item.go);

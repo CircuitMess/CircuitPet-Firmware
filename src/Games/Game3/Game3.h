@@ -20,13 +20,19 @@ protected:
 
 private:
 	void buttonPressed(uint i) override;
-	void addItem(std::string file, bool edible, int value, PixelDim dim);
+	void addTemplate(std::string file, PixelDim dim, int value);
 
 	struct Item{
 		std::shared_ptr<GameObject> go;
-		bool edible;
-		float fallSpeed; //will be changed via spawner
-		int value; 		 //used not only for score, but for the rarity of the spawns
+//		bool edible;
+//		float fallSpeed; //will be changed via spawner
+		int value;
+	};
+
+	struct Template{
+		std::string path;
+		PixelDim dim;
+		int value;
 	};
 	void collisionHandler(Item item);
 
@@ -34,6 +40,8 @@ private:
 	Duck* duck;
 	std::shared_ptr<GameObject> bg;
 	std::vector<Item> items;
+	std::vector<Template> foods;
+	std::vector<Template> bombs;
 };
 
 
