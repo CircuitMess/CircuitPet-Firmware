@@ -12,3 +12,13 @@ void StaticRC::push(Sprite* parent, PixelDim pos) const{
 	
 	parent->drawIcon(file, pos.x, pos.y, dim.x, dim.y);
 }
+
+void StaticRC::setFile(File file){
+	StaticRC::file = file;
+}
+
+void StaticRC::setFile(File file, PixelDim dim){
+	StaticRC::file = file;
+	StaticRC::dim = dim;
+}
+

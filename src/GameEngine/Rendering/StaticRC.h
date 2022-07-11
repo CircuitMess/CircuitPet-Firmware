@@ -10,6 +10,8 @@ public:
 	 * @param dim Width, height.
 	 */
 	StaticRC(File file, PixelDim dim);
+	void setFile(File file); //no change in dim
+	void setFile(File file, PixelDim dim); //change in dim
 
 protected:
 	void push(Sprite* parent, PixelDim pos) const override;
