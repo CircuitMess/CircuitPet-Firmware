@@ -25,8 +25,6 @@ private:
 
 	struct Item{
 		std::shared_ptr<GameObject> go;
-//		bool edible;
-//		float fallSpeed; //will be changed via spawner
 		int value;
 	};
 
@@ -40,6 +38,9 @@ private:
 
 	int hugerMeter = 200;
 	int lives = 3;
+	const float fallSpeed = 30.0f;
+	const float spawnRate = 1.5f;
+	float timeToSpawn = 0.0f;
 
 	Duck* duck;
 	std::shared_ptr<GameObject> bg;

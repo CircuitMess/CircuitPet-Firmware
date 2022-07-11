@@ -38,6 +38,17 @@ void Game3::onLoad(){
 
 void Game3::onLoop(float deltaTime){
 	duck->loop(deltaTime);
+	timeToSpawn += deltaTime;
+	if(timeToSpawn >= spawnRate)
+	{
+		spawnRandom();
+		timeToSpawn -= spawnRate;
+	}
+	for(const auto object : movingObjects){
+		int y = deltaTime * fallSpeed + object->getPos().y;
+		int x = object->getPos().x;
+		object->setPos({x,y});
+	}
 }
 
 void Game3::onStart(){
@@ -69,9 +80,11 @@ void Game3::addTemplate(std::string file, PixelDim dim, int value){
 void Game3::spawnRandom(){
 	int randNum = rand()%(101);
 	if(randNum <= 70){
-		spawnItem(foods[0]);
+		int pick = rand()%foods.size();
+		spawnItem(foods[pick]);
 	}else{
-		spawnItem(bombs[0]);
+		int pick = rand()%bombs.size();
+		spawnItem(bombs[pick]);
 	}
 }
 
