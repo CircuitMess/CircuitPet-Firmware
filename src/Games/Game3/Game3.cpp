@@ -26,6 +26,13 @@ void Game3::onLoad(){
 	addObject(bg);
 	bg->getRenderComponent()->setLayer(-1);
 
+	collectorBot = std::make_shared<GameObject>(
+			nullptr,
+			std::make_unique<RectCC>(PixelDim {160, 15})
+	);
+	collectorBot->setPos({0,  140});
+	addObject(collectorBot);
+
 	duck = new Duck(getFile("/DuckWalk.gif"), getFile("/DuckEat.gif"));
 	addObject(duck->getGameObject());
 
@@ -95,12 +102,18 @@ void Game3::spawnItem(Game3::Template temp){
 			std::make_unique<RectCC>(temp.dim)
 	);
 	addObject(go);
-	go->setPos({randPos,0});
-	Item item{go,foods[0].value};
+	movingObjects.insert(go);
+	go->setPos({randPos,-temp.dim.y});
+	Item item{go,temp.value};
 	collision.addPair(*duck->getGameObject(), *item.go,  [this, item](){ collisionHandler(item);});
+	collision.addPair(*collectorBot, *item.go,  [this, item](){
+		movingObjects.erase(item.go);
+		removeObject(item.go);
+	});
 }
 
 void Game3::collisionHandler(Item item){
+	movingObjects.erase(item.go);
 	removeObject(item.go);
 	duck->startEating();
 	if(item.value > 0){

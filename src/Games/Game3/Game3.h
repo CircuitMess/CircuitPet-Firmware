@@ -44,7 +44,8 @@ private:
 
 	Duck* duck;
 	std::shared_ptr<GameObject> bg;
-	std::vector<Item> items;
+	std::shared_ptr<GameObject> collectorBot;
+	std::set<std::shared_ptr<GameObject>> movingObjects;
 	std::vector<Template> foods;
 	std::vector<Template> bombs;
 };
