@@ -20,6 +20,7 @@ Duck::~Duck(){
 }
 
 void Duck::loop(float deltaTime){
+	if(eating) return;
 	float moveX = deltaTime*velocity*speed;
 	moveX += go->getPos().x;
 	if(moveX < - width/4 || moveX > 160 - (width*3)/4) return;
@@ -27,7 +28,6 @@ void Duck::loop(float deltaTime){
 }
 
 void Duck::startEating(){
-	velocity = 0.0f;
 	eating = true;
 	anim->setAnim(eat);
 	anim->setLoopDoneCallback([this](uint32_t t){
@@ -46,7 +46,6 @@ std::shared_ptr<GameObject> Duck::getGameObject(){
 }
 
 void Duck::buttonPressed(uint i){
-	if(eating) return; //player will have to click and hold after eating is over
 	if(i == BTN_LEFT){
 		velocity = -1.0f;
 	}
