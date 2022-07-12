@@ -24,7 +24,7 @@ void Game3::onLoad(){
 			nullptr
 	);
 	addObject(bg);
-	bg->getRenderComponent()->setLayer(-1);
+	bg->getRenderComponent()->setLayer(-2);
 
 	collectorBot = std::make_shared<GameObject>(
 			nullptr,
@@ -35,6 +35,7 @@ void Game3::onLoad(){
 
 	duck = new Duck(getFile("/DuckWalk.gif"), getFile("/DuckEat.gif"));
 	addObject(duck->getGameObject());
+	duck->getGameObject()->getRenderComponent()->setLayer(-1);
 
 	addTemplate("/Nut.raw", PixelDim{ 13, 13 }, 15);
 	addTemplate("/Screw.raw", PixelDim{ 5, 15 }, 5);

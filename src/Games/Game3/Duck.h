@@ -22,8 +22,8 @@ private:
 	const uint16_t width = 48;
 	const uint16_t height = 77;
 	float velocity = 0.0f;
-	const float speed = 30.0f;
-	const float beakRadius = (float)width/4;
+	const float speed = 50.0f;
+	const float beakRadius = (float)width/5;
 	bool eating = false;
 
 	File walk;
