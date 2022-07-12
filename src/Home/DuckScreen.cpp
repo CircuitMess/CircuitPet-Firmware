@@ -2,6 +2,7 @@
 #include <Loop/LoopManager.h>
 #include "../Stats/StatsManager.h"
 #include "../Games/TestGame.h"
+#include "../Games/Game4/Game4.h"
 #include <Chatter.h>
 
 DuckScreen::DuckScreen(Sprite* base) : State(), base(base), bgSprite(base, StatMan.getLevel()),
@@ -17,7 +18,7 @@ DuckScreen::DuckScreen(Sprite* base) : State(), base(base), bgSprite(base, StatM
 
 	menuItems = {
 			{ "Oily", GameImage(base, "/MenuIcons/Icon1.raw"), [this](){
-				Game* game = new TestGame();
+				Game* game = new Game4();
 				game->load();
 
 				printf("Loading.");

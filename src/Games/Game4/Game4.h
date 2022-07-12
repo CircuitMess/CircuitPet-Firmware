@@ -18,9 +18,17 @@ protected:
 	void onRender(Sprite* canvas) override;
 
 private:
+	void buttonPressed(uint i) override;
+
+
+	std::shared_ptr<GameObject> leftWall;
+	std::shared_ptr<GameObject> objectDuck;
 	std::shared_ptr<GameObject> bg;
 	std::shared_ptr<GameObject> duck;
+	std::vector<std::shared_ptr<GameObject>> movingObjects;
 
+	const int tileDim = 16;
+	const float speed = 20.0f;
 };
 
 
