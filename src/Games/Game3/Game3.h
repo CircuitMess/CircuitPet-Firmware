@@ -38,14 +38,15 @@ private:
 
 	int hugerMeter = 200;
 	int lives = 3;
-	const float fallSpeed = 30.0f;
-	const float spawnRate = 1.5f;
+	const int speedMin = 30;
+	const int speedMax = 50;
+	const float spawnRate = 1.3f;
 	float timeToSpawn = 0.0f;
 
 	Duck* duck;
 	std::shared_ptr<GameObject> bg;
 	std::shared_ptr<GameObject> collectorBot;
-	std::set<std::shared_ptr<GameObject>> movingObjects;
+	std::set<std::pair<std::shared_ptr<GameObject>, float>> movingObjects;
 	std::vector<Template> foods;
 	std::vector<Template> bombs;
 };

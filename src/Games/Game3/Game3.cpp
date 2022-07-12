@@ -52,9 +52,9 @@ void Game3::onLoop(float deltaTime){
 		timeToSpawn -= spawnRate;
 	}
 	for(const auto object : movingObjects){
-		int y = deltaTime * fallSpeed + object->getPos().y;
-		int x = object->getPos().x;
-		object->setPos({x,y});
+		int y = deltaTime * object.second + object.first->getPos().y;
+		int x = object.first->getPos().x;
+		object.first->setPos({x,y});
 	}
 }
 
@@ -102,18 +102,22 @@ void Game3::spawnItem(Game3::Template temp){
 			std::make_unique<RectCC>(temp.dim)
 	);
 	addObject(go);
-	movingObjects.insert(go);
+	float speed = rand()%(speedMax-speedMin+1)+speedMin;
+
+	movingObjects.insert(std::make_pair(go,speed));
 	go->setPos({randPos,-temp.dim.y});
 	Item item{go,temp.value};
-	collision.addPair(*duck->getGameObject(), *item.go,  [this, item](){ collisionHandler(item);});
-	collision.addPair(*collectorBot, *item.go,  [this, item](){
-		movingObjects.erase(item.go);
+	collision.addPair(*duck->getGameObject(), *item.go,  [this, item, speed](){
+		collisionHandler(item);
+		movingObjects.erase(std::make_pair(item.go,speed));
+	});
+	collision.addPair(*collectorBot, *item.go,  [this, item,speed](){
+		movingObjects.erase(std::make_pair(item.go,speed));
 		removeObject(item.go);
 	});
 }
 
 void Game3::collisionHandler(Item item){
-	movingObjects.erase(item.go);
 	removeObject(item.go);
 	duck->startEating();
 	if(item.value > 0){
@@ -122,5 +126,9 @@ void Game3::collisionHandler(Item item){
 		lives--;
 	}
 	Serial.printf("lives: %d\thunger: %d\n", lives, hugerMeter);
+	if(lives <= 0)
+	{
+		pop();
+	}
 }
 
