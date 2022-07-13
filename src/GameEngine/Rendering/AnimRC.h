@@ -11,7 +11,7 @@ public:
 	 * @param file GIF file.
 	 */
 	AnimRC(File file);
-
+	~AnimRC() override = default;
 	/**
 	 * Replaces the current animation with the one provided.
 	 * Will auto-play the anim if the last one was running when the new one was set.
