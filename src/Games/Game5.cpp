@@ -1,12 +1,15 @@
 #include "Game5.h"
 #include "../GameEngine/Collision/CircleCC.h"
 #include "../GameEngine/Collision/RectCC.h"
+#include "../GameEngine/Rendering/SpriteRC.h"
+#include "../GameEngine/Rendering/StaticRC.h"
 
 constexpr const char* Game5::barsIcons[3];
 constexpr const char* Game5::circlesIcons[3];
 constexpr const char* Game5::circlesIconsPressed[3];
 constexpr uint16_t Game5::barsX[3];
 constexpr uint16_t Game5::circlesX[3];
+constexpr const char* Game5::notesIcons[3];
 
 std::map<uint, uint8_t> btnBarMap = {{ BTN_LEFT,  0 },
 									 { BTN_RIGHT, 1 },
@@ -22,12 +25,26 @@ Game5::Game5() : Game("/Games/5", {
 		{ circlesIconsPressed[0], {}, true },
 		{ circlesIconsPressed[1], {}, true },
 		{ circlesIconsPressed[2], {}, true },
-}), bottomWall(nullptr, std::make_unique<RectCC>(glm::vec2 { 160, 20 })){
+		{ notesIcons[0],          {}, true },
+		{ notesIcons[1],          {}, true },
+		{ notesIcons[2],          {}, true },
+		{ "/Pat1.gif",            {}, true }}),
+				 bottomWall(nullptr, std::make_unique<RectCC>(glm::vec2 { 160, 20 })),
+				 scoreBar(std::make_unique<SpriteRC>(PixelDim { 7, 110 }), nullptr){
+
 	bottomWall.setPos({ 0, 138 });
+	addObject(std::make_shared<GameObject>(bottomWall));
+
+	scoreBar.setPos({ 143, 14 });
+	scoreBarSprite = std::static_pointer_cast<SpriteRC>(scoreBar.getRenderComponent())->getSprite();
+	scoreBarSprite->clear(TFT_BLACK);
+	scoreBarSprite->drawRect(0, 0, scoreBarSprite->width(), scoreBarSprite->height(), TFT_WHITE);
+	addObject(std::make_shared<GameObject>(scoreBar));
 }
 
 void Game5::onStart(){
 	Input::getInstance()->addListener(this);
+	duckRC->start();
 }
 
 void Game5::onStop(){
@@ -46,10 +63,41 @@ void Game5::onLoad(){
 		circles[i]->setPos({ circlesX[i], circlesY });
 		addObject(circles[i]);
 	}
+
+	duck = std::make_shared<GameObject>(std::make_unique<AnimRC>(getFile("/Pat1.gif")), nullptr);
+	duck->setPos({ 80, 20 });
+	duckRC = std::static_pointer_cast<AnimRC>(duck->getRenderComponent());
+	addObject(duck);
 }
 
 void Game5::onLoop(float deltaTime){
-	updateNotes(deltaTime);
+	switch(state){
+		case Running:
+			beatTimer += deltaTime;
+			if(beatTimer >= beatInterval){
+				beatTimer = 0;
+				uint8_t randNotes = rand() % 8;
+				for(int i = 0; i < 3; ++i){
+					if(randNotes & (1 << i)){
+						createNote(i);
+					}
+				}
+			}
+
+			updateNotes(deltaTime);
+			break;
+
+		case DonePause:
+			gameDoneTimer += deltaTime;
+			if(gameDoneTimer >= gameDonePause){
+				pop();
+			}
+			break;
+
+		default:
+			break;
+	}
+
 }
 
 void Game5::onRender(Sprite* canvas){
@@ -59,6 +107,9 @@ void Game5::buttonPressed(uint i){
 	if(!btnBarMap.count(i)) return;
 
 	uint8_t circleIndex = btnBarMap[i];
+
+	noteHit(circleIndex);
+
 	if(circlesPressed[circleIndex]) return;
 
 	circlesPressed[circleIndex] = true;
@@ -73,24 +124,24 @@ void Game5::buttonReleased(uint i){
 
 	circlesPressed[circleIndex] = false;
 	std::static_pointer_cast<StaticRC>(circles[circleIndex]->getRenderComponent())->setFile(getFile(circlesIcons[circleIndex]));
-
 }
 
 void Game5::updateNotes(float delta){
 	for(uint8_t i = 0; i < 3; ++i){
 		for(auto& note : notes[i]){
-			note->setPos({ circlesX[i], circles[i]->getPos().y + delta * notesSpeed });
+			note->setPos({ note->getPos().x, note->getPos().y + delta * notesSpeed });
 		}
 	}
 }
 
 void Game5::createNote(uint8_t track){
-	uint8_t type = random() % 3;
+	uint8_t type = rand() % 3;
 
 	auto note = std::make_shared<GameObject>(std::make_unique<StaticRC>(getFile(notesIcons[type]), PixelDim { 8, 9 }),
 											 std::make_unique<RectCC>(glm::vec2 { 8, 9 }));
 
 	note->getRenderComponent()->setLayer(2);
+	note->setPos({ barsX[track] + 3, -9 });
 
 	collision.addPair(*note, bottomWall, [this, note, track](){
 		removeObject(note);
@@ -98,4 +149,70 @@ void Game5::createNote(uint8_t track){
 	});
 
 	notes[track].push_back(note);
+	addObject(note);
+}
+
+void Game5::noteHit(uint8_t track){
+	if(notes[track].empty()) return;
+
+	float diff = abs(notePerfectY - notes[track].front()->getPos().y);
+
+	if(diff <= noteTolerance){
+		score += notePoints + (int)(diff * perfectBonus / noteTolerance);
+
+		adjustTempo();
+		adjustScoreBar();
+
+		removeObject(notes[track].front());
+		notes[track].pop_front();
+		if(score >= goal){
+			gameDone(true);
+			return;
+		}
+
+		//TODO - change good note/ bad note anim
+		duckRC->setAnim(getFile("/Pat1.gif"));
+
+	}else{
+		life--;
+		if(life <= 0){
+			gameDone(false);
+			return;
+		}
+
+		duckRC->setAnim(getFile("/Pat1.gif"));
+	}
+}
+
+void Game5::adjustTempo(){
+	float factor = 1.0f + 0.75f * ((float)(min(score, goal)) / (float)goal);
+	beatInterval = defaultBeatInterval / factor;
+	notesSpeed = defaultNotesSpeed * factor;
+}
+
+void Game5::gameDone(bool success){
+	for(auto& track : notes){
+		track.clear();
+	}
+
+	//TODO - play fail or win anim on duck object
+	if(success){
+		duckRC->setAnim(getFile("/Pat1.gif"));
+	}else{
+		duckRC->setAnim(getFile("/Pat1.gif"));
+	}
+
+	state = DoneAnim;
+
+	duckRC->setLoopDoneCallback([this](uint32_t){
+		state = DonePause;
+		gameDoneTimer = 0;
+		duckRC->stop();
+	});
+}
+
+void Game5::adjustScoreBar(){
+	int infill = (int)((float)(scoreBarSprite->height() - 2) * ((float)(min(score, goal)) / (float)goal));
+
+	scoreBarSprite->fillRect(1, scoreBarSprite->height() - 1 - infill, scoreBarSprite->width() - 2, infill, C_RGB(246, 242, 65));
 }

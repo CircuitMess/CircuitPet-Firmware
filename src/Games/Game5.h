@@ -4,8 +4,8 @@
 #include <Arduino.h>
 #include <Input/InputListener.h>
 #include "../GameEngine/Game.h"
-#include "../GameEngine/Rendering/StaticRC.h"
 #include "Chatter.h"
+#include "../GameEngine/Rendering/AnimRC.h"
 #include <deque>
 
 class Game5 : public Game, private InputListener {
@@ -14,6 +14,7 @@ class Game5 : public Game, private InputListener {
 
 public:
 	Game5();
+
 protected:
 	void onStart() override;
 	void onStop() override;
@@ -21,14 +22,36 @@ protected:
 	void onLoop(float deltaTime) override;
 	void onRender(Sprite* canvas) override;
 
-
 private:
+	enum {
+		Running, DoneAnim, DonePause
+	} state = Running;
+
 	GameObject bottomWall;
+	GameObject scoreBar;
+	std::shared_ptr<Sprite> scoreBarSprite;
 	ObjPtr bars[3];
 	ObjPtr circles[3];
+	ObjPtr duck;
+	std::shared_ptr<AnimRC> duckRC;
+
+	void gameDone(bool success);
+	constexpr static float gameDonePause = 1.0f;
+	float gameDoneTimer = 0;
+
+	uint8_t life = 3;
+	uint32_t score = 0;
+	constexpr static uint32_t perfectBonus = 200;
+	constexpr static uint32_t notePoints = 100;
+	constexpr static uint32_t goal = 15 * (perfectBonus + notePoints);
+	float beatTimer = 0;
+	constexpr static float defaultBeatInterval = 1.0f;
+	float beatInterval = defaultBeatInterval;
+
 
 	constexpr static uint16_t barsX[3] = {8, 26, 44};
 	constexpr static const char* barsIcons[3] = {"/BarP.raw", "/BarY.raw", "/BarB.raw"};
+
 
 	bool circlesPressed[3] = {false, false, false};
 	constexpr static uint16_t circlesY = 109;
@@ -39,14 +62,18 @@ private:
 
 	std::deque<ObjPtr> notes[3];
 	constexpr static const char* notesIcons[3] = {"/note1.raw", "/note2.raw", "/note3.raw"};
+	constexpr static float notePerfectY = circlesY + 5;
+	constexpr static float noteTolerance = 8.0f;
 	void updateNotes(float delta);
 	void createNote(uint8_t track);
-	float notesSpeed = 50.0f;
+	constexpr static float defaultNotesSpeed = 50.0f;
+	float notesSpeed = defaultNotesSpeed;
 
-
+	void noteHit(uint8_t track);
+	void adjustTempo();
+	void adjustScoreBar();
 	void buttonPressed(uint i) override;
 	void buttonReleased(uint i) override;
-
 };
 
 
