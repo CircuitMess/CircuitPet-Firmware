@@ -9,15 +9,17 @@
 //compiler says declarations are required, not redundant
 constexpr std::array<float, 3> Game6::asteroidSpeed;
 constexpr std::array<float, 3> Game6::asteroidRadius;
+constexpr Game6::ImageDesc Game6::asteroidIcons[];
 
 Game6::Game6() : wrapWalls({ .top =  { nullptr, std::make_unique<RectCC>(glm::vec2 { wrapWallsSize.x, 100 }) },
 							 .bot =  { nullptr, std::make_unique<RectCC>(glm::vec2 { wrapWallsSize.x, 100 }) },
 							 .left =  { nullptr, std::make_unique<RectCC>(glm::vec2 { 100, wrapWallsSize.y }) },
 							 .right =  { nullptr, std::make_unique<RectCC>(glm::vec2 { 100, wrapWallsSize.y }) }
 						   }),
-				 Game("", {{ "/Bg/Level6.raw",       {}, true },
-						 { "/MenuIcons/Icon1.raw", {}, true },
-						   { "/MenuIcons/Icon2.raw", {}, true }
+				 Game("/Games/6", {{ "/bg.raw",       {}, true },
+						 { asteroidIcons[0].path, {}, true },
+						 { asteroidIcons[1].path, {}, true },
+						 { asteroidIcons[2].path, {}, true },
 				 }){
 
 	wrapWalls.top.setPos(glm::vec2 { 0, -100 } - (2 * asteroidRadius[(uint8_t)AsteroidSize::Large] + 1));
@@ -27,7 +29,7 @@ Game6::Game6() : wrapWalls({ .top =  { nullptr, std::make_unique<RectCC>(glm::ve
 }
 
 void Game6::onLoad(){
-	auto pat = std::make_shared<GameObject>(std::make_unique<StaticRC>(getFile("/MenuIcons/Icon1.raw"), PixelDim { 32, 32 }),
+	auto pat = std::make_shared<GameObject>(std::make_unique<StaticRC>(getFile(asteroidIcons[2].path),  asteroidIcons[2].dim),
 											std::make_unique<CircleCC>(16, glm::vec2{16, 16}));
 	addObject(pat);
 	player.setObj(pat);
@@ -35,7 +37,7 @@ void Game6::onLoad(){
 
 
 	auto bg = std::make_shared<GameObject>(
-			std::make_unique<StaticRC>(getFile("/Bg/Level6.raw"), PixelDim { 160, 128 }),
+			std::make_unique<StaticRC>(getFile("/bg.raw"), PixelDim { 160, 128 }),
 			nullptr
 	);
 	addObject(bg);
@@ -150,11 +152,7 @@ void Game6::shootBullet(){
 
 void Game6::createAsteroid(Game6::AsteroidSize size, glm::vec2 pos){
 
-//	auto spriteRC = std::make_unique<SpriteRC>(PixelDim { asteroidRadius[(uint8_t)size] * 2, asteroidRadius[(uint8_t)size] * 2 });
-	auto spriteRC = std::make_unique<StaticRC>(getFile("/MenuIcons/Icon2.raw"), PixelDim{32, 32});
-//	spriteRC->getSprite()->clear(TFT_TRANSPARENT);
-//	spriteRC->getSprite()->fillCircle(asteroidRadius[(uint8_t)size], asteroidRadius[(uint8_t)size], asteroidRadius[(uint8_t)size], TFT_BROWN);
-
+	auto spriteRC = std::make_unique<StaticRC>(getFile(asteroidIcons[(uint8_t)size].path), asteroidIcons[(uint8_t)size].dim);
 	auto asteroid = std::make_shared<GameObject>(std::move(spriteRC),
 												 std::make_unique<CircleCC>(asteroidRadius[(uint8_t)size],
 																			glm::vec2 { asteroidRadius[(uint8_t)size], asteroidRadius[(uint8_t)size] }));

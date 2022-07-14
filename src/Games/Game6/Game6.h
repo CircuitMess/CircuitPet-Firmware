@@ -63,6 +63,14 @@ private:
 		Small, Medium, Large
 	};
 
+	struct ImageDesc {
+		const char* path;
+		PixelDim dim;
+	};
+	static constexpr ImageDesc asteroidIcons[] = {{"/asteroidS.raw", {15, 14}},
+												  {"/asteroidM.raw", {20, 21}},
+												  {"/asteroidL.raw", {31, 30}}};
+
 	struct Asteroid {
 		std::shared_ptr<GameObject> gObj;
 		glm::vec2 velocity;
@@ -74,7 +82,7 @@ private:
 	};
 
 	constexpr static std::array<float, 3> asteroidSpeed = { 25.0f, 20.0f, 12.0f };
-	constexpr static std::array<float, 3> asteroidRadius = { 5.0f, 10.0f, 20.0f };
+	constexpr static std::array<float, 3> asteroidRadius = { 7.5f, 10.0f, 15.0f };
 	std::vector<Asteroid> asteroidPool;
 
 	void asteroidHit(const Asteroid& asteroid);
