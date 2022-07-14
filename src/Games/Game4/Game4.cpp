@@ -6,19 +6,19 @@
 #include <Input/Input.h>
 
 Game4::Game4() : Game("/Games/Game4", {
-		{ "/Background.raw",  {}, true },
-		{ "/TileTop1.raw",    {}, true },
-		{ "/TileTop2.raw",    {}, true },
-		{ "/TileBot1.raw",    {}, true },
-		{ "/TileBot2.raw",    {}, true },
-		{ "/ObjectJump1.raw", {}, true },
-		{ "/ObjectJump2.raw", {}, true },
-		{ "/ObjectJump3.raw", {}, true },
-		{ "/ObjectJump4.raw", {}, true },
-		{ "/ObjectDuck1.raw", {}, true },
-		{ "/ObjectDuck2.raw", {}, true },
-		{ "/ObjectDuck3.raw", {}, true },
-		{ "/DuckIdle.gif",    {}, false }
+		{ "/Background.raw",     {}, true },
+		{ "/TileTop1.raw",       {}, true },
+		{ "/TileTop2.raw",       {}, true },
+		{ "/TileBot1.raw",       {}, true },
+		{ "/TileBot2.raw",       {}, true },
+		{ "/ObstacleOver1.raw",  {}, true },
+		{ "/ObstacleOver2.raw",  {}, true },
+		{ "/ObstacleOver3.raw",  {}, true },
+		{ "/ObstacleOver4.raw",  {}, true },
+		{ "/ObstacleUnder1.raw", {}, true },
+		{ "/ObstacleUnder2.raw", {}, true },
+		{ "/ObstacleUnder3.raw", {}, true },
+		{ "/DuckIdle.gif",       {}, false }
 }){}
 
 void Game4::onLoad(){
