@@ -22,6 +22,27 @@ Game4::Game4() : Game("/Games/Game4", {
 }){}
 
 void Game4::onLoad(){
+	srand(time(nullptr));
+
+	tileManager = new TileManager(movingObjects);
+	tileManager->addFilePair(getFile("/TileTop1.raw"), getFile("/TileBot1.raw"));
+	tileManager->addFilePair(getFile("/TileTop2.raw"), getFile("/TileBot2.raw"));
+	tileManager->create(); // creates GameObjects into movingObjects
+
+	leftWall = std::make_shared<GameObject>(
+			nullptr,
+			std::make_unique<RectCC>(glm::vec2{ 1, 128 })
+	);
+	leftWall->setPos({ -tileDim * tilesPerArray, 0 });
+	addObject(leftWall);
+
+	for(auto obj : movingObjects){
+		addObject(obj);
+		collision.addPair(*leftWall, *obj, [this, obj](){
+			tileManager->reset(obj);
+		});
+	}
+
 	bg = std::make_shared<GameObject>(
 			std::make_unique<StaticRC>(getFile("/Background.raw"), PixelDim{ 160, 128 }),
 			nullptr
@@ -66,10 +87,10 @@ void Game4::onLoad(){
 }
 
 void Game4::onLoop(float deltaTime){
-	for(auto obj : movingObjects){
-		int x = obj->getPos().x - deltaTime * speed;
-		int y = obj->getPos().y;
-		obj->setPos({x,y});
+	for(auto obj: movingObjects){
+		float x = obj->getPos().x - deltaTime * speed;
+		float y = obj->getPos().y;
+		obj->setPos({ x, y });
 	}
 }
 
