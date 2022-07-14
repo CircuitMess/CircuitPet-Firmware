@@ -2,14 +2,26 @@
 #include "../../GameEngine/Rendering/StaticRC.h"
 #include "../../GameEngine/Rendering/AnimRC.h"
 #include "../../GameEngine/Collision/CircleCC.h"
+#include "../../GameEngine/Collision/RectCC.h"
 #include <Pins.hpp>
 #include <Input/Input.h>
 
+constexpr Game2::ImageDesc Game2::upObstacles[];
+constexpr Game2::ImageDesc Game2::downObstacles[];
+
 Game2::Game2() : Game("/Games/2", {
 		{ "/duck.gif", {}, true },
-		{ "/bg.raw", {}, true }
-}){
+		{ "/bg.raw",   {}, true },
+		{ upObstacles[0].path,   {}, true },
+		{ upObstacles[1].path,   {}, true },
+		{ downObstacles[0].path,   {}, true },
+		{ downObstacles[1].path,   {}, true },
+		{ downObstacles[2].path,   {}, true },
+		{ downObstacles[3].path,   {}, true },
+		{ downObstacles[4].path,   {}, true }}),
+		leftWall(nullptr, std::make_unique<RectCC>(glm::vec2 { 20, 128 })){
 
+	leftWall.setPos({-(20 + 50), 0});
 }
 
 void Game2::onLoad(){
@@ -32,6 +44,7 @@ void Game2::onLoop(float deltaTime){
 	if(!firstPress) return;
 
 	updateDuck(deltaTime);
+	updateObstacles(deltaTime);
 }
 
 void Game2::onStart(){
@@ -56,7 +69,7 @@ void Game2::buttonPressed(uint i){
 		}
 
 		if(duckSpeed < 0){
-			duckSpeed = max(duckSpeed - flapSpeed, -3*flapSpeed);
+			duckSpeed = max(duckSpeed - flapSpeed, -3 * flapSpeed);
 		}else{
 			duckSpeed = -flapSpeed;
 		}
@@ -82,4 +95,12 @@ void Game2::updateDuck(float delta){
 
 
 	duck->setPos({ duck->getPos().x, y });
+}
+
+void Game2::updateObstacles(float delta){
+
+
+	for(auto obstacle : obstacles){
+		obstacle->setPos({ obstacle->getPos().x - obstacleSpeed * delta, obstacle->getPos().y });
+	}
 }
