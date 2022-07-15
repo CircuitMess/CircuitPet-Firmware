@@ -1,8 +1,8 @@
 #include <Pins.hpp>
 #include "Game4.h"
 #include "../../GameEngine/Rendering/StaticRC.h"
-#include "../../GameEngine/Rendering/AnimRC.h"
 #include "../../GameEngine/Collision/RectCC.h"
+#include "../../GameEngine/Collision/CircleCC.h"
 #include <Input/Input.h>
 
 Game4::Game4() : Game("/Games/Game4", {
@@ -29,6 +29,8 @@ Game4::Game4() : Game("/Games/Game4", {
 void Game4::onLoad(){
 	srand(time(nullptr));
 
+	setupObstacles();
+
 	tileManager = new TileManager(movingObjects);
 	tileManager->addFilePair(getFile("/TileTop1.raw"), getFile("/TileBot1.raw"));
 	tileManager->addFilePair(getFile("/TileTop2.raw"), getFile("/TileBot2.raw"));
@@ -41,15 +43,13 @@ void Game4::onLoad(){
 	leftWall->setPos({ -tileDim * tilesPerArray, 0 });
 	addObject(leftWall);
 
-	for(auto obj : movingObjects){
+	for(auto obj: movingObjects){
 		addObject(obj);
-		collision.addPair(*leftWall, *obj, [this, obj](){
-			tileManager->reset(obj);
-		});
+		collision.addPair(*leftWall, *obj, [this, obj](){ tileManager->reset(obj); });
 	}
 
 	bg = std::make_shared<GameObject>(
-			std::make_unique<StaticRC>(getFile("/Background.raw"), PixelDim{ 160, 128 }),
+			std::make_unique<StaticRC>(getFile("/Background.raw"), PixelDim{ 160, topY }),
 			nullptr
 	);
 	bg->getRenderComponent()->setLayer(-1);
@@ -77,6 +77,11 @@ void Game4::onLoop(float deltaTime){
 		float y = obj->getPos().y;
 		obj->setPos({ x, y });
 	}
+	value += deltaTime;
+	if(value >= spawnRate){
+		value -= spawnRate;
+		spawn();
+	}
 }
 
 void Game4::onStart(){
@@ -96,3 +101,49 @@ void Game4::buttonPressed(uint i){
 		pop();
 	}
 }
+
+void Game4::setupObstacles(){
+	obstacleOver.push_back({ getFile("/ObstacleOver1.raw"), { 40, 31 }});
+	obstacleOver.push_back({ getFile("/ObstacleOver2.raw"), { 24, 19 }});
+	obstacleOver.push_back({ getFile("/ObstacleOver3.raw"), { 22, 19 }});
+	obstacleOver.push_back({ getFile("/ObstacleOver4.raw"), { 33, 19 }});
+
+	obstacleUnder.push_back({ getFile("/ObstacleUnder1.raw"), { 36, 27 }});
+	obstacleUnder.push_back({ getFile("/ObstacleUnder2.raw"), { 40, 30 }});
+	obstacleUnder.push_back({ getFile("/ObstacleUnder3.raw"), { 19, 19 }});
+}
+
+void Game4::spawn(){
+	int coinFlip = rand() % 2;
+	Obstacle obstacle;
+	int posY;
+	if(coinFlip == 0){
+		int under = rand() % obstacleUnder.size();
+		obstacle = obstacleUnder[under];
+		posY = topY - 40 - obstacle.dim.y;
+	}else{
+		int over = rand() % obstacleOver.size();
+		obstacle = obstacleOver[over];
+		posY = topY - obstacle.dim.y;
+	}
+
+	auto gObj = std::make_shared<GameObject>(
+			std::make_unique<StaticRC>(obstacle.file, obstacle.dim),
+			std::make_unique<RectCC>(obstacle.dim)
+	);
+	addObject(gObj);
+	gObj->setPos({ 160, posY });
+	gObj->getRenderComponent()->setLayer(1);
+	collision.addPair(*duck->getGameObject(), *gObj, [this, gObj](){
+//		duckDown(gObj);
+	});
+	collision.addPair(*leftWall, *gObj, [this, gObj](){ removeObject(gObj); });
+	movingObjects.push_back(gObj);
+}
+//
+//void Game4::duckDown(std::shared_ptr<GameObject> gObj){
+//	speed = 0.0f;
+//	duckAnim->setAnim(getFile("/DuckDown.gif"));
+//	collision.removePair(*duck, *gObj);
+//	duckAnim->setLoopDoneCallback([this](uint32_t t){ pop(); });
+//}

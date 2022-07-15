@@ -25,16 +25,27 @@ private:
 	Duck* duck;
 
 	void buttonPressed(uint i) override;
+	void setupObstacles();
+	void spawn();
+
+//	void duckDown(std::shared_ptr<GameObject> gObj);
 
 	const int tileDim = 16;
-	const int topY = 96;
+	const int topY = 128 - 32;
 	const int tilesPerArray = 5;
-	const float speed = 20.0f;
+	const float spawnRate = 3.0f;
+	float speed = 20.0f;
+	float value = 0.0f;
+
+	struct Obstacle{
+		File file;
+		PixelDim dim;
+	};
 
 	std::shared_ptr<GameObject> leftWall;
-	std::shared_ptr<GameObject> objectDuck;
 	std::shared_ptr<GameObject> bg;
-	std::shared_ptr<GameObject> duck;
+	std::vector<Obstacle> obstacleUnder;
+	std::vector<Obstacle> obstacleOver;
 	std::vector<std::shared_ptr<GameObject>> movingObjects;
 };
 
