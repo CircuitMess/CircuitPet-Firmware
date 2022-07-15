@@ -6,6 +6,8 @@
 #include <Input/InputListener.h>
 #include "../../GameEngine/Game.h"
 #include "TileManager.h"
+#include "../../GameEngine/Rendering/AnimRC.h"
+#include "Duck.h"
 
 class Game4 : public Game, private InputListener{
 public:
@@ -20,6 +22,7 @@ protected:
 
 private:
 	TileManager* tileManager;
+	Duck* duck;
 
 	void buttonPressed(uint i) override;
 

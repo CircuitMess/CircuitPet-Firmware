@@ -11,14 +11,19 @@ Game4::Game4() : Game("/Games/Game4", {
 		{ "/TileTop2.raw",       {}, true },
 		{ "/TileBot1.raw",       {}, true },
 		{ "/TileBot2.raw",       {}, true },
-		{ "/ObstacleOver1.raw",  {}, true },
-		{ "/ObstacleOver2.raw",  {}, true },
-		{ "/ObstacleOver3.raw",  {}, true },
-		{ "/ObstacleOver4.raw",  {}, true },
-		{ "/ObstacleUnder1.raw", {}, true },
-		{ "/ObstacleUnder2.raw", {}, true },
-		{ "/ObstacleUnder3.raw", {}, true },
-		{ "/DuckIdle.gif",       {}, false }
+		{ "/ObstacleOver1.raw",  {}, false },
+		{ "/ObstacleOver2.raw",  {}, false },
+		{ "/ObstacleOver3.raw",  {}, false },
+		{ "/ObstacleOver4.raw",  {}, false },
+		{ "/ObstacleUnder1.raw", {}, false },
+		{ "/ObstacleUnder2.raw", {}, false },
+		{ "/ObstacleUnder3.raw", {}, false },
+		{ "/DuckWalk.gif",       {}, false },
+		{ "/DuckPreJump.gif",    {}, false },
+		{ "/DuckMidJump.gif",    {}, false },
+		{ "/DuckAfterJump.gif",  {}, false },
+		{ "/DuckCrouch.gif",     {}, false },
+		{ "/DuckDown.gif",       {}, false }
 }){}
 
 void Game4::onLoad(){
@@ -50,40 +55,20 @@ void Game4::onLoad(){
 	bg->getRenderComponent()->setLayer(-1);
 	addObject(bg);
 
-	duck = std::make_shared<GameObject>(
-			std::make_unique<AnimRC>(getFile("/DuckIdle.gif")),
-			std::make_unique<RectCC>(glm::vec2{ 53, 87 })
+	auto duckGO = std::make_shared<GameObject>(
+			std::make_unique<AnimRC>(getFile("/DuckWalk.gif")),
+			std::make_unique<CircleCC>(15.0f, glm::vec2{ 20, 20 })
 	);
-	addObject(duck);
-	duck->getRenderComponent()->setLayer(0);
-	duck->setPos({ 5, 9 });
+	addObject(duckGO);
+	duckGO->getRenderComponent()->setLayer(0);
+	duckGO->setPos({ 5, 50 });
 
-	objectDuck = std::make_shared<GameObject>(
-			std::make_unique<StaticRC>(getFile("/ObjectDuck1.raw"), PixelDim{ 36, 27 }),
-			std::make_unique<RectCC>(glm::vec2{ 36, 27 })
-	);
-	objectDuck->setPos({ 90, 60 });
-	addObject(objectDuck);
-	movingObjects.push_back(objectDuck);
-
-	collision.addPair(*duck, *objectDuck, [](){});
-
-	for(int i = 0; i < 11; i++){
-		auto tileTop = std::make_shared<GameObject>(
-				std::make_unique<StaticRC>(getFile("/TileTop2.raw"), PixelDim{ tileDim, tileDim }),
-				std::make_unique<RectCC>(glm::vec2{ tileDim, tileDim })
-		);
-		tileTop->setPos({ i * tileDim, 96 });
-		addObject(tileTop);
-		auto tileBot = std::make_shared<GameObject>(
-				std::make_unique<StaticRC>(getFile("/TileBot1.raw"), PixelDim{ tileDim, tileDim }),
-				std::make_unique<RectCC>(glm::vec2{ tileDim, tileDim })
-		);
-		tileBot->setPos({ i * tileDim, 112 });
-		addObject(tileBot);
-		movingObjects.push_back(tileTop);
-		movingObjects.push_back(tileBot);
-	}
+	duck = new Duck(duckGO);
+	duck->setFiles(getFile("/DuckWalk.gif"),
+				   getFile("/DuckDown.gif"),
+				   getFile("/DUckPreJump.gif"),
+				   getFile("/DuckMidJump.gif"),
+				   getFile("/DuckAfterJump.gif"));
 }
 
 void Game4::onLoop(float deltaTime){
@@ -95,7 +80,6 @@ void Game4::onLoop(float deltaTime){
 }
 
 void Game4::onStart(){
-	reinterpret_cast<AnimRC*>(duck->getRenderComponent().get())->start();
 	Input::getInstance()->addListener(this);
 }
 
