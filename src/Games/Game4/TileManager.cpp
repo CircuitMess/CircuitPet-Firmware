@@ -27,8 +27,6 @@ void TileManager::create(){
 void TileManager::reset(std::shared_ptr<GameObject> tiles){
 	drawTiles(tiles);
 	tiles->setPos({ (arrays-1) * (tilesPerArray) * tileDim, topY });
-	Serial.printf("reset to %d\n", arrays * tilesPerArray * tileDim);
-
 }
 
 void TileManager::drawTiles(std::shared_ptr<GameObject> tiles){

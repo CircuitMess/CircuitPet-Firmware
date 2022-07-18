@@ -18,7 +18,7 @@ public:
 	void clone();
 
 	std::shared_ptr<RenderComponent> getRenderComponent() const;
-	std::shared_ptr<const CollisionComponent> getCollisionComponent() const;
+	std::shared_ptr<CollisionComponent> getCollisionComponent() const;
 
 private:
 	glm::vec2 pos = { 0, 0 };
