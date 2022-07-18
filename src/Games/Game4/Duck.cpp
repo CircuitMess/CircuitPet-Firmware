@@ -1,13 +1,18 @@
 
 #include "Duck.h"
+#include "Game4.h"
 
-Duck::Duck(std::shared_ptr<GameObject> duckGO) : gameObject(duckGO){
+Duck::Duck(std::shared_ptr<GameObject> duckGO, Game4* game4) : gameObject(duckGO), game4(game4){
 	animRc = std::static_pointer_cast<AnimRC>(duckGO->getRenderComponent());
 	animRc->start();
 }
 
 void Duck::death(){
-
+	animRc->setAnim(down);
+	animRc->setLoopDoneCallback([this](uint32_t){
+		Serial.println("DEATH!");
+		game4->pop();
+	});
 }
 
 void Duck::crouch(){

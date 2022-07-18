@@ -63,7 +63,7 @@ void Game4::onLoad(){
 	duckGO->getRenderComponent()->setLayer(0);
 	duckGO->setPos({ 5, 50 });
 
-	duck = new Duck(duckGO);
+	duck = new Duck(duckGO, this);
 	duck->setFiles(getFile("/DuckWalk.gif"),
 				   getFile("/DuckDown.gif"),
 				   getFile("/DUckPreJump.gif"),
@@ -135,15 +135,11 @@ void Game4::spawn(){
 	gObj->setPos({ 160, posY });
 	gObj->getRenderComponent()->setLayer(1);
 	collision.addPair(*duck->getGameObject(), *gObj, [this, gObj](){
-//		duckDown(gObj);
+		speed = 0.0f;
+		collision.removePair(*duck->getGameObject(), *gObj);
+		duck->death();
 	});
 	collision.addPair(*leftWall, *gObj, [this, gObj](){ removeObject(gObj); });
 	movingObjects.push_back(gObj);
 }
-//
-//void Game4::duckDown(std::shared_ptr<GameObject> gObj){
-//	speed = 0.0f;
-//	duckAnim->setAnim(getFile("/DuckDown.gif"));
-//	collision.removePair(*duck, *gObj);
-//	duckAnim->setLoopDoneCallback([this](uint32_t t){ pop(); });
-//}
+
