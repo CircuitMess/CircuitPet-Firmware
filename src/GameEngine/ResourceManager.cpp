@@ -13,12 +13,17 @@ void ResourceManager::load(const std::vector<ResDescriptor>& descriptors){
 		std::string path = root + descriptor.path;
 		auto cPath = path.c_str();
 
+		File original = SPIFFS.open(cPath);
+		if(!original){
+			ESP_LOGE("ResMan", "Failed to load resource %s", cPath);
+			continue;
+		}
+
 		if(descriptor.inRam){
 			if(descriptor.compParams){
 
 				//decode compressed file from SPIFFS to decoded RAMFile
-				File original = CompressedFile::open(SPIFFS.open(cPath), descriptor.compParams.expansion,
-													 descriptor.compParams.lookahead);
+				original = CompressedFile::open(original, descriptor.compParams.expansion, descriptor.compParams.lookahead);
 				original.seek(0);
 				File output = RamFile::create();
 
@@ -28,12 +33,12 @@ void ResourceManager::load(const std::vector<ResDescriptor>& descriptors){
 				resources[descriptor.path] = output;
 			}else{
 				//copy file from SPIFFS to RAMFile
-				resources[descriptor.path] = RamFile::open(SPIFFS.open(cPath));
+				resources[descriptor.path] = RamFile::open(original);
 			}
 
 		}else{
 			//use file from SPIFFS, not from RAM
-			resources[descriptor.path] = SPIFFS.open(cPath);
+			resources[descriptor.path] = original;
 		}
 	}
 }
