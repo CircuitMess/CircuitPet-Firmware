@@ -11,6 +11,7 @@
 class SpriteRC : public RenderComponent {
 public:
 	SpriteRC(PixelDim dim);
+	virtual ~SpriteRC() = default;
 	std::shared_ptr<Sprite> getSprite() const;
 protected:
 	void push(Sprite* parent, PixelDim pos) const override;

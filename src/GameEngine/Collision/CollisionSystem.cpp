@@ -3,18 +3,20 @@
 #include <utility>
 #include "RectCC.h"
 #include "CircleCC.h"
+#include "PolygonCC.h"
+#include <map>
 
 #undef abs
 
 CollisionSystem::CollisionSystem(const Game* game) : GameSystem(game), Walls({
-	 .top =  { nullptr, std::make_unique<RectCC>(glm::vec2{ 160, 1 }) },
-	 .bot =  { nullptr, std::make_unique<RectCC>(glm::vec2{ 160, 1 }) },
-	 .left =  { nullptr, std::make_unique<RectCC>(glm::vec2{ 1, 128 }) },
-	 .right =  { nullptr, std::make_unique<RectCC>(glm::vec2{ 1, 128 }) }
+	 .top =  { nullptr, std::make_unique<RectCC>(glm::vec2{ 160, 100 }) },
+	 .bot =  { nullptr, std::make_unique<RectCC>(glm::vec2{ 160, 100 }) },
+	 .left =  { nullptr, std::make_unique<RectCC>(glm::vec2{ 100, 128 }) },
+	 .right =  { nullptr, std::make_unique<RectCC>(glm::vec2{ 100, 128 }) }
 }){
-	Walls.top.setPos({ 0, -1 });
+	Walls.top.setPos({ 0, -100 });
 	Walls.bot.setPos({ 0, 128 });
-	Walls.left.setPos({ -1, 0 });
+	Walls.left.setPos({ -100, 0 });
 	Walls.right.setPos({ 160, 0 });
 }
 
@@ -26,15 +28,21 @@ void CollisionSystem::update(uint32_t deltaMicros){
 		auto type1 = pair.first->getCollisionComponent()->getType();
 		auto type2 = pair.second->getCollisionComponent()->getType();
 
-		if(type1 == CollisionType::Rect && type2 == CollisionType::Rect){
-			overlap = rectRect(*pair.first, *pair.second);
-		}else if(type1 == CollisionType::Rect && type2 == CollisionType::Circle){
-			overlap = rectCircle(*pair.first, *pair.second);
-		}else if(type1 == CollisionType::Circle && type2 == CollisionType::Rect){
-			overlap = rectCircle(*pair.second, *pair.first);
-		}else if(type1 == CollisionType::Circle && type2 == CollisionType::Circle){
-			overlap = circleCircle(*pair.first, *pair.second);
-		}
+		std::pair<CollisionType, CollisionType> types = {type1, type2};
+
+		std::map<std::pair<CollisionType, CollisionType>, std::function<bool(const GameObject&, const GameObject&)>> map = {
+			{ { CollisionType::Circle, CollisionType::Circle }, &CollisionSystem::circleCircle },
+			{ { CollisionType::Rect, CollisionType::Rect }, &CollisionSystem::rectRect },
+			{ { CollisionType::Rect, CollisionType::Circle }, &CollisionSystem::rectCircle },
+			{ { CollisionType::Circle, CollisionType::Rect }, [this](const GameObject& circle, const GameObject& rect){ return rectCircle(rect, circle); }},
+			{ { CollisionType::Polygon, CollisionType::Polygon }, &CollisionSystem::polyPoly },
+			{ { CollisionType::Polygon, CollisionType::Rect }, &CollisionSystem::polyRect },
+			{ { CollisionType::Rect, CollisionType::Polygon }, [this](const GameObject& rect, const GameObject& poly){ return polyRect(poly, rect); } },
+			{ { CollisionType::Polygon, CollisionType::Circle }, &CollisionSystem::polyCircle },
+			{ { CollisionType::Circle, CollisionType::Polygon }, [this](const GameObject& circle, const GameObject& poly){ return polyCircle(poly, circle); } }
+		};
+
+		overlap = map[types](*pair.first, *pair.second);
 
 		if(overlap && !pair.colliding){
 			pair.handler();
@@ -42,6 +50,8 @@ void CollisionSystem::update(uint32_t deltaMicros){
 
 		pair.colliding = overlap;
 	}
+
+	pairs = pairsCopy;
 }
 
 void CollisionSystem::addPair(const GameObject& first, const GameObject& second, std::function<void()> handler){
@@ -124,8 +134,6 @@ bool CollisionSystem::rectRect(const GameObject& square1, const GameObject& squa
 }
 
 bool CollisionSystem::circleCircle(const GameObject& circle1, const GameObject& circle2){
-	// TODO: center offsetting
-
 	auto r1 = circle1.getCollisionComponent()->getCircle()->getRadius();
 	auto r2 = circle2.getCollisionComponent()->getCircle()->getRadius();
 
@@ -136,8 +144,6 @@ bool CollisionSystem::circleCircle(const GameObject& circle1, const GameObject& 
 }
 
 bool CollisionSystem::rectCircle(const GameObject& rect, const GameObject& circle){
-	// TODO: center offsetting
-
 	auto cPos = circle.getPos() +  circle.getCollisionComponent()->getCircle()->getOffset();;
 	auto r = circle.getCollisionComponent()->getCircle()->getRadius();
 	auto rDim = rect.getCollisionComponent()->getRect()->getDim();
@@ -151,6 +157,104 @@ bool CollisionSystem::rectCircle(const GameObject& rect, const GameObject& circl
 	if (distance.y <= (rDim.y/2)) { return true; }
 
 	return glm::distance(distance, rDim * 0.5f) <= r;
+}
+
+bool CollisionSystem::polyPoly(const GameObject& poly1, const GameObject& poly2){
+	auto points1 = poly1.getCollisionComponent()->getPolygon();
+	auto points2 = poly2.getCollisionComponent()->getPolygon();
+
+	if(!points1->isConvex() || !points2->isConvex()) return false;
+
+	boolean isColliding = false;
+	auto translatedPoints = points2->getPoints();
+	for(auto& point:translatedPoints){
+		point += poly2.getPos();
+	}
+
+	for(auto i : points1->getPoints()){
+		if(polyContainsPoint(translatedPoints, i + poly1.getPos())){
+			isColliding = true;
+		}
+	}
+
+	return isColliding;
+}
+
+bool CollisionSystem::polyRect(const GameObject& poly, const GameObject& rect){
+	if(!poly.getCollisionComponent()->getPolygon()->isConvex()) return false;
+
+	auto dim = rect.getCollisionComponent()->getRect()->getDim();
+
+	glm::vec2 point1 = rect.getPos();
+	glm::vec2 point2 = { rect.getPos().x + dim.x, rect.getPos().y };
+	glm::vec2 point3 = rect.getPos() + dim;
+	glm::vec2 point4 = { rect.getPos().x, rect.getPos().y + dim.y };
+	auto rectPoints = { point1, point2, point3, point4 };
+
+	boolean isColliding = false;
+	for(auto i : poly.getCollisionComponent()->getPolygon()->getPoints()){
+		if(polyContainsPoint(rectPoints, i + poly.getPos())){
+			isColliding = true;
+//			Serial.printf("rect contains point %.f, %.f\n", i.x, i.y);
+		}
+	}
+
+	return isColliding;
+}
+
+bool CollisionSystem::polyCircle(const GameObject& poly, const GameObject& circle){
+
+	if(!poly.getCollisionComponent()->getPolygon()->isConvex()) return false;
+
+	auto intersectSegmentCircle = [](glm::vec2 start, glm::vec2 end, glm::vec2 center, float radius){
+		glm::vec2 tmp = { end.x - start.x, end.y - start.y };        // holds polygon line vector
+		glm::vec2 tmp1 = { center.x - start.x, center.y - start.y };    // holds start to circle center vector
+		float l = glm::length(tmp);                    // the euclidean length of line :(w * w + h * h) squared
+		float u = glm::dot(tmp1, tmp);                // the dot product for these 2 vectors
+
+		glm::vec2 tmp2;
+
+		if(u <= 0){                                           // circle center is closest to start
+			tmp2 = { start.x, start.y };                  // set point to start point
+		}else if(u >= l){                                    // circle is closest to end
+			tmp2 = { end.x, end.y };                      // set point to end point
+		}else{                                                // circle is in between
+			glm::vec2 tmp3 = tmp * u;                           // scale the normal by the dot product to get position on border
+			tmp2 = tmp3 + start;                               // set point to position on line closest to circle center
+		}
+		// check if circle radius is longer than the line from our position on line to circle center (true for collisions)
+
+		glm::vec2 line = center - tmp2;
+		return glm::length(line) <= radius;
+	};
+
+
+	auto points = poly.getCollisionComponent()->getPolygon()->getPoints();
+	glm::vec2 center = circle.getPos() + circle.getCollisionComponent()->getCircle()->getOffset();
+
+
+	for(int i = 0; i < points.size(); i++){
+		glm::vec2 start = points[i] + poly.getPos();
+		glm::vec2 end = points[(i + 1) % points.size()] + poly.getPos();
+		if(intersectSegmentCircle(start, end, center, circle.getCollisionComponent()->getCircle()->getRadius())) return true;
+	}
+	return false;
+}
+
+bool CollisionSystem::polyContainsPoint(const CollisionSystem::Polygon& polygon, glm::vec2 point){
+	int intersects = 0;                                 // counter for times line crosses
+
+	for(size_t i = 0; i < polygon.size(); i++){
+		glm::vec2 point1 = polygon[i];
+		glm::vec2 point2 = polygon[(i + 1) % polygon.size()];
+
+		//  (point is between y1 and y2)                 && (point) < (( gradient) * (distance) + vertex.x)
+		if(((point.y <= point1.y && point.y > point2.y) || (point.y <= point2.y && point.y > point1.y))
+		   && point.x < ((point2.x - point1.x) / (point2.y - point1.y) * (point.y - point1.y) + point1.x)){
+			intersects++;
+		}
+	}
+	return (intersects & 1) == 1;
 }
 
 void CollisionSystem::drawDebug(Sprite* canvas){
@@ -171,10 +275,29 @@ void CollisionSystem::drawDebug(Sprite* canvas){
 				canvas->drawCircle(obj.getPos().x + obj.getCollisionComponent()->getCircle()->getOffset().x,
 								   obj.getPos().y + obj.getCollisionComponent()->getCircle()->getOffset().y,
 								   col->getCircle()->getRadius(), c);
+			}else if(col->getType() == CollisionType::Polygon){
+				CollisionSystem::drawPolygon(col->getPolygon()->getPoints(), obj.getPos(), canvas, c);
 			}
 		};
 
 		draw(c, *pair.first);
 		draw(c, *pair.second);
+	}
+}
+
+void CollisionSystem::drawPolygon(const CollisionSystem::Polygon& points, glm::vec2 pos, Sprite* canvas, Color color){
+	typedef glm::vec2 Point;
+
+	if(points.empty()) return;
+	if(points.size() == 1){
+		canvas->drawPixel(points.front().x, points.front().y);
+		return;
+	}
+
+	for(size_t i = 0; i < points.size(); i++){
+		auto translated1 = points[i] + pos;
+		auto translated2 = points[(i + 1) % points.size()] + pos;
+
+		canvas->drawLine(translated1.x, translated1.y, translated2.x, translated2.y, color);
 	}
 }

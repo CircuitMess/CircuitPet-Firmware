@@ -10,6 +10,7 @@ class RenderComponent {
 	friend RenderSystem;
 
 public:
+	virtual ~RenderComponent() = default;
 	int8_t getLayer() const;
 	void setLayer(int8_t layer);
 

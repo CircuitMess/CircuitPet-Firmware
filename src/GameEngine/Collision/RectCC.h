@@ -7,6 +7,8 @@
 class RectCC : public CollisionComponent{
 public:
 	RectCC(glm::vec2 dim);
+	~RectCC() override = default;
+
 	glm::vec2 getDim() const;
 
 private:
