@@ -13,7 +13,7 @@ public:
 	~StaticRC() override = default;
 
 protected:
-	void push(Sprite* parent, PixelDim pos) const override;
+	void push(Sprite* parent, PixelDim pos, float rot) const override;
 
 private:
 	File file;
