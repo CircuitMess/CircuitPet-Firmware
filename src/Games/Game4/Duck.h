@@ -6,6 +6,8 @@
 #include <memory>
 #include "../../GameEngine/GameObject.h"
 #include "../../GameEngine/Rendering/AnimRC.h"
+#include "../../GameEngine/Collision/CircleCC.h"
+
 
 class Game4;
 
@@ -15,24 +17,23 @@ public:
 	void death();
 	void crouch();
 	void jump();
+	void walk();
 
 	std::shared_ptr<GameObject> getGameObject();
-	void setFiles(File walk,
-				  File down,
-				  File preJump,
-				  File midJump,
-				  File afterJump);
+	void setFiles(File walk, File down, File preJump, File midJump, File afterJump, File crouching);
 private:
 	std::shared_ptr<GameObject> gameObject;
 	std::shared_ptr<AnimRC> animRc;
+	std::shared_ptr<CircleCC> circleCc;
 
 	Game4* game4;
 
-	File walk;
+	File walking;
 	File down;
 	File preJump;
 	File midJump;
 	File afterJump;
+	File crouching;
 };
 
 

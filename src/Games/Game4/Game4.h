@@ -12,7 +12,7 @@
 class Game4 : public Game, private InputListener{
 public:
 	Game4();
-
+	~Game4();
 protected:
 	void onLoad() override;
 	void onLoop(float deltaTime) override;
@@ -25,15 +25,15 @@ private:
 	Duck* duck;
 
 	void buttonPressed(uint i) override;
+	void buttonReleased(uint i) override;
 	void setupObstacles();
 	void spawn();
 
-//	void duckDown(std::shared_ptr<GameObject> gObj);
 
 	const int tileDim = 16;
 	const int topY = 128 - 32;
 	const int tilesPerArray = 5;
-	const float spawnRate = 3.0f;
+	const float spawnRate = 4.0f;
 	float speed = 20.0f;
 	float value = 0.0f;
 

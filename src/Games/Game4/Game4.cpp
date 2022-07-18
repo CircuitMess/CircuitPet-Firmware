@@ -11,20 +11,24 @@ Game4::Game4() : Game("/Games/Game4", {
 		{ "/TileTop2.raw",       {}, true },
 		{ "/TileBot1.raw",       {}, true },
 		{ "/TileBot2.raw",       {}, true },
-		{ "/ObstacleOver1.raw",  {}, false },
-		{ "/ObstacleOver2.raw",  {}, false },
-		{ "/ObstacleOver3.raw",  {}, false },
-		{ "/ObstacleOver4.raw",  {}, false },
-		{ "/ObstacleUnder1.raw", {}, false },
-		{ "/ObstacleUnder2.raw", {}, false },
-		{ "/ObstacleUnder3.raw", {}, false },
-		{ "/DuckWalk.gif",       {}, false },
+		{ "/ObstacleOver1.raw",  {}, true },
+		{ "/ObstacleOver2.raw",  {}, true },
+		{ "/ObstacleOver3.raw",  {}, true },
+		{ "/ObstacleOver4.raw",  {}, true },
+		{ "/ObstacleUnder1.raw", {}, true },
+		{ "/ObstacleUnder2.raw", {}, true },
+		{ "/ObstacleUnder3.raw", {}, true },
+		{ "/DuckCrouch.gif",     {}, false },
 		{ "/DuckPreJump.gif",    {}, false },
 		{ "/DuckMidJump.gif",    {}, false },
 		{ "/DuckAfterJump.gif",  {}, false },
-		{ "/DuckCrouch.gif",     {}, false },
-		{ "/DuckDown.gif",       {}, false }
+		{ "/DuckDown.gif",       {}, false },
+		{ "/DuckWalk.gif",       {}, false }
 }){}
+
+Game4::~Game4(){
+	delete (duck);
+}
 
 void Game4::onLoad(){
 	srand(time(nullptr));
@@ -57,7 +61,7 @@ void Game4::onLoad(){
 
 	auto duckGO = std::make_shared<GameObject>(
 			std::make_unique<AnimRC>(getFile("/DuckWalk.gif")),
-			std::make_unique<CircleCC>(15.0f, glm::vec2{ 20, 20 })
+			std::make_unique<CircleCC>(12.0f, glm::vec2{ 20, 20 })
 	);
 	addObject(duckGO);
 	duckGO->getRenderComponent()->setLayer(0);
@@ -68,7 +72,8 @@ void Game4::onLoad(){
 				   getFile("/DuckDown.gif"),
 				   getFile("/DUckPreJump.gif"),
 				   getFile("/DuckMidJump.gif"),
-				   getFile("/DuckAfterJump.gif"));
+				   getFile("/DuckAfterJump.gif"),
+				   getFile("/DuckCrouch.gif"));
 }
 
 void Game4::onLoop(float deltaTime){
@@ -100,6 +105,18 @@ void Game4::buttonPressed(uint i){
 	if(i == BTN_BACK){
 		pop();
 	}
+	if(i == BTN_DOWN){
+		duck->crouch();
+	}
+	if(i == BTN_UP){
+		duck->jump();
+	}
+}
+
+void Game4::buttonReleased(uint i){
+	if(i == BTN_DOWN){
+		duck->walk();
+	}
 }
 
 void Game4::setupObstacles(){
@@ -120,7 +137,7 @@ void Game4::spawn(){
 	if(coinFlip == 0){
 		int under = rand() % obstacleUnder.size();
 		obstacle = obstacleUnder[under];
-		posY = topY - 40 - obstacle.dim.y;
+		posY = topY - 30 - obstacle.dim.y;
 	}else{
 		int over = rand() % obstacleOver.size();
 		obstacle = obstacleOver[over];
