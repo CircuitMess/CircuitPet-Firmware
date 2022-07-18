@@ -11,6 +11,7 @@ public:
 	CircleCC(float radius, glm::vec2 offset = {0, 0});
 	float getRadius() const;
 	glm::vec2 getOffset() const;
+	void setOffset(const glm::vec2& offset);
 
 private:
 	float radius;
