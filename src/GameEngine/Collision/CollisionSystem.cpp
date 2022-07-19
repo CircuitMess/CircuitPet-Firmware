@@ -63,6 +63,11 @@ void CollisionSystem::addPair(const GameObject& first, const GameObject& second,
 	if(!first.getCollisionComponent() || !second.getCollisionComponent()) return;
 
 	addedPairs.push_back({ &first, &second, std::move(handler) });
+
+	auto it = remove_if(removedPairs.begin(), removedPairs.end(), [&first, &second](const Pair& pair) -> bool {
+		return (pair.first == &first && pair.second == &second) || (pair.first == &second && pair.second == &first);
+	});
+	removedPairs.erase(it, pairs.end());
 }
 
 void CollisionSystem::removePair(const GameObject& first, const GameObject& second){
@@ -71,6 +76,11 @@ void CollisionSystem::removePair(const GameObject& first, const GameObject& seco
 			removedPairs.push_back(pair);
 		}
 	});
+
+	auto it = remove_if(addedPairs.begin(), addedPairs.end(), [&first, &second](const Pair& pair) -> bool {
+		return (pair.first == &first && pair.second == &second) || (pair.first == &second && pair.second == &first);
+	});
+	addedPairs.erase(it, pairs.end());
 }
 
 void CollisionSystem::removeObject(const GameObject& GO){
@@ -79,6 +89,9 @@ void CollisionSystem::removeObject(const GameObject& GO){
 			removedPairs.push_back(pair);
 		}
 	});
+
+	auto it = remove_if(addedPairs.begin(), addedPairs.end(), [&GO](const Pair& pair) -> bool { return pair.first == &GO || pair.second == &GO; });
+	pairs.erase(it, addedPairs.end());
 }
 
 void CollisionSystem::wallTop(const GameObject& obj, std::function<void()> handler){
