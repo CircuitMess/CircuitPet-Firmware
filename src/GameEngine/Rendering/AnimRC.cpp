@@ -38,7 +38,7 @@ void AnimRC::push(Sprite* parent, PixelDim pos, float rot) const{
 	if(rot == 0){
 		gif.push(parent, pos.x, pos.y);
 	}else{
-		gif.pushRotate(parent, pos.x + gif.getWidth() / 2, pos.y + gif.getHeight() / 2, rot);
+		gif.pushRotate(parent, pos.x, pos.y, rot);
 	}}
 
 void AnimRC::setLoopDoneCallback(std::function<void(uint32_t)> cb){
