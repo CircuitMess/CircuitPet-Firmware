@@ -50,13 +50,13 @@ private:
 	static bool circleCircle(const GameObject& circle1, const GameObject& circle2);
 	static bool rectRect(const GameObject& square1, const GameObject& square2);
 	static bool rectCircle(const GameObject& rect, const GameObject& circle);
-	static bool polyPoly(const GameObject& poly1, const GameObject& poly2);
+	static bool polyPoly(const GameObject& obj1, const GameObject& obj2);
 	static bool polyRect(const GameObject& poly, const GameObject& rect);
 	static bool polyCircle(const GameObject& poly, const GameObject& circle);
 
 	static bool polyContainsPoint(const Polygon& polygon, glm::vec2 point);
-
-	static void drawPolygon(const CollisionSystem::Polygon& points, glm::vec2 pos, Sprite* canvas, Color color);
+	static CollisionSystem::Polygon getRotatedTranslatedPoly(const GameObject& poly);
+	static void drawPolygon(const GameObject& poly, Sprite* canvas, Color color);
 };
 
 

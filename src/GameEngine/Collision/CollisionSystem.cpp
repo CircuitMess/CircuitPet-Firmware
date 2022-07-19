@@ -5,6 +5,10 @@
 #include "CircleCC.h"
 #include "PolygonCC.h"
 #include <map>
+#include <glm.h>
+#include <glm/ext.hpp>
+#include <glm/gtx/matrix_transform_2d.hpp>
+#include <glm/gtx/vector_angle.hpp>
 
 #undef abs
 
@@ -34,12 +38,12 @@ void CollisionSystem::update(uint32_t deltaMicros){
 			{ { CollisionType::Circle, CollisionType::Circle }, &CollisionSystem::circleCircle },
 			{ { CollisionType::Rect, CollisionType::Rect }, &CollisionSystem::rectRect },
 			{ { CollisionType::Rect, CollisionType::Circle }, &CollisionSystem::rectCircle },
-			{ { CollisionType::Circle, CollisionType::Rect }, [this](const GameObject& circle, const GameObject& rect){ return rectCircle(rect, circle); }},
+			{ { CollisionType::Circle, CollisionType::Rect }, [](const GameObject& circle, const GameObject& rect){ return rectCircle(rect, circle); }},
 			{ { CollisionType::Polygon, CollisionType::Polygon }, &CollisionSystem::polyPoly },
 			{ { CollisionType::Polygon, CollisionType::Rect }, &CollisionSystem::polyRect },
-			{ { CollisionType::Rect, CollisionType::Polygon }, [this](const GameObject& rect, const GameObject& poly){ return polyRect(poly, rect); } },
+			{ { CollisionType::Rect, CollisionType::Polygon }, [](const GameObject& rect, const GameObject& poly){ return polyRect(poly, rect); } },
 			{ { CollisionType::Polygon, CollisionType::Circle }, &CollisionSystem::polyCircle },
-			{ { CollisionType::Circle, CollisionType::Polygon }, [this](const GameObject& circle, const GameObject& poly){ return polyCircle(poly, circle); } }
+			{ { CollisionType::Circle, CollisionType::Polygon }, [](const GameObject& circle, const GameObject& poly){ return polyCircle(poly, circle); } }
 		};
 
 		overlap = map[types](*pair.first, *pair.second);
@@ -144,7 +148,7 @@ bool CollisionSystem::circleCircle(const GameObject& circle1, const GameObject& 
 }
 
 bool CollisionSystem::rectCircle(const GameObject& rect, const GameObject& circle){
-	auto cPos = circle.getPos() +  circle.getCollisionComponent()->getCircle()->getOffset();;
+	auto cPos = circle.getPos() +  circle.getCollisionComponent()->getCircle()->getOffset();
 	auto r = circle.getCollisionComponent()->getCircle()->getRadius();
 	auto rDim = rect.getCollisionComponent()->getRect()->getDim();
 	auto rPos = rect.getPos() + 0.5f * rDim;
@@ -159,20 +163,19 @@ bool CollisionSystem::rectCircle(const GameObject& rect, const GameObject& circl
 	return glm::distance(distance, rDim * 0.5f) <= r;
 }
 
-bool CollisionSystem::polyPoly(const GameObject& poly1, const GameObject& poly2){
-	auto points1 = poly1.getCollisionComponent()->getPolygon();
-	auto points2 = poly2.getCollisionComponent()->getPolygon();
+bool CollisionSystem::polyPoly(const GameObject& obj1, const GameObject& obj2){
+	auto poly1 = obj1.getCollisionComponent()->getPolygon();
+	auto poly2 = obj2.getCollisionComponent()->getPolygon();
 
-	if(!points1->isConvex() || !points2->isConvex()) return false;
+	if(!poly1->isConvex() || !poly2->isConvex()) return false;
 
 	boolean isColliding = false;
-	auto translatedPoints = points2->getPoints();
-	for(auto& point:translatedPoints){
-		point += poly2.getPos();
-	}
 
-	for(auto i : points1->getPoints()){
-		if(polyContainsPoint(translatedPoints, i + poly1.getPos())){
+	auto points1 = getRotatedTranslatedPoly(obj1);
+	auto points2 = getRotatedTranslatedPoly(obj2);
+
+	for(auto i : points2){
+		if(polyContainsPoint(points1, i)){
 			isColliding = true;
 		}
 	}
@@ -192,10 +195,12 @@ bool CollisionSystem::polyRect(const GameObject& poly, const GameObject& rect){
 	auto rectPoints = { point1, point2, point3, point4 };
 
 	boolean isColliding = false;
-	for(auto i : poly.getCollisionComponent()->getPolygon()->getPoints()){
-		if(polyContainsPoint(rectPoints, i + poly.getPos())){
+
+	auto polyPoints = getRotatedTranslatedPoly(poly);
+
+	for(auto i : polyPoints){
+		if(polyContainsPoint(rectPoints, i)){
 			isColliding = true;
-//			Serial.printf("rect contains point %.f, %.f\n", i.x, i.y);
 		}
 	}
 
@@ -228,14 +233,13 @@ bool CollisionSystem::polyCircle(const GameObject& poly, const GameObject& circl
 		return glm::length(line) <= radius;
 	};
 
-
-	auto points = poly.getCollisionComponent()->getPolygon()->getPoints();
+	auto points = getRotatedTranslatedPoly(poly);
 	glm::vec2 center = circle.getPos() + circle.getCollisionComponent()->getCircle()->getOffset();
 
 
 	for(int i = 0; i < points.size(); i++){
-		glm::vec2 start = points[i] + poly.getPos();
-		glm::vec2 end = points[(i + 1) % points.size()] + poly.getPos();
+		glm::vec2 start = points[i];
+		glm::vec2 end = points[(i + 1) % points.size()];
 		if(intersectSegmentCircle(start, end, center, circle.getCollisionComponent()->getCircle()->getRadius())) return true;
 	}
 	return false;
@@ -257,6 +261,29 @@ bool CollisionSystem::polyContainsPoint(const CollisionSystem::Polygon& polygon,
 	return (intersects & 1) == 1;
 }
 
+CollisionSystem::Polygon CollisionSystem::getRotatedTranslatedPoly(const GameObject& poly){
+	float rot = poly.getRot();
+	auto polyPoints = poly.getCollisionComponent()->getPolygon()->getPoints();
+
+	if( rot == 0) return polyPoints;
+
+	auto center = poly.getPos() + poly.getCollisionComponent()->getPolygon()->getCenter();
+
+	auto rotMat = glm::identity<glm::mat3>();
+	rotMat = glm::translate(rotMat, center);
+	rotMat = glm::rotate(rotMat, glm::radians(rot));
+	rotMat = glm::translate(rotMat, -center);
+
+	auto pos = poly.getPos();
+	auto polyCopy = polyPoints;
+
+	std::transform(polyCopy.begin(), polyCopy.end(), polyCopy.begin(), [&rotMat, &pos](glm::vec2& point){
+		return rotMat * glm::vec3(point + pos, 1.0f);
+	});
+
+	return polyCopy;
+}
+
 void CollisionSystem::drawDebug(Sprite* canvas){
 	std::set<const GameObject*> drawn;
 
@@ -276,7 +303,7 @@ void CollisionSystem::drawDebug(Sprite* canvas){
 								   obj.getPos().y + obj.getCollisionComponent()->getCircle()->getOffset().y,
 								   col->getCircle()->getRadius(), c);
 			}else if(col->getType() == CollisionType::Polygon){
-				CollisionSystem::drawPolygon(col->getPolygon()->getPoints(), obj.getPos(), canvas, c);
+				CollisionSystem::drawPolygon(obj, canvas, c);
 			}
 		};
 
@@ -285,8 +312,10 @@ void CollisionSystem::drawDebug(Sprite* canvas){
 	}
 }
 
-void CollisionSystem::drawPolygon(const CollisionSystem::Polygon& points, glm::vec2 pos, Sprite* canvas, Color color){
+void CollisionSystem::drawPolygon(const GameObject& poly, Sprite* canvas, Color color){
 	typedef glm::vec2 Point;
+
+	auto points = poly.getCollisionComponent()->getPolygon()->getPoints();
 
 	if(points.empty()) return;
 	if(points.size() == 1){
@@ -294,10 +323,12 @@ void CollisionSystem::drawPolygon(const CollisionSystem::Polygon& points, glm::v
 		return;
 	}
 
-	for(size_t i = 0; i < points.size(); i++){
-		auto translated1 = points[i] + pos;
-		auto translated2 = points[(i + 1) % points.size()] + pos;
+	points = getRotatedTranslatedPoly(poly);
 
-		canvas->drawLine(translated1.x, translated1.y, translated2.x, translated2.y, color);
+	for(size_t i = 0; i < points.size(); i++){
+		glm::vec2 p1 = points[i];
+		glm::vec2 p2 = points[(i + 1) % points.size()];
+
+		canvas->drawLine(p1.x, p1.y, p2.x, p2.y, color);
 	}
 }
