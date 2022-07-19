@@ -43,8 +43,9 @@ void Game1::onLoad(){
 			nullptr
 	);
 	addObject(oilCanGO);
-	oilCanGO->setPos({ 100, 60 });
+	oilCanGO->setPos({ 99, 60 });
 	oilCanGO->getRenderComponent()->setLayer(1);
+	oilCan->setGameObject(oilCanGO);
 
 	duckGo = std::make_shared<GameObject>(
 			std::make_unique<AnimRC>(getFile("/OilyIdle.gif")),
@@ -66,6 +67,7 @@ void Game1::onLoad(){
 
 void Game1::onLoop(float deltaTime){
 	indicator->move(deltaTime);
+	oilCan->move(deltaTime);
 }
 
 void Game1::onRender(Sprite* canvas){
@@ -109,7 +111,6 @@ void Game1::addPoints(int difference){
 	multiplier = (length-(float)difference)/length;
 	multiplier = pow(multiplier,4);
 	fillPercent += multiplier * maxPoints;
-
 	oilCan->fill(fillPercent);
 //	Serial.printf("multi: %f, diff: %d\n", multiplier, difference);
 //	Serial.printf("FillPRCNT: %f\n", fillPercent);
@@ -118,9 +119,13 @@ void Game1::addPoints(int difference){
 		Input::getInstance()->removeListener(this);
 		removeObject(barGO);
 		removeObject(indicatorGO);
-		duckAnim->setAnim(getFile("/OilyDone.gif"));
-		duckGo->setPos({ 17, 16 }); //manually set for the gif to fit
+		delete(indicator);
+		delete(bar);
+		oilCan->startMoving();
 
-		duckAnim->setLoopDoneCallback([this](uint32_t i){ pop();});
+		duckGo->setPos({ 17, 16 }); //manually set for the gif to fit
+		duckAnim->setAnim(getFile("/OilyDone.gif"));
+//		pop();
+//		duckAnim->setLoopDoneCallback([this](uint32_t i){ pop();});
 	}
 }
