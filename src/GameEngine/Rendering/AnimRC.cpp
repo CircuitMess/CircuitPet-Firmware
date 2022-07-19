@@ -1,12 +1,15 @@
 #include "AnimRC.h"
 
+#include <utility>
+
 //parentSprite as nullptr is safe as long as you pass the correct parent Sprite* in the push() function
 AnimRC::AnimRC(File file) : gif(nullptr, file){
-
+	gif.setLoopMode(loopMode);
 }
 
 void AnimRC::setAnim(File file){
 	gif = GIFAnimatedSprite(nullptr, file);
+	gif.setLoopMode(loopMode);
 
 	if(playing){
 		gif.start();
@@ -36,9 +39,13 @@ void AnimRC::push(Sprite* parent, PixelDim pos, float rot) const{
 		gif.push(parent, pos.x, pos.y);
 	}else{
 		gif.pushRotate(parent, pos.x + gif.getWidth() / 2, pos.y + gif.getHeight() / 2, rot);
-	}
-}
+	}}
 
 void AnimRC::setLoopDoneCallback(std::function<void(uint32_t)> cb){
-	gif.setLoopDoneCallback(cb);
+	gif.setLoopDoneCallback(std::move(cb));
+}
+
+void AnimRC::setLoopMode(GIF::LoopMode loopMode){
+	this->loopMode = loopMode;
+	gif.setLoopMode(loopMode);
 }

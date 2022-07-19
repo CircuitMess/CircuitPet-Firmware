@@ -27,6 +27,8 @@ public:
 	 */
 	void setLoopDoneCallback(std::function<void(uint32_t)> cb);
 
+	void setLoopMode(GIF::LoopMode loopMode);
+
 	void start();
 	void stop();
 	void reset();
@@ -38,7 +40,7 @@ private:
 	GIFAnimatedSprite gif;
 	bool playing = false;
 
-	std::function<void(uint32_t loopCount)> cb;
+	GIF::LoopMode loopMode = GIF::Infinite;
 };
 
 
