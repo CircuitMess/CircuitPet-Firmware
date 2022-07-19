@@ -48,26 +48,37 @@ void CollisionSystem::update(uint32_t deltaMicros){
 
 		pair.colliding = overlap;
 	}
+
+	for(auto& pair:removedPairs){
+		pairs.erase(std::remove(pairs.begin(), pairs.end(), pair), pairs.end());
+	}
+	pairs.insert(pairs.end(), addedPairs.begin(), addedPairs.end());
+
+	addedPairs.clear();
+	removedPairs.clear();
 }
 
 void CollisionSystem::addPair(const GameObject& first, const GameObject& second, std::function<void()> handler){
 	if(&first == &second) return;
 	if(!first.getCollisionComponent() || !second.getCollisionComponent()) return;
 
-	pairs.push_back({ &first, &second, std::move(handler) });
+	addedPairs.push_back({ &first, &second, std::move(handler) });
 }
 
 void CollisionSystem::removePair(const GameObject& first, const GameObject& second){
-	auto it = remove_if(pairs.begin(), pairs.end(), [&first, &second](const Pair& pair) -> bool {
-		return (pair.first == &first && pair.second == &second) || (pair.first == &second && pair.second == &first);
+	std::for_each(pairs.begin(), pairs.end(), [&first, &second, this](const Pair& pair){
+		if((pair.first == &first && pair.second == &second) || (pair.first == &second && pair.second == &first)){
+			removedPairs.push_back(pair);
+		}
 	});
-
-	pairs.erase(it, pairs.end());
 }
 
 void CollisionSystem::removeObject(const GameObject& GO){
-	auto it = remove_if(pairs.begin(), pairs.end(), [&GO](const Pair& pair) -> bool { return pair.first == &GO || pair.second == &GO; });
-	pairs.erase(it, pairs.end());
+	std::for_each(pairs.begin(), pairs.end(), [&GO, this](const Pair& pair){
+		if(pair.first == &GO || pair.second == &GO){
+			removedPairs.push_back(pair);
+		}
+	});
 }
 
 void CollisionSystem::wallTop(const GameObject& obj, std::function<void()> handler){
