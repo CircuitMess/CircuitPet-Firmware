@@ -13,12 +13,16 @@ public:
 
 	const std::vector<glm::vec2>& getPoints() const;
 	bool isConvex() const;
+	const glm::vec2& getCenter() const;
 
 private:
 	const std::vector<glm::vec2> points;
 	static bool checkConvexity(const std::vector<glm::vec2>& polygon);
+	static glm::vec2 checkPolyCenter(const std::vector<glm::vec2>& points);
+
 
 	const bool convex;
+	glm::vec2 center;
 };
 
 
