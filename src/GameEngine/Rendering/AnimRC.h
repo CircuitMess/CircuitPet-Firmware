@@ -34,7 +34,7 @@ public:
 	void reset();
 
 protected:
-	void push(Sprite* parent, PixelDim pos) const override;
+	void push(Sprite* parent, PixelDim pos, float rot) const override;
 
 private:
 	GIFAnimatedSprite gif;

@@ -13,8 +13,10 @@ public:
 	SpriteRC(PixelDim dim);
 	virtual ~SpriteRC() = default;
 	std::shared_ptr<Sprite> getSprite() const;
+
 protected:
-	void push(Sprite* parent, PixelDim pos) const override;
+	void push(Sprite* parent, PixelDim pos, float rot) const override;
+
 private:
 	std::shared_ptr<Sprite> sprite;
 };
