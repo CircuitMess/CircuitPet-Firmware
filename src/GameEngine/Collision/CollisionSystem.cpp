@@ -21,9 +21,7 @@ CollisionSystem::CollisionSystem(const Game* game) : GameSystem(game), Walls({
 }
 
 void CollisionSystem::update(uint32_t deltaMicros){
-	auto pairsCopy = pairs;
-	for(auto& pair : pairsCopy){
-		bool overlap = false;
+	for(auto& pair : pairs){
 
 		auto type1 = pair.first->getCollisionComponent()->getType();
 		auto type2 = pair.second->getCollisionComponent()->getType();
@@ -42,7 +40,7 @@ void CollisionSystem::update(uint32_t deltaMicros){
 			{ { CollisionType::Circle, CollisionType::Polygon }, [this](const GameObject& circle, const GameObject& poly){ return polyCircle(poly, circle); } }
 		};
 
-		overlap = map[types](*pair.first, *pair.second);
+		bool overlap = map[types](*pair.first, *pair.second);
 
 		if(overlap && !pair.colliding){
 			pair.handler();
@@ -50,8 +48,6 @@ void CollisionSystem::update(uint32_t deltaMicros){
 
 		pair.colliding = overlap;
 	}
-
-	pairs = pairsCopy;
 }
 
 void CollisionSystem::addPair(const GameObject& first, const GameObject& second, std::function<void()> handler){
