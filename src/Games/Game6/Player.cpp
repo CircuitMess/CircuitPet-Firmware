@@ -4,12 +4,14 @@ void Player::leftTurn(float delta){
 	angle -= delta * rotSpeed;
 	angle = fmod(angle, 360.0f);
 
-	//TODO - apply rotation to render component somehow?
+	obj->setRot(angle);
 }
 
 void Player::rightTurn(float delta){
 	angle += delta * rotSpeed;
 	angle = fmod(angle, 360.0f);
+
+	obj->setRot(angle);
 }
 
 float Player::getAngle() const{
