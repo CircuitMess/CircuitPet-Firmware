@@ -24,6 +24,7 @@ protected:
 private:
 	void buttonPressed(uint i) override;
 	void addPoints(int difference);
+	void drawHearts();
 
 	Indicator* indicator;
 	OilCan* oilCan;
@@ -36,6 +37,7 @@ private:
 	float multiplier;
 
 	std::shared_ptr<AnimRC> duckAnim;
+	std::shared_ptr<Sprite> hearts;
 	std::shared_ptr<GameObject> indicatorGO;
 	std::shared_ptr<GameObject> oilCanGO;
 	std::shared_ptr<GameObject> barGO;

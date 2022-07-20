@@ -64,6 +64,16 @@ void Game1::onLoad(){
 	addObject(bg);
 	bg->getRenderComponent()->setLayer(0);
 
+	auto heartsSprite =	std::make_unique<SpriteRC>(PixelDim{48,6});
+	hearts = heartsSprite->getSprite();
+	auto heartsGO = std::make_shared<GameObject>(
+			move(heartsSprite),
+			nullptr
+	);
+	addObject(heartsGO);
+	heartsGO->setPos({5 ,5});
+
+	drawHearts();
 }
 
 void Game1::onLoop(float deltaTime){
@@ -97,6 +107,7 @@ void Game1::buttonPressed(uint i){
 	}
 	if(i == BTN_ENTER){
 		tries--;
+		drawHearts();
 		if(tries < 0){ pop(); }
 		addPoints(indicator->getDifference());
 	}
@@ -129,5 +140,12 @@ void Game1::addPoints(int difference){
 		duckAnim->setLoopDoneCallback([this](uint32_t){
 			resetAnim();
 		});
+	}
+}
+
+void Game1::drawHearts(){
+	hearts->clear(TFT_TRANSPARENT);
+	for(int i = 0; i < tries; i++){
+		hearts->drawIcon(getFile("/Hearth.raw"),0 + i*8,0,7,6);
 	}
 }
