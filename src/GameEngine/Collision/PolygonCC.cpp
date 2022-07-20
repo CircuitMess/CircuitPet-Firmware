@@ -5,6 +5,11 @@ PolygonCC::PolygonCC(std::initializer_list<glm::vec2> points) : CollisionCompone
 																convex(checkConvexity(this->points)), center(checkPolyCenter(points)){
 }
 
+PolygonCC::PolygonCC(std::initializer_list<glm::vec2> points, glm::vec2 pivot) : CollisionComponent(CollisionType::Polygon), points(points),
+																				 convex(checkConvexity(this->points)), center(pivot){
+
+}
+
 bool PolygonCC::checkConvexity(const std::vector<glm::vec2>& polygon){
 	typedef glm::vec2 Point;
 	//Code from Sunshine2K, licensed under MIT
