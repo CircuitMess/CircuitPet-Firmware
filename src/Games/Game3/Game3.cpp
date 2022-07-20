@@ -123,9 +123,12 @@ void Game3::spawnItem(Game3::Template temp){
 
 void Game3::collisionHandler(Item item){
 	removeObject(item.go);
-	duck->startEating();
+	duck->startEating(item.value);
 	if(item.value > 0){
 		hugerMeter -= item.value;
+		if(hugerMeter <= 0){
+			duck->filled(this);
+		}
 	}else{
 		lives--;
 	}

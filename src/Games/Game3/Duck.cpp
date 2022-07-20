@@ -3,6 +3,7 @@
 #include "Duck.h"
 #include "../../GameEngine/Collision/CircleCC.h"
 #include <Input/Input.h>
+#include "Game3.h"
 
 Duck::Duck(File walk, File eat, File eatBad, File win) : walk(walk), eat(eat), eatBad(eatBad), win(win){
 	Input::getInstance()->addListener(this);
@@ -65,7 +66,7 @@ void Duck::buttonReleased(uint i){
 	}
 }
 
-void Duck::filled(){
+void Duck::filled(Game3* game){
 	anim->setAnim(win);
-	anim->setLoopDoneCallback({});
+	anim->setLoopDoneCallback([game](uint32_t){game->pop(); printf("popped\n");});
 }

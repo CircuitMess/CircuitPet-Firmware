@@ -7,6 +7,7 @@
 #include "../../GameEngine/GameObject.h"
 #include "../../GameEngine/Rendering/AnimRC.h"
 
+class Game3;
 
 class Duck : private InputListener {
 public:
@@ -15,7 +16,7 @@ public:
 	std::shared_ptr<GameObject> getGameObject();
 	void loop(float deltaTime);
 	void startEating(int value);
-	void filled();
+	void filled(Game3* game);
 
 private:
 	void buttonPressed(uint i) override;

@@ -33,6 +33,7 @@ private:
 		PixelDim dim;
 		int value;
 	};
+
 	void spawnItem(Template temp);
 	void collisionHandler(Item item);
 
