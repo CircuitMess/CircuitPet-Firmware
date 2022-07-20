@@ -7,12 +7,13 @@
 
 Game1::Game1() : Game("/Games/Game1", {
 		{ "/Arrow.raw",      {}, true },
-		{ "/Background.raw", {}, false },
+		{ "/Background.raw", {}, true },
 		{ "/EmptyCan.raw",   {}, true },
 		{ "/FullCan.raw",    {}, true },
+		{ "/Hearth.raw",     {}, true },
 		{ "/OilyDone.gif",   {}, false },
-		{ "/OilyIdle.gif",   {}, false },
-		{ "/OilyJump.gif",   {}, false }
+		{ "/OilyIdle.gif",   {}, true },
+		{ "/OilyJump.gif",   {}, true }
 }){}
 
 void Game1::onLoad(){
@@ -97,14 +98,7 @@ void Game1::buttonPressed(uint i){
 	if(i == BTN_ENTER){
 		tries--;
 		if(tries < 0){ pop(); }
-		duckAnim->setAnim(getFile("/OilyJump.gif"));
-		duckAnim->setLoopDoneCallback([this](uint32_t){
-			resetAnim();
-		});
-
 		addPoints(indicator->getDifference());
-		bar->resetGoal();
-		indicator->setGoal(bar->getY());
 	}
 }
 
@@ -114,24 +108,26 @@ void Game1::resetAnim(){
 }
 
 void Game1::addPoints(int difference){
-	multiplier = (length-(float)difference)/length;
-	multiplier = pow(multiplier,4);
+	multiplier = (length - (float) difference) / length;
+	multiplier = pow(multiplier, 4);
 	fillPercent += multiplier * maxPoints;
 	oilCan->fill(fillPercent);
-//	Serial.printf("multi: %f, diff: %d\n", multiplier, difference);
-//	Serial.printf("FillPRCNT: %f\n", fillPercent);
+	Serial.printf("multi: %f, diff: %d\n", multiplier, difference);
+	Serial.printf("FillPRCNT: %f\n", fillPercent);
+	bar->resetGoal();
+	indicator->setGoal(bar->getY());
 
 	if(fillPercent >= 0.999f){
 		Input::getInstance()->removeListener(this);
 		removeObject(barGO);
 		removeObject(indicatorGO);
-		delete(indicator);
-		delete(bar);
+		delete (indicator);
+		delete (bar);
 		oilCan->startMoving();
-
-		duckGo->setPos({ 17, 16 }); //manually set for the gif to fit
-		duckAnim->setAnim(getFile("/OilyDone.gif"));
-//		pop();
-//		duckAnim->setLoopDoneCallback([this](uint32_t i){ pop();});
+	}else{
+		duckAnim->setAnim(getFile("/OilyJump.gif"));
+		duckAnim->setLoopDoneCallback([this](uint32_t){
+			resetAnim();
+		});
 	}
 }
