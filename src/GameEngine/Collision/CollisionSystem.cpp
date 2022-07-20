@@ -50,8 +50,10 @@ void CollisionSystem::update(uint32_t deltaMicros){
 	}
 
 	for(auto& pair:removedPairs){
+		if(pairs.empty()) break;
 		pairs.erase(std::remove(pairs.begin(), pairs.end(), pair), pairs.end());
 	}
+
 	pairs.insert(pairs.end(), addedPairs.begin(), addedPairs.end());
 
 	addedPairs.clear();
@@ -64,10 +66,12 @@ void CollisionSystem::addPair(const GameObject& first, const GameObject& second,
 
 	addedPairs.push_back({ &first, &second, std::move(handler) });
 
+	if(removedPairs.empty()) return;
+
 	auto it = remove_if(removedPairs.begin(), removedPairs.end(), [&first, &second](const Pair& pair) -> bool {
 		return (pair.first == &first && pair.second == &second) || (pair.first == &second && pair.second == &first);
 	});
-	removedPairs.erase(it, pairs.end());
+	removedPairs.erase(it, removedPairs.end());
 }
 
 void CollisionSystem::removePair(const GameObject& first, const GameObject& second){
@@ -76,6 +80,8 @@ void CollisionSystem::removePair(const GameObject& first, const GameObject& seco
 			removedPairs.push_back(pair);
 		}
 	});
+
+	if(addedPairs.empty()) return;
 
 	auto it = remove_if(addedPairs.begin(), addedPairs.end(), [&first, &second](const Pair& pair) -> bool {
 		return (pair.first == &first && pair.second == &second) || (pair.first == &second && pair.second == &first);
@@ -90,8 +96,12 @@ void CollisionSystem::removeObject(const GameObject& GO){
 		}
 	});
 
-	auto it = remove_if(addedPairs.begin(), addedPairs.end(), [&GO](const Pair& pair) -> bool { return pair.first == &GO || pair.second == &GO; });
-	pairs.erase(it, addedPairs.end());
+	if(addedPairs.empty()) return;
+
+	auto it = remove_if(addedPairs.begin(), addedPairs.end(), [&GO](const Pair& pair) -> bool {
+		return pair.first == &GO || pair.second == &GO;
+	});
+	addedPairs.erase(it, addedPairs.end());
 }
 
 void CollisionSystem::wallTop(const GameObject& obj, std::function<void()> handler){
