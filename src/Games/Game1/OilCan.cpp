@@ -14,14 +14,17 @@ OilCan::OilCan(std::shared_ptr<Sprite> sprite, File fullCan, File emptyCan) :
 	fill(0.0f);
 }
 
-void OilCan::move(float deltaTime){
-	if(!moving) return;
-	Serial.printf("aaa %f\n", deltaTime);
+bool OilCan::move(float deltaTime){
+	if(!moving) return false;
 	startPos.y += deltaTime*speed;
 	gameObject->setPos(startPos);
 	if(startPos.y >= endPos.y){
-		sprite->clear(TFT_TRANSPARENT);
 		moving = false;
+		gameObject->setPos(endPos);
+		sprite->clear(TFT_TRANSPARENT);
+		return true;
+	}else{
+		return false;
 	}
 }
 

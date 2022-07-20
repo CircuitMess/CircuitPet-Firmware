@@ -10,7 +10,7 @@ class OilCan {
 public:
 	OilCan(std::shared_ptr<Sprite> sprite, File fullCan, File emptyCan);
 	void fill(float fillPercent);
-	void move(float deltaTime);
+	bool move(float deltaTime);
 	void setGameObject(std::shared_ptr<GameObject> gameObj);
 	void startMoving();
 

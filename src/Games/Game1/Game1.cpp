@@ -67,7 +67,13 @@ void Game1::onLoad(){
 
 void Game1::onLoop(float deltaTime){
 	indicator->move(deltaTime);
-	oilCan->move(deltaTime);
+	if(oilCan->move(deltaTime)){
+		duckGo->setPos({ 17, 16 }); //manually set for the gif to fit
+		duckAnim->setAnim(getFile("/OilyDone.gif"));
+		duckAnim->setLoopDoneCallback([this](uint32_t i){
+			printf("popped\n");
+			pop();});
+	};
 }
 
 void Game1::onRender(Sprite* canvas){
