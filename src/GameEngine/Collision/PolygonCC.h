@@ -9,6 +9,11 @@
 class PolygonCC : public CollisionComponent {
 public:
 	PolygonCC(std::initializer_list<glm::vec2> points);
+	/**
+	 * @param points Points that define a polygon
+	 * @param pivot Pivot point when rotation is applied, relative to the polygon
+	 */
+	PolygonCC(std::initializer_list<glm::vec2> points, glm::vec2 pivot);
 	~PolygonCC() override = default;
 
 	const std::vector<glm::vec2>& getPoints() const;
