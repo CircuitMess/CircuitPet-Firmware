@@ -10,11 +10,13 @@
 
 class Duck : private InputListener {
 public:
-	Duck(File walk, File eat);
+	Duck(File walk, File eat, File eatBad, File win);
 	~Duck();
 	std::shared_ptr<GameObject> getGameObject();
 	void loop(float deltaTime);
-	void startEating();
+	void startEating(int value);
+	void filled();
+
 private:
 	void buttonPressed(uint i) override;
 	void buttonReleased(uint i) override;
@@ -28,6 +30,8 @@ private:
 
 	File walk;
 	File eat;
+	File eatBad;
+	File win;
 
 	std::shared_ptr<GameObject> go;
 	std::shared_ptr<AnimRC> anim;

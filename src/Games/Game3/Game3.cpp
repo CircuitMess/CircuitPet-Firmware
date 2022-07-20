@@ -12,12 +12,15 @@ Game3::Game3() : Game("/Games/Game3", {
 		{ "/Dynamite.raw",   {}, true },
 		{ "/Nut.raw",        {}, true },
 		{ "/Screw.raw",      {}, true },
+		{ "/Heart.raw",      {}, true },
 		{ "/DuckWalk.gif",   {}, true },
+		{ "/DuckEatBad.gif", {}, true },
+		{ "/DuckWin.gif",    {}, true },
 		{ "/DuckEat.gif",    {}, true }
 }){}
 
 void Game3::onLoad(){
-	srand (time(NULL));
+	srand(time(NULL));
 
 	bg = std::make_shared<GameObject>(
 			std::make_unique<StaticRC>(getFile("/Background.raw"), PixelDim{ 160, 128 }),

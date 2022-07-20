@@ -4,7 +4,7 @@
 #include "../../GameEngine/Collision/CircleCC.h"
 #include <Input/Input.h>
 
-Duck::Duck(File walk, File eat) : walk(walk), eat(eat){
+Duck::Duck(File walk, File eat, File eatBad, File win) : walk(walk), eat(eat), eatBad(eatBad), win(win){
 	Input::getInstance()->addListener(this);
 	go = std::make_shared<GameObject>(
 			std::make_unique<AnimRC>(this->walk),
@@ -27,9 +27,14 @@ void Duck::loop(float deltaTime){
 	go->setPos({moveX, go->getPos().y});
 }
 
-void Duck::startEating(){
+void Duck::startEating(int value){
 	eating = true;
-	anim->setAnim(eat);
+	if(value > 0){
+		anim->setAnim(eat);
+	}else{
+		anim->setAnim(eatBad);
+	}
+
 	anim->setLoopDoneCallback([this](uint32_t t){
 		finishEating();
 	});
@@ -58,4 +63,9 @@ void Duck::buttonReleased(uint i){
 	if(i == BTN_LEFT || i == BTN_RIGHT){
 		velocity = 0.0f;
 	}
+}
+
+void Duck::filled(){
+	anim->setAnim(win);
+	anim->setLoopDoneCallback({});
 }
