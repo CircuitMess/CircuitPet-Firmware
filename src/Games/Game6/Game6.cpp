@@ -35,7 +35,7 @@ Game6::Game6() : wrapWalls({ .top =  { nullptr, std::make_unique<RectCC>(glm::ve
 void Game6::onLoad(){
 	auto pat = std::make_shared<GameObject>(
 			std::make_unique<AnimRC>(getFile("/player.gif")),
-			std::make_unique<PolygonCC>(playerHitbox));
+			std::make_unique<PolygonCC>(playerHitbox, glm::vec2{19.0/2.0, 44 / 2.0}));
 
 	playerAnim = std::static_pointer_cast<AnimRC>(pat->getRenderComponent());
 	addObject(pat);
