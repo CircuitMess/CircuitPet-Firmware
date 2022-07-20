@@ -3,6 +3,7 @@
 #include "../../GameEngine/Rendering/StaticRC.h"
 #include "../../GameEngine/Collision/RectCC.h"
 #include "../../GameEngine/Collision/CircleCC.h"
+#include "../../GameEngine/Collision/PolygonCC.h"
 #include "../../GameEngine/Rendering/SpriteRC.h"
 #include <Input/Input.h>
 
@@ -10,16 +11,19 @@
 constexpr std::array<float, 3> Game6::asteroidSpeed;
 constexpr std::array<float, 3> Game6::asteroidRadius;
 constexpr Game6::ImageDesc Game6::asteroidIcons[];
+constexpr std::initializer_list<glm::vec2> Game6::playerHitbox;
 
 Game6::Game6() : wrapWalls({ .top =  { nullptr, std::make_unique<RectCC>(glm::vec2 { wrapWallsSize.x, 100 }) },
 							 .bot =  { nullptr, std::make_unique<RectCC>(glm::vec2 { wrapWallsSize.x, 100 }) },
 							 .left =  { nullptr, std::make_unique<RectCC>(glm::vec2 { 100, wrapWallsSize.y }) },
 							 .right =  { nullptr, std::make_unique<RectCC>(glm::vec2 { 100, wrapWallsSize.y }) }
 						   }),
-				 Game("/Games/6", {{ "/bg.raw",       {}, true },
+				 Game("/Games/6", {
+						 { "/bg.raw",             {}, true },
 						 { asteroidIcons[0].path, {}, true },
 						 { asteroidIcons[1].path, {}, true },
 						 { asteroidIcons[2].path, {}, true },
+						 { "/player.gif", {}, true }
 				 }){
 
 	wrapWalls.top.setPos(glm::vec2 { 0, -100 } - (2 * asteroidRadius[(uint8_t)AsteroidSize::Large] + 1));
@@ -29,11 +33,14 @@ Game6::Game6() : wrapWalls({ .top =  { nullptr, std::make_unique<RectCC>(glm::ve
 }
 
 void Game6::onLoad(){
-	auto pat = std::make_shared<GameObject>(std::make_unique<StaticRC>(getFile(asteroidIcons[2].path),  asteroidIcons[2].dim),
-											std::make_unique<CircleCC>(16, glm::vec2{16, 16}));
+	auto pat = std::make_shared<GameObject>(
+			std::make_unique<AnimRC>(getFile("/player.gif")),
+			std::make_unique<PolygonCC>(playerHitbox));
+
+	playerAnim = std::static_pointer_cast<AnimRC>(pat->getRenderComponent());
 	addObject(pat);
 	player.setObj(pat);
-	pat->setPos({ 80, 60 });
+	pat->setPos({ 70, 42 });
 
 
 	auto bg = std::make_shared<GameObject>(
@@ -68,6 +75,7 @@ void Game6::onRender(Sprite* canvas){
 
 void Game6::onStart(){
 	Input::getInstance()->addListener(this);
+	playerAnim->start();
 
 	nextLevel();
 }
@@ -125,9 +133,9 @@ void Game6::shootBullet(){
 											   std::make_unique<CircleCC>(2, glm::vec2 { 2, 2 }));
 	addObject(bullet);
 
-	glm::vec2 center = player.getObj()->getPos() + 16.0f;
+	glm::vec2 center = player.getObj()->getPos() + glm::vec2{8, 44/2};
 	glm::vec2 direction = { cos(M_PI * (player.getAngle() - 90.f) / 180.0), sin(M_PI * (player.getAngle() - 90.f) / 180.0) };
-	glm::vec2 bulletPos = direction * 16.0f + center;
+	glm::vec2 bulletPos = (direction * (float)(44/2)) + center;
 	glm::vec2 speed = direction * bulletSpeed;
 
 	bullet->setPos(bulletPos);
@@ -151,11 +159,11 @@ void Game6::shootBullet(){
 }
 
 void Game6::createAsteroid(Game6::AsteroidSize size, glm::vec2 pos){
+	std::shared_ptr<GameObject> asteroid;
+		asteroid = std::make_shared<GameObject>(
+				std::make_unique<StaticRC>(getFile(asteroidIcons[(uint8_t)size].path), asteroidIcons[(uint8_t)size].dim),
+				std::make_unique<CircleCC>(asteroidRadius[(uint8_t)size], glm::vec2 { asteroidRadius[(uint8_t)size], asteroidRadius[(uint8_t)size] }));
 
-	auto spriteRC = std::make_unique<StaticRC>(getFile(asteroidIcons[(uint8_t)size].path), asteroidIcons[(uint8_t)size].dim);
-	auto asteroid = std::make_shared<GameObject>(std::move(spriteRC),
-												 std::make_unique<CircleCC>(asteroidRadius[(uint8_t)size],
-																			glm::vec2 { asteroidRadius[(uint8_t)size], asteroidRadius[(uint8_t)size] }));
 	addObject(asteroid);
 	asteroid->setPos(pos);
 

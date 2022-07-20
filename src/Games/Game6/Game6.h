@@ -5,6 +5,7 @@
 #include <Input/InputListener.h>
 #include "../../GameEngine/Game.h"
 #include "Player.h"
+#include "../../GameEngine/Rendering/AnimRC.h"
 
 class Game6 : public Game, private InputListener {
 protected:
@@ -35,6 +36,14 @@ private:
 	float invincibilityTime = 0;
 	float invincibilityBlink = 0;
 	float invincibilityBlinkDuration = 0.2f;
+	std::shared_ptr<AnimRC> playerAnim;
+
+	static constexpr std::initializer_list<glm::vec2> playerHitbox = {
+			{ 2,  32 },
+			{ 0,  24 },
+			{ 9,  0 },
+			{ 18, 24 },
+			{ 16, 32 }};
 
 	constexpr static float invincibilityDuration = 2.0f;
 	//------------ Player end ------------
@@ -67,9 +76,9 @@ private:
 		const char* path;
 		PixelDim dim;
 	};
-	static constexpr ImageDesc asteroidIcons[] = {{"/asteroidS.raw", {15, 14}},
-												  {"/asteroidM.raw", {20, 21}},
-												  {"/asteroidL.raw", {31, 30}}};
+	static constexpr ImageDesc asteroidIcons[] = {{ "/asteroidS.raw", { 15, 14 }},
+												  { "/asteroidM.raw", { 20, 21 }},
+												  { "/asteroidL.raw", { 31, 30 }}};
 
 	struct Asteroid {
 		std::shared_ptr<GameObject> gObj;
