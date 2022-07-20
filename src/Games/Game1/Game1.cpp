@@ -10,7 +10,7 @@ Game1::Game1() : Game("/Games/Game1", {
 		{ "/Background.raw", {}, true },
 		{ "/EmptyCan.raw",   {}, true },
 		{ "/FullCan.raw",    {}, true },
-		{ "/Hearth.raw",     {}, true },
+		{ "/Heart.raw",     {}, true },
 		{ "/OilyDone.gif",   {}, false },
 		{ "/OilyIdle.gif",   {}, true },
 		{ "/OilyJump.gif",   {}, true }
@@ -146,6 +146,6 @@ void Game1::addPoints(int difference){
 void Game1::drawHearts(){
 	hearts->clear(TFT_TRANSPARENT);
 	for(int i = 0; i < tries; i++){
-		hearts->drawIcon(getFile("/Hearth.raw"),0 + i*8,0,7,6);
+		hearts->drawIcon(getFile("/Heart.raw"),0 + i*8,0,7,6);
 	}
 }
