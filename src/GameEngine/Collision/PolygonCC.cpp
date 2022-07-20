@@ -2,7 +2,7 @@
 #include <Arduino.h>
 
 PolygonCC::PolygonCC(std::initializer_list<glm::vec2> points) : CollisionComponent(CollisionType::Polygon), points(points),
-																convex(checkConvexity(this->points)){
+																convex(checkConvexity(this->points)), center(checkPolyCenter(points)){
 }
 
 bool PolygonCC::checkConvexity(const std::vector<glm::vec2>& polygon){
@@ -41,4 +41,22 @@ const std::vector<glm::vec2>& PolygonCC::getPoints() const{
 
 bool PolygonCC::isConvex() const{
 	return convex;
+}
+
+glm::vec2 PolygonCC::checkPolyCenter(const std::vector<glm::vec2>& points) {
+	float left = 0, right = 0, top = 0, bot = 0;
+
+	//get leftmost, rightmost, topmost, bottommost points
+	for(const auto& point : points){
+		if(point.x < left) left = point.x;
+		if(point.x > right) right = point.x;
+		if(point.y < top) top = point.y;
+		if(point.y > bot) bot = point.y;
+	}
+
+	return {(right - left) / 2, (bot - top) / 2};
+}
+
+const glm::vec2& PolygonCC::getCenter() const{
+	return center;
 }
