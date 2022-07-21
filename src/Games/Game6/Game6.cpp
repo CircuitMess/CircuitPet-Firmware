@@ -12,6 +12,7 @@ constexpr std::array<float, 3> Game6::asteroidSpeed;
 constexpr std::array<float, 3> Game6::asteroidRadius;
 constexpr Game6::ImageDesc Game6::asteroidIcons[];
 constexpr std::initializer_list<glm::vec2> Game6::playerHitbox;
+constexpr glm::vec2 Game6::startPosition;
 
 Game6::Game6() : wrapWalls({ .top =  { nullptr, std::make_unique<RectCC>(glm::vec2 { wrapWallsSize.x, 100 }) },
 							 .bot =  { nullptr, std::make_unique<RectCC>(glm::vec2 { wrapWallsSize.x, 100 }) },
@@ -23,7 +24,8 @@ Game6::Game6() : wrapWalls({ .top =  { nullptr, std::make_unique<RectCC>(glm::ve
 						 { asteroidIcons[0].path, {}, true },
 						 { asteroidIcons[1].path, {}, true },
 						 { asteroidIcons[2].path, {}, true },
-						 { "/player.gif", {}, true }
+						 { "/player.gif", {}, true },
+						 { "/explosion.gif", {}, true }
 				 }){
 
 	wrapWalls.top.setPos(glm::vec2 { 0, -100 } - (2 * asteroidRadius[(uint8_t)AsteroidSize::Large] + 1));
@@ -40,7 +42,7 @@ void Game6::onLoad(){
 	playerAnim = std::static_pointer_cast<AnimRC>(pat->getRenderComponent());
 	addObject(pat);
 	player.setObj(pat);
-	pat->setPos({ 70, 42 });
+	pat->setPos({startPosition.x, 0});
 
 
 	auto bg = std::make_shared<GameObject>(
@@ -52,20 +54,72 @@ void Game6::onLoad(){
 }
 
 void Game6::onLoop(float deltaTime){
+	switch(state){
+		case Intro:{
+			introTimer += deltaTime;
+			float progress = introTimer / introTime;
 
-	if(leftHold && !rightHold){
-		player.leftTurn(deltaTime);
-	}else if(rightHold && !leftHold){
-		player.rightTurn(deltaTime);
-	}
+			if(progress >= 1.f){
+				player.getObj()->setPos(startPosition);
+				state = Running;
+				nextLevel();
+			}
+			progress = sin((progress * PI) / 2); //easing function
+			float y = 128 - progress * (128 - startPosition.y);
 
-	updateInvincibility(deltaTime);
-	updateBullets(deltaTime);
-	updateAsteroids(deltaTime);
+			player.getObj()->setPos({ startPosition.x, y });
+			break;
+		}
+
+		case Running:
+			if(leftHold && !rightHold){
+				player.leftTurn(deltaTime);
+			}else if(rightHold && !leftHold){
+				player.rightTurn(deltaTime);
+			}
+
+			updateInvincibility(deltaTime);
+			updateBullets(deltaTime);
+			updateAsteroids(deltaTime);
 
 
-	if(asteroidPool.empty()){
-		nextLevel();
+			if(asteroidPool.empty()){
+				if(level == 4){
+					state = Win;
+					Input::getInstance()->removeListener(this);
+					return;
+				}
+				nextLevel();
+			}
+			break;
+
+		case DeathAnim:
+			updateAsteroids(deltaTime);
+			updateBullets(deltaTime);
+			break;
+
+		case DeathPause:
+			updateAsteroids(deltaTime);
+			updateBullets(deltaTime);
+
+			deathTimer+=deltaTime;
+			if(deathTimer >= deathPauseTime){
+				pop();
+			}
+			break;
+
+		case Win:
+			updateBullets(deltaTime);
+			glm::vec2 direction = { cos(M_PI * (player.getAngle() - 90.f) / 180.0), sin(M_PI * (player.getAngle() - 90.f) / 180.0) };
+
+			winTimer += deltaTime;
+			if(winTimer > 1.f){
+				player.getObj()->setPos(player.getObj()->getPos() + direction * winAcceleration * (float)pow(winTimer - 1.0f, 2));
+			}
+			if(winTimer >= winTime){
+				pop();
+			}
+			break;
 	}
 }
 
@@ -77,11 +131,11 @@ void Game6::onStart(){
 	Input::getInstance()->addListener(this);
 	playerAnim->start();
 
-	nextLevel();
 }
 
 void Game6::onStop(){
 	Input::getInstance()->removeListener(this);
+	playerAnim->stop();
 }
 
 void Game6::buttonPressed(uint i){
@@ -260,6 +314,7 @@ void Game6::playerHit(){
 	life--;
 	if(life == 0){
 		gameOver();
+		return;
 	}
 	invincible = true;
 }
@@ -308,7 +363,17 @@ void Game6::spawnRandomAsteroid(){
 }
 
 void Game6::gameOver(){
-	//play anim
-//	pop();
+	Input::getInstance()->removeListener(this);
 
+	for(auto& asteroid : asteroidPool){
+		collision.removePair(*asteroid.gObj, *player.getObj());
+	}
+
+	state = DeathAnim;
+	playerAnim->setAnim(getFile("/explosion.gif"));
+	player.getObj()->setPos(player.getObj()->getPos() - glm::vec2{23, 11.5});
+	playerAnim->setLoopDoneCallback([this](uint32_t){
+		state = DeathPause;
+		playerAnim->stop();
+	});
 }

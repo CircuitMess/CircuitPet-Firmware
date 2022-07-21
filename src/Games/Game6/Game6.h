@@ -20,6 +20,20 @@ protected:
 	void onRender(Sprite* canvas) override;
 
 private:
+	enum {
+		Intro, Running, DeathAnim, DeathPause, Win
+	} state = Intro;
+
+	float introTimer = 0;
+	static constexpr float introTime = 1.5f;
+	float deathTimer = 0;
+	static constexpr float deathPauseTime = 3.f;
+	float winTimer = 0;
+	static constexpr float winTime = 3.f;
+	static constexpr float winAcceleration = 40.f;
+
+	static constexpr glm::vec2 startPosition = { 70, 42 };
+
 	uint8_t level = 0;
 	void nextLevel();
 	void gameOver();
