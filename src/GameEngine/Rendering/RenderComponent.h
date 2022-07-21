@@ -10,6 +10,7 @@ class RenderComponent {
 	friend RenderSystem;
 
 public:
+	virtual ~RenderComponent() = default;
 	int8_t getLayer() const;
 	void setLayer(int8_t layer);
 
@@ -17,7 +18,7 @@ public:
 	void setVisible(bool visible);
 
 protected:
-	virtual void push(Sprite* parent, PixelDim pos) const = 0;
+	virtual void push(Sprite* parent, PixelDim pos, float rot) const = 0;
 
 private:
 	bool visible = true;

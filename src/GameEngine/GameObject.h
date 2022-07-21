@@ -10,8 +10,12 @@ class GameObject {
 public:
 	GameObject(std::unique_ptr<RenderComponent> rc, std::unique_ptr<CollisionComponent> cc);
 
+	virtual ~GameObject() = default;
 	glm::vec2 getPos() const;
 	void setPos(glm::vec2 pos);
+
+	float getRot() const;
+	void setRot(float rot);
 
 	//TODO - razraditi ovo i implementirati
 	void clone();
@@ -21,6 +25,7 @@ public:
 
 private:
 	glm::vec2 pos = { 0, 0 };
+	float rot = 0;
 	std::shared_ptr<RenderComponent> renderComponent;
 	std::shared_ptr<CollisionComponent> collisionComponent;
 
