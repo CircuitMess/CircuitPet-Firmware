@@ -90,7 +90,7 @@ void CollisionSystem::removePair(const GameObject& first, const GameObject& seco
 	auto it = remove_if(addedPairs.begin(), addedPairs.end(), [&first, &second](const Pair& pair) -> bool {
 		return (pair.first == &first && pair.second == &second) || (pair.first == &second && pair.second == &first);
 	});
-	addedPairs.erase(it, pairs.end());
+	addedPairs.erase(it, addedPairs.end());
 }
 
 void CollisionSystem::removeObject(const GameObject& GO){
