@@ -20,6 +20,9 @@ protected:
 	void onRender(Sprite* canvas) override;
 
 private:
+	std::shared_ptr<Sprite> levelSprite;
+	std::shared_ptr<GameObject> hearts[3];
+
 	enum {
 		Intro, Running, DeathAnim, DeathPause, Win
 	} state = Intro;
@@ -74,7 +77,7 @@ private:
 	};
 
 	constexpr static float bulletSpeed = 80.0f;
-	constexpr static uint8_t maxBullets = 4;
+	constexpr static uint8_t maxBullets = 3;
 
 	std::vector<Bullet> bulletPool;
 	void updateBullets(float deltaTime);

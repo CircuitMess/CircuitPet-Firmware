@@ -25,7 +25,8 @@ Game6::Game6() : wrapWalls({ .top =  { nullptr, std::make_unique<RectCC>(glm::ve
 						 { asteroidIcons[1].path, {}, true },
 						 { asteroidIcons[2].path, {}, true },
 						 { "/player.gif", {}, true },
-						 { "/explosion.gif", {}, true }
+						 { "/explosion.gif", {}, true },
+						 { "/heart.raw", {}, true }
 				 }){
 
 	wrapWalls.top.setPos(glm::vec2 { 0, -100 } - (2 * asteroidRadius[(uint8_t)AsteroidSize::Large] + 1));
@@ -51,6 +52,20 @@ void Game6::onLoad(){
 	);
 	addObject(bg);
 	bg->getRenderComponent()->setLayer(-1);
+
+	for(uint8_t i = 0; i < 3; i++){
+		hearts[i] = std::make_shared<GameObject>(std::make_unique<StaticRC>(getFile("/heart.raw"), PixelDim{7, 6}), nullptr);
+		hearts[i]->setPos({2 + i*9, 3});
+		hearts[i]->getRenderComponent()->setLayer(1);
+		addObject(hearts[i]);
+		hearts[i]->getRenderComponent()->setVisible(false);
+	}
+
+	auto levelObj = std::make_shared<GameObject>(std::make_unique<SpriteRC>(PixelDim{ 50, 7}), nullptr);
+	levelObj->setPos({ 160 - 50 - 1, 2});
+	levelSprite = std::static_pointer_cast<SpriteRC>(levelObj->getRenderComponent())->getSprite();
+	levelSprite->clear(TFT_TRANSPARENT);
+	addObject(levelObj);
 }
 
 void Game6::onLoop(float deltaTime){
@@ -61,6 +76,9 @@ void Game6::onLoop(float deltaTime){
 
 			if(progress >= 1.f){
 				player.getObj()->setPos(startPosition);
+				for(auto& heart : hearts){
+					heart->getRenderComponent()->setVisible(true);
+				}
 				state = Running;
 				nextLevel();
 			}
@@ -312,6 +330,7 @@ void Game6::updateInvincibility(float delta){
 
 void Game6::playerHit(){
 	life--;
+	hearts[life]->getRenderComponent()->setVisible(false);
 	if(life == 0){
 		gameOver();
 		return;
@@ -321,6 +340,11 @@ void Game6::playerHit(){
 
 void Game6::nextLevel(){
 	level++;
+	levelSprite->clear(TFT_TRANSPARENT);
+	levelSprite->setTextColor(TFT_WHITE);
+	levelSprite->setCursor(0, 0);
+	levelSprite->printf("Level: %d", level);
+
 
 	for(uint8_t i = 0; i < level; i++){
 		spawnRandomAsteroid();
