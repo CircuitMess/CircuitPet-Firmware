@@ -22,6 +22,7 @@ private:
 	void buttonPressed(uint i) override;
 	void addTemplate(std::string file, PixelDim dim, int value);
 	void spawnRandom();
+	void drawHearts();
 
 	struct Item{
 		std::shared_ptr<GameObject> go;
@@ -36,15 +37,16 @@ private:
 
 	void spawnItem(Template temp);
 	void collisionHandler(Item item);
-
 	int hugerMeter = 200;
+
 	int lives = 3;
 	const int speedMin = 30;
 	const int speedMax = 50;
 	const float spawnRate = 1.3f;
 	float timeToSpawn = 0.0f;
-
 	Duck* duck;
+
+	std::shared_ptr<Sprite> hearts;
 	std::shared_ptr<GameObject> bg;
 	std::shared_ptr<GameObject> collectorBot;
 	std::set<std::pair<std::shared_ptr<GameObject>, float>> movingObjects;
