@@ -24,7 +24,7 @@ void Duck::loop(float deltaTime){
 	if(eating) return;
 	float moveX = deltaTime*velocity*speed;
 	moveX += go->getPos().x;
-	if(moveX < - width/4 || moveX > 160 - (width*3)/4) return;
+	if(moveX < 10 - width/4 || moveX > 160 - (width*3)/4) return;
 	go->setPos({moveX, go->getPos().y});
 }
 

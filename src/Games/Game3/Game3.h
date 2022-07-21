@@ -23,6 +23,7 @@ private:
 	void addTemplate(std::string file, PixelDim dim, int value);
 	void spawnRandom();
 	void drawHearts();
+	void drawBar();
 
 	struct Item{
 		std::shared_ptr<GameObject> go;
@@ -37,8 +38,9 @@ private:
 
 	void spawnItem(Template temp);
 	void collisionHandler(Item item);
-	int hugerMeter = 200;
 
+	const int hugerMeterMax = 200;
+	int hugerMeter = 0;
 	int lives = 3;
 	const int speedMin = 30;
 	const int speedMax = 50;
@@ -47,6 +49,7 @@ private:
 	Duck* duck;
 
 	std::shared_ptr<Sprite> hearts;
+	std::shared_ptr<Sprite> hungerBar;
 	std::shared_ptr<GameObject> bg;
 	std::shared_ptr<GameObject> collectorBot;
 	std::set<std::pair<std::shared_ptr<GameObject>, float>> movingObjects;
