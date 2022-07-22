@@ -3,6 +3,7 @@
 #include "../GameEngine/Collision/RectCC.h"
 #include "../GameEngine/Rendering/SpriteRC.h"
 #include "../GameEngine/Rendering/StaticRC.h"
+#include <Util/GIF.h>
 
 constexpr const char* Game5::barsIcons[3];
 constexpr const char* Game5::circlesIcons[3];
@@ -10,6 +11,7 @@ constexpr const char* Game5::circlesIconsPressed[3];
 constexpr uint16_t Game5::barsX[3];
 constexpr uint16_t Game5::circlesX[3];
 constexpr const char* Game5::notesIcons[3];
+constexpr const char* Game5::danceGIFs[4];
 
 std::map<uint, uint8_t> btnBarMap = {{ BTN_LEFT,  0 },
 									 { BTN_RIGHT, 1 },
@@ -28,14 +30,24 @@ Game5::Game5() : Game("/Games/5", {
 		{ notesIcons[0],          {}, true },
 		{ notesIcons[1],          {}, true },
 		{ notesIcons[2],          {}, true },
-		{ "/Pat1.gif",            {}, true }}),
+		{ "/bg.raw",          {}, true },
+		{ danceGIFs[0],          {}, false },
+		{ danceGIFs[1],          {}, false },
+		{ danceGIFs[2],          {}, false },
+		{ danceGIFs[3],          {}, false },
+		{ "/fail.gif",            {}, false },
+		{ "/idle.gif",            {}, true },
+		{ "/win.gif",            {}, false },
+		{ "/starFull.raw",            {}, true },
+		{ "/starEmpty.raw",            {}, true },
+		{ "/heart.raw",            {}, true }}),
 				 bottomWall(nullptr, std::make_unique<RectCC>(glm::vec2 { 160, 20 })),
 				 scoreBar(std::make_unique<SpriteRC>(PixelDim { 7, 110 }), nullptr){
 
 	bottomWall.setPos({ 0, 138 });
 	addObject(std::make_shared<GameObject>(bottomWall));
 
-	scoreBar.setPos({ 143, 14 });
+	scoreBar.setPos({ 146, 14 });
 	scoreBarSprite = std::static_pointer_cast<SpriteRC>(scoreBar.getRenderComponent())->getSprite();
 	scoreBarSprite->clear(TFT_BLACK);
 	scoreBarSprite->drawRect(0, 0, scoreBarSprite->width(), scoreBarSprite->height(), TFT_WHITE);
@@ -52,9 +64,29 @@ void Game5::onStop(){
 }
 
 void Game5::onLoad(){
+	auto bg = std::make_shared<GameObject>(
+			std::make_unique<StaticRC>(getFile("/bg.raw"), PixelDim{160, 128}), nullptr);
+	bg->getRenderComponent()->setLayer(-1);
+	addObject(bg);
+
+	scoreStar = std::make_shared<GameObject>(
+			std::make_unique<StaticRC>(getFile("/starEmpty.raw"), PixelDim{17, 13}), nullptr);
+	scoreStar->setPos({141, 4});
+	scoreStar->getRenderComponent()->setLayer(1);
+	addObject(scoreStar);
+
+	for(uint8_t i = 0; i < 3; i++){
+		hearts[i] = std::make_shared<GameObject>(std::make_unique<StaticRC>(getFile("/heart.raw"), PixelDim{7, 6}), nullptr);
+		hearts[i]->setPos({104 + i*9, 5});
+		hearts[i]->getRenderComponent()->setLayer(1);
+		addObject(hearts[i]);
+		hearts[i]->getRenderComponent()->setVisible(true);
+	}
+
+
 	for(uint8_t i = 0; i < 3; ++i){
 		bars[i] = std::make_shared<GameObject>(std::make_unique<StaticRC>(getFile(barsIcons[i]), PixelDim { 14, 115 }), nullptr);
-		bars[i]->setPos({ barsX[i], 0 });
+		bars[i]->setPos({ barsX[i], barsY });
 		addObject(bars[i]);
 
 		circles[i] = std::make_shared<GameObject>(std::make_unique<StaticRC>(getFile(circlesIcons[i]), PixelDim { 18, 18 }),
@@ -64,8 +96,8 @@ void Game5::onLoad(){
 		addObject(circles[i]);
 	}
 
-	duck = std::make_shared<GameObject>(std::make_unique<AnimRC>(getFile("/Pat1.gif")), nullptr);
-	duck->setPos({ 80, 20 });
+	duck = std::make_shared<GameObject>(std::make_unique<AnimRC>(getFile("/idle.gif")), nullptr);
+	duck->setPos({ 65, 50 });
 	duckRC = std::static_pointer_cast<AnimRC>(duck->getRenderComponent());
 	addObject(duck);
 }
@@ -143,8 +175,8 @@ void Game5::createNote(uint8_t track){
 	note->getRenderComponent()->setLayer(2);
 	note->setPos({ barsX[track] + 3, -9 });
 
-	collision.addPair(*note, bottomWall, [this, note, track](){
-		removeObject(note);
+	collision.addPair(*note, bottomWall, [this, track](){
+		removeObject(notes[track].front());
 		notes[track].pop_front();
 	});
 
@@ -170,18 +202,24 @@ void Game5::noteHit(uint8_t track){
 			return;
 		}
 
-		//TODO - change good note/ bad note anim
-		duckRC->setAnim(getFile("/Pat1.gif"));
+		uint8_t i = rand() % 4;
+		duckRC->setAnim(getFile(danceGIFs[i]));
 
 	}else{
 		life--;
+		hearts[life]->getRenderComponent()->setVisible(false);
 		if(life <= 0){
 			gameDone(false);
 			return;
 		}
 
-		duckRC->setAnim(getFile("/Pat1.gif"));
+		duckRC->setAnim(getFile("/fail.gif"));
 	}
+
+	duckRC->setLoopMode(GIF::LoopMode::Infinite);
+	duckRC->setLoopDoneCallback([&](uint32_t){
+		duckRC->setAnim((getFile("/idle.gif")));
+	});
 }
 
 void Game5::adjustTempo(){
@@ -195,15 +233,16 @@ void Game5::gameDone(bool success){
 		track.clear();
 	}
 
-	//TODO - play fail or win anim on duck object
 	if(success){
-		duckRC->setAnim(getFile("/Pat1.gif"));
+		duckRC->setAnim(getFile("/win.gif"));
+		std::static_pointer_cast<StaticRC>(scoreStar->getRenderComponent())->setFile(getFile("/starFull.raw"));
 	}else{
-		duckRC->setAnim(getFile("/Pat1.gif"));
+		duckRC->setAnim(getFile("/fail.gif"));
 	}
 
 	state = DoneAnim;
 
+	duckRC->setLoopMode(GIF::LoopMode::Single);
 	duckRC->setLoopDoneCallback([this](uint32_t){
 		state = DonePause;
 		gameDoneTimer = 0;

@@ -30,13 +30,16 @@ private:
 	GameObject bottomWall;
 	GameObject scoreBar;
 	std::shared_ptr<Sprite> scoreBarSprite;
+	std::shared_ptr<GameObject> hearts[3];
+
+	ObjPtr scoreStar;
 	ObjPtr bars[3];
 	ObjPtr circles[3];
 	ObjPtr duck;
 	std::shared_ptr<AnimRC> duckRC;
 
 	void gameDone(bool success);
-	constexpr static float gameDonePause = 1.0f;
+	constexpr static float gameDonePause = 1.5f;
 	float gameDoneTimer = 0;
 
 	uint8_t life = 3;
@@ -48,13 +51,13 @@ private:
 	constexpr static float defaultBeatInterval = 1.0f;
 	float beatInterval = defaultBeatInterval;
 
-
+	constexpr static int16_t barsY = -5;
 	constexpr static uint16_t barsX[3] = {8, 26, 44};
 	constexpr static const char* barsIcons[3] = {"/BarP.raw", "/BarY.raw", "/BarB.raw"};
 
 
 	bool circlesPressed[3] = {false, false, false};
-	constexpr static uint16_t circlesY = 109;
+	constexpr static uint16_t circlesY = 104;
 	constexpr static uint16_t circlesX[3] = {6, 24, 42};
 	constexpr static const char* circlesIcons[3] = {"/circ_p1.raw", "/circ_y1.raw", "/circ_b1.raw"};
 	constexpr static const char* circlesIconsPressed[3] = {"/circ_p2.raw", "/circ_y2.raw", "/circ_b2.raw"};
@@ -62,6 +65,8 @@ private:
 
 	std::deque<ObjPtr> notes[3];
 	constexpr static const char* notesIcons[3] = {"/note1.raw", "/note2.raw", "/note3.raw"};
+	constexpr static const char* danceGIFs[4] = {"/dance1.gif", "/dance2.gif", "/dance3.gif", "/dance4.gif"};
+
 	constexpr static float notePerfectY = circlesY + 5;
 	constexpr static float noteTolerance = 8.0f;
 	void updateNotes(float delta);
