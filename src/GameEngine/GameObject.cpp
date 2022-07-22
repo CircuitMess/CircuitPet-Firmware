@@ -20,4 +20,12 @@ std::shared_ptr<CollisionComponent> GameObject::getCollisionComponent() const{
 	return collisionComponent;
 }
 
+float GameObject::getRot() const{
+	return rot;
+}
+
+void GameObject::setRot(float rot){
+	GameObject::rot = rot;
+}
+
 

@@ -27,17 +27,20 @@ public:
 	 */
 	void setLoopDoneCallback(std::function<void(uint32_t)> cb);
 
+	void setLoopMode(GIF::LoopMode loopMode);
+
 	void start();
 	void stop();
+	void reset();
 
 protected:
-	void push(Sprite* parent, PixelDim pos) const override;
+	void push(Sprite* parent, PixelDim pos, float rot) const override;
 
 private:
 	GIFAnimatedSprite gif;
 	bool playing = false;
 
-	std::function<void(uint32_t loopCount)> cb;
+	GIF::LoopMode loopMode = GIF::Infinite;
 };
 
 
