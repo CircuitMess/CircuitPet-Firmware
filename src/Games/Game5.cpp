@@ -119,21 +119,22 @@ void Game5::onLoop(float deltaTime){
 
 			updateNotes(deltaTime);
 
-			if(fail){
+			for(uint8_t i = 0; i < 3; i++){
+				if(fail[i]){
+					failTime[i] += deltaTime;
 
-				failTime += deltaTime;
+					auto rc = std::static_pointer_cast<StaticRC>(bars[i]->getRenderComponent());
+					if((int)(failTime[i] / failBlinkDuration) % 2 == 0){
+						rc->setFile(getFile(barsIcons[3]));
+					}else{
+						rc->setFile(getFile(barsIcons[i]));
+					}
 
-				auto rc = std::static_pointer_cast<StaticRC>(bars[failedTrack]->getRenderComponent());
-				if((int)(failTime / failBlinkDuration) % 2 == 0){
-					rc->setFile(getFile(barsIcons[3]));
-				}else{
-					rc->setFile(getFile(barsIcons[failedTrack]));
-				}
-
-				if(failTime >= failDuration){
-					failTime = 0;
-					fail = false;
-					rc->setFile(getFile(barsIcons[failedTrack]));
+					if(failTime[i] >= failDuration){
+						failTime[i] = 0;
+						fail[i] = false;
+						rc->setFile(getFile(barsIcons[i]));
+					}
 				}
 			}
 			break;
@@ -237,9 +238,8 @@ void Game5::noteHit(uint8_t track){
 			return;
 		}
 
-		fail = true;
-		failedTrack = track;
-		failTime = 0;
+		fail[track] = true;
+		failTime[track] = 0;
 	}
 }
 

@@ -28,9 +28,9 @@ private:
 	} state = Running;
 
 	GameObject bottomWall;
-	GameObject scoreBar;
+	ObjPtr scoreBar;
 	std::shared_ptr<Sprite> scoreBarSprite;
-	std::shared_ptr<GameObject> hearts[3];
+	ObjPtr hearts[3];
 
 	ObjPtr scoreStar;
 	ObjPtr bars[3];
@@ -52,10 +52,9 @@ private:
 	float beatInterval = defaultBeatInterval;
 
 	constexpr static float failDuration = 0.8f;
-	float failTime = 0;
-	float failBlinkDuration = 0.2f;
-	bool fail = false;
-	uint8_t failedTrack = 0;
+	float failTime[3] = {0};
+	constexpr static float failBlinkDuration = 0.2f;
+	bool fail[3] = {0};
 
 	constexpr static int16_t barsY = -5;
 	constexpr static uint16_t barsX[3] = {8, 26, 44};
