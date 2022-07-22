@@ -5,7 +5,7 @@
 #include "../GameEngine/Rendering/StaticRC.h"
 #include <Util/GIF.h>
 
-constexpr const char* Game5::barsIcons[3];
+constexpr const char* Game5::barsIcons[4];
 constexpr const char* Game5::circlesIcons[3];
 constexpr const char* Game5::circlesIconsPressed[3];
 constexpr uint16_t Game5::barsX[3];
@@ -21,6 +21,7 @@ Game5::Game5() : Game("/Games/5", {
 		{ barsIcons[0],           {}, true },
 		{ barsIcons[1],           {}, true },
 		{ barsIcons[2],           {}, true },
+		{ barsIcons[3],           {}, true },
 		{ circlesIcons[0],        {}, true },
 		{ circlesIcons[1],        {}, true },
 		{ circlesIcons[2],        {}, true },
@@ -117,6 +118,24 @@ void Game5::onLoop(float deltaTime){
 			}
 
 			updateNotes(deltaTime);
+
+			if(fail){
+
+				failTime += deltaTime;
+
+				auto rc = std::static_pointer_cast<StaticRC>(bars[failedTrack]->getRenderComponent());
+				if((int)(failTime / failBlinkDuration) % 2 == 0){
+					rc->setFile(getFile(barsIcons[3]));
+				}else{
+					rc->setFile(getFile(barsIcons[failedTrack]));
+				}
+
+				if(failTime >= failDuration){
+					failTime = 0;
+					fail = false;
+					rc->setFile(getFile(barsIcons[failedTrack]));
+				}
+			}
 			break;
 
 		case DonePause:
@@ -205,6 +224,11 @@ void Game5::noteHit(uint8_t track){
 		uint8_t i = rand() % 4;
 		duckRC->setAnim(getFile(danceGIFs[i]));
 
+		duckRC->setLoopMode(GIF::LoopMode::Infinite);
+		duckRC->setLoopDoneCallback([&](uint32_t){
+			duckRC->setAnim((getFile("/idle.gif")));
+		});
+
 	}else{
 		life--;
 		hearts[life]->getRenderComponent()->setVisible(false);
@@ -213,13 +237,10 @@ void Game5::noteHit(uint8_t track){
 			return;
 		}
 
-		duckRC->setAnim(getFile("/fail.gif"));
+		fail = true;
+		failedTrack = track;
+		failTime = 0;
 	}
-
-	duckRC->setLoopMode(GIF::LoopMode::Infinite);
-	duckRC->setLoopDoneCallback([&](uint32_t){
-		duckRC->setAnim((getFile("/idle.gif")));
-	});
 }
 
 void Game5::adjustTempo(){

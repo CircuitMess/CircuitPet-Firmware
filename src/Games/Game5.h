@@ -51,10 +51,15 @@ private:
 	constexpr static float defaultBeatInterval = 1.0f;
 	float beatInterval = defaultBeatInterval;
 
+	constexpr static float failDuration = 0.8f;
+	float failTime = 0;
+	float failBlinkDuration = 0.2f;
+	bool fail = false;
+	uint8_t failedTrack = 0;
+
 	constexpr static int16_t barsY = -5;
 	constexpr static uint16_t barsX[3] = {8, 26, 44};
-	constexpr static const char* barsIcons[3] = {"/BarP.raw", "/BarY.raw", "/BarB.raw"};
-
+	constexpr static const char* barsIcons[4] = {"/BarP.raw", "/BarY.raw", "/BarB.raw", "/BarR.raw"};
 
 	bool circlesPressed[3] = {false, false, false};
 	constexpr static uint16_t circlesY = 104;
