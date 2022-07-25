@@ -7,21 +7,27 @@
 #include "../../GameEngine/GameObject.h"
 #include "../../GameEngine/Rendering/AnimRC.h"
 #include "../../GameEngine/Collision/CircleCC.h"
+#include <Input/InputListener.h>
 
 
 class Game4;
 
-class Duck {
+class Duck : private InputListener {
 public:
 	Duck(std::shared_ptr<GameObject> duckGO, Game4* game4);
+	~Duck();
 	void death();
-	void crouch();
 	void jump();
 	void walk();
 
 	std::shared_ptr<GameObject> getGameObject();
-	void setFiles(File walk, File down, File preJump, File midJump, File afterJump, File crouching);
+	void setFiles(File walk, File down, File preJump, File midJump, File afterJump, File ducking, File ducked, File unDucking);
 private:
+	Game4* game4;
+
+	void buttonPressed(uint i) override;
+	void buttonReleased(uint i) override;
+
 	std::shared_ptr<GameObject> gameObject;
 	std::shared_ptr<AnimRC> animRc;
 	std::shared_ptr<CircleCC> circleCc;
@@ -33,7 +39,9 @@ private:
 	File preJump;
 	File midJump;
 	File afterJump;
-	File crouching;
+	File ducking;
+	File ducked;
+	File unDucking;
 };
 
 

@@ -18,7 +18,9 @@ Game4::Game4() : Game("/Games/Game4", {
 		{ "/ObstacleUnder1.raw", {}, true },
 		{ "/ObstacleUnder2.raw", {}, true },
 		{ "/ObstacleUnder3.raw", {}, true },
-		{ "/DuckCrouch.gif",     {}, false },
+		{ "/DuckDucked.gif",     {}, false },
+		{ "/DuckDucking.gif",    {}, false },
+		{ "/DuckUnDucking.gif",  {}, false },
 		{ "/DuckPreJump.gif",    {}, false },
 		{ "/DuckMidJump.gif",    {}, false },
 		{ "/DuckAfterJump.gif",  {}, false },
@@ -73,7 +75,9 @@ void Game4::onLoad(){
 				   getFile("/DUckPreJump.gif"),
 				   getFile("/DuckMidJump.gif"),
 				   getFile("/DuckAfterJump.gif"),
-				   getFile("/DuckCrouch.gif"));
+				   getFile("/DuckDucking.gif"),
+				   getFile("/DuckDucked.gif"),
+				   getFile("/DuckUnDucking.gif"));
 }
 
 void Game4::onLoop(float deltaTime){
@@ -105,18 +109,10 @@ void Game4::buttonPressed(uint i){
 	if(i == BTN_BACK){
 		pop();
 	}
-	if(i == BTN_DOWN){
-		duck->crouch();
-	}
-	if(i == BTN_UP){
-		duck->jump();
-	}
 }
 
 void Game4::buttonReleased(uint i){
-	if(i == BTN_DOWN){
-		duck->walk();
-	}
+
 }
 
 void Game4::setupObstacles(){
