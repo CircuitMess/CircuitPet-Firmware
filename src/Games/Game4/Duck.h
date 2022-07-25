@@ -17,23 +17,27 @@ public:
 	Duck(std::shared_ptr<GameObject> duckGO, Game4* game4);
 	~Duck();
 	void death();
-	void jump();
-	void walk();
+	void update(float deltaTime);
 
 	std::shared_ptr<GameObject> getGameObject();
 	void setFiles(File walk, File down, File preJump, File midJump, File afterJump, File ducking, File ducked, File unDucking);
-private:
-	Game4* game4;
 
+private:
 	void buttonPressed(uint i) override;
 	void buttonReleased(uint i) override;
+	void walk();
 
+	Game4* game4;
 	std::shared_ptr<GameObject> gameObject;
 	std::shared_ptr<AnimRC> animRc;
 	std::shared_ptr<CircleCC> circleCc;
 
-	Game4* game4;
-
+	const int startPosY = 50;
+	float velocity;
+	float multiplier = 1.0f;
+	const float jumpVelocity = -45.0f;
+	const float gravity = -jumpVelocity/1.8f;
+	bool isJumping = false;
 	File walking;
 	File down;
 	File preJump;

@@ -63,7 +63,7 @@ void Game4::onLoad(){
 
 	auto duckGO = std::make_shared<GameObject>(
 			std::make_unique<AnimRC>(getFile("/DuckWalk.gif")),
-			std::make_unique<CircleCC>(12.0f, glm::vec2{ 20, 20 })
+			std::make_unique<CircleCC>(10.0f, glm::vec2{ 25, 20 })
 	);
 	addObject(duckGO);
 	duckGO->getRenderComponent()->setLayer(0);
@@ -72,7 +72,7 @@ void Game4::onLoad(){
 	duck = new Duck(duckGO, this);
 	duck->setFiles(getFile("/DuckWalk.gif"),
 				   getFile("/DuckDown.gif"),
-				   getFile("/DUckPreJump.gif"),
+				   getFile("/DuckPreJump.gif"),
 				   getFile("/DuckMidJump.gif"),
 				   getFile("/DuckAfterJump.gif"),
 				   getFile("/DuckDucking.gif"),
@@ -91,6 +91,7 @@ void Game4::onLoop(float deltaTime){
 		value -= spawnRate;
 		spawn();
 	}
+	duck->update(deltaTime);
 }
 
 void Game4::onStart(){

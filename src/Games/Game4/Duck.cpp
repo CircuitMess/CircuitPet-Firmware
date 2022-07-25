@@ -14,6 +14,63 @@ Duck::~Duck(){
 	Input::getInstance()->removeListener(this);
 }
 
+void Duck::update(float deltaTime){
+	if(!isJumping) return;
+	float y = gameObject->getPos().y;
+	y += velocity * deltaTime;
+	velocity += gravity * deltaTime * multiplier;
+	Serial.printf("y = %f\tvelocity = %f\tdeltaTime = %f\n", y, velocity, deltaTime);
+	gameObject->setPos({ 5, y });
+	if(y > startPosY){
+		gameObject->setPos({5,startPosY});
+		multiplier = 1.0f;
+		isJumping = false;
+		walk();
+	}
+}
+
+void Duck::buttonPressed(uint i){
+	if(i == BTN_DOWN){
+		if(isJumping){
+			multiplier = 10.0f;
+		}else{
+			animRc->setAnim(ducking);
+			animRc->setLoopDoneCallback([this](uint32_t){
+				animRc->setAnim(ducked);
+			});
+			circleCc->setOffset({ 30, 30 });
+		}
+	}
+	if(i == BTN_UP){
+		if(isJumping) return;
+		isJumping = true;
+		velocity = jumpVelocity;
+		walk();
+		animRc->setAnim(preJump);
+		animRc->setLoopDoneCallback([this](uint32_t){
+			animRc->setAnim(midJump);
+			//animRc->stop();
+
+		});
+	}
+}
+
+void Duck::buttonReleased(uint i){
+	if(i == BTN_DOWN){
+		if(isJumping) return;
+		walk();
+	}
+}
+
+void Duck::walk(){
+	animRc->start();
+	animRc->setAnim(unDucking);
+	animRc->setLoopDoneCallback([this](uint32_t){
+		animRc->setAnim(walking);
+	});
+	circleCc->setOffset({ 25, 20 });
+}
+
 void Duck::death(){
 	Input::getInstance()->removeListener(this);
 	animRc->setAnim(down);
@@ -21,37 +78,6 @@ void Duck::death(){
 		animRc->stop();
 		game4->pop();
 	});
-}
-
-void Duck::buttonPressed(uint i){
-	if(i == BTN_DOWN){
-		animRc->setAnim(ducking);
-		animRc->setLoopDoneCallback([this](uint32_t){
-			animRc->setAnim(ducked);
-		});
-		circleCc->setOffset({ 25, 30 });
-	}
-
-}
-
-void Duck::buttonReleased(uint i){
-	if(i == BTN_DOWN){
-		animRc->setAnim(unDucking);
-		animRc->setLoopDoneCallback([this](uint32_t){
-			animRc->setAnim(walking);
-		});
-		circleCc->setOffset({ 20, 20 });
-	}
-}
-
-void Duck::jump(){
-	circleCc->setOffset({20, 10});
-	animRc->setAnim(down);
-}
-
-void Duck::walk(){
-	circleCc->setOffset({20,20});
-	animRc->setAnim(walking);
 }
 
 std::shared_ptr<GameObject> Duck::getGameObject(){

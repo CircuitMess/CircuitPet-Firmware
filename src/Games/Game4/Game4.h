@@ -26,21 +26,20 @@ private:
 
 	void buttonPressed(uint i) override;
 	void buttonReleased(uint i) override;
-	void setupObstacles();
-	void spawn();
-
-
-	const int tileDim = 16;
-	const int topY = 128 - 32;
-	const int tilesPerArray = 5;
-	const float spawnRate = 4.0f;
-	float speed = 20.0f;
-	float value = 0.0f;
 
 	struct Obstacle{
 		File file;
 		PixelDim dim;
 	};
+	void setupObstacles();
+	void spawn();
+
+	const int tileDim = 16;
+	const int topY = 128 - 32;
+	const int tilesPerArray = 5;
+	const float spawnRate = 4.0f;
+	float speed = 30.0f;
+	float value = 0.0f;
 
 	std::shared_ptr<GameObject> leftWall;
 	std::shared_ptr<GameObject> bg;
