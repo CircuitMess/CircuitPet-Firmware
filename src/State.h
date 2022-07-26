@@ -13,7 +13,7 @@ public:
 	bool isStarted() const;
 
 	void push(State* parent);
-	void pop();
+	virtual void pop();
 
 protected:
 	virtual void onStart() = 0;
