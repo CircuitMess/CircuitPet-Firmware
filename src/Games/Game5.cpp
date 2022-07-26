@@ -43,16 +43,16 @@ Game5::Game5() : Game("/Games/5", {
 		{ "/starEmpty.raw",            {}, true },
 		{ "/heart.raw",            {}, true }}),
 				 bottomWall(nullptr, std::make_unique<RectCC>(glm::vec2 { 160, 20 })),
-				 scoreBar(std::make_unique<SpriteRC>(PixelDim { 7, 110 }), nullptr){
+				 scoreBar(std::make_shared<GameObject>(std::make_unique<SpriteRC>(PixelDim { 7, 110 }), nullptr)){
 
 	bottomWall.setPos({ 0, 138 });
 	addObject(std::make_shared<GameObject>(bottomWall));
 
-	scoreBar.setPos({ 146, 14 });
-	scoreBarSprite = std::static_pointer_cast<SpriteRC>(scoreBar.getRenderComponent())->getSprite();
+	scoreBar->setPos({ 146, 14 });
+	scoreBarSprite = std::static_pointer_cast<SpriteRC>(scoreBar->getRenderComponent())->getSprite();
 	scoreBarSprite->clear(TFT_BLACK);
 	scoreBarSprite->drawRect(0, 0, scoreBarSprite->width(), scoreBarSprite->height(), TFT_WHITE);
-	addObject(std::make_shared<GameObject>(scoreBar));
+	addObject(scoreBar);
 }
 
 void Game5::onStart(){
@@ -62,6 +62,7 @@ void Game5::onStart(){
 
 void Game5::onStop(){
 	Input::getInstance()->addListener(this);
+	duckRC->stop();
 }
 
 void Game5::onLoad(){
@@ -156,6 +157,11 @@ void Game5::onRender(Sprite* canvas){
 }
 
 void Game5::buttonPressed(uint i){
+	if(i == BTN_BACK){
+		pop();
+		return;
+	}
+
 	if(!btnBarMap.count(i)) return;
 
 	uint8_t circleIndex = btnBarMap[i];
