@@ -30,6 +30,7 @@ private:
 	struct Obstacle{
 		File file;
 		PixelDim dim;
+		std::initializer_list<glm::vec2> points;
 	};
 	void setupObstacles();
 	void spawn();

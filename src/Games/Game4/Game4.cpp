@@ -2,7 +2,7 @@
 #include "Game4.h"
 #include "../../GameEngine/Rendering/StaticRC.h"
 #include "../../GameEngine/Collision/RectCC.h"
-#include "../../GameEngine/Collision/CircleCC.h"
+#include "../../GameEngine/Collision/PolygonCC.h"
 #include <Input/Input.h>
 
 Game4::Game4() : Game("/Games/Game4", {
@@ -113,14 +113,14 @@ void Game4::buttonReleased(uint i){
 }
 
 void Game4::setupObstacles(){
-	obstacleOver.push_back({ getFile("/ObstacleOver1.raw"), { 40, 31 }});
-	obstacleOver.push_back({ getFile("/ObstacleOver2.raw"), { 24, 19 }});
-	obstacleOver.push_back({ getFile("/ObstacleOver3.raw"), { 22, 19 }});
-	obstacleOver.push_back({ getFile("/ObstacleOver4.raw"), { 33, 19 }});
+	obstacleOver.push_back({ getFile("/ObstacleOver1.raw"), { 40, 31 }, {{ 0, 30 }, { 25, 0 }, { 39, 0 }}});
+	obstacleOver.push_back({ getFile("/ObstacleOver2.raw"), { 24, 19 }, {{ 3, 18 }, { 20, 0 }, { 21, 18 }}});
+	obstacleOver.push_back({ getFile("/ObstacleOver3.raw"), { 22, 19 }, {}});
+	obstacleOver.push_back({ getFile("/ObstacleOver4.raw"), { 33, 19 }, {}});
 
-	obstacleUnder.push_back({ getFile("/ObstacleUnder1.raw"), { 36, 27 }});
-	obstacleUnder.push_back({ getFile("/ObstacleUnder2.raw"), { 40, 30 }});
-	obstacleUnder.push_back({ getFile("/ObstacleUnder3.raw"), { 19, 19 }});
+	obstacleUnder.push_back({ getFile("/ObstacleUnder1.raw"), { 36, 27 }, {{ 1, 17 }, { 11, 8 }, { 22, 8 }, { 35, 17 }, { 22, 26 }, { 11, 26 }}});
+	obstacleUnder.push_back({ getFile("/ObstacleUnder2.raw"), { 40, 30 }, {{ 0, 20 }, { 9, 11 }, { 27, 20 }, { 9, 29 } }});
+	obstacleUnder.push_back({ getFile("/ObstacleUnder3.raw"), { 19, 19 }, {}});
 }
 
 void Game4::spawn(){
@@ -137,13 +137,22 @@ void Game4::spawn(){
 		posY = topY - obstacle.dim.y;
 	}
 
-	auto gObj = std::make_shared<GameObject>(
-			std::make_unique<StaticRC>(obstacle.file, obstacle.dim),
-			std::make_unique<RectCC>(obstacle.dim)
-	);
+	std::shared_ptr<GameObject> gObj;
+	if(obstacle.points.size() >= 3){
+		gObj = std::make_shared<GameObject>(
+				std::make_unique<StaticRC>(obstacle.file, obstacle.dim),
+				std::make_unique<PolygonCC>(obstacle.points)
+		);
+	}else{
+		gObj = std::make_shared<GameObject>(
+				std::make_unique<StaticRC>(obstacle.file, obstacle.dim),
+				std::make_unique<RectCC>(obstacle.dim)
+		);
+	}
 	addObject(gObj);
 	gObj->setPos({ 160, posY });
 	gObj->getRenderComponent()->setLayer(1);
+
 	collision.addPair(*duck->getGameObject(), *gObj, [this, gObj](){
 		speed = 0.0f;
 		collision.removePair(*duck->getGameObject(), *gObj);
