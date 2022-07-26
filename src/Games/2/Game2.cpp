@@ -3,104 +3,229 @@
 #include "../../GameEngine/Rendering/AnimRC.h"
 #include "../../GameEngine/Collision/CircleCC.h"
 #include "../../GameEngine/Collision/RectCC.h"
+#include "../../GameEngine/Collision/PolygonCC.h"
 #include <Pins.hpp>
 #include <Input/Input.h>
+#include <glm/gtx/vector_angle.hpp>
 
-constexpr Game2::ImageDesc Game2::upObstacles[];
-constexpr Game2::ImageDesc Game2::downObstacles[];
+constexpr Game2::ObstacleDesc Game2::TopObstacles[];
+constexpr Game2::ObstacleDesc Game2::BotObstacles[];
 
 Game2::Game2() : Game("/Games/2", {
-		{ "/duck.gif", {}, true },
-		{ "/bg.raw",   {}, true },
-		{ upObstacles[0].path,   {}, true },
-		{ upObstacles[1].path,   {}, true },
-		{ downObstacles[0].path,   {}, true },
-		{ downObstacles[1].path,   {}, true },
-		{ downObstacles[2].path,   {}, true },
-		{ downObstacles[3].path,   {}, true },
-		{ downObstacles[4].path,   {}, true }}),
-		leftWall(nullptr, std::make_unique<RectCC>(glm::vec2 { 20, 128 })){
+		{ "/duck.gif",          {}, true },
+		{ "/bg.raw",            {}, true },
+		{ TopObstacles[0].path, {}, true },
+		{ TopObstacles[1].path, {}, true },
+		{ BotObstacles[0].path, {}, true },
+		{ BotObstacles[1].path, {}, true },
+		{ BotObstacles[2].path, {}, true },
+		{ BotObstacles[3].path, {}, true },
+		{ BotObstacles[4].path, {}, true }}){
 
-	leftWall.setPos({-(20 + 50), 0});
 }
 
 void Game2::onLoad(){
 	auto bg = std::make_shared<GameObject>(
-			std::make_unique<StaticRC>(getFile("/bg.raw"), PixelDim { 160, 128 }), nullptr);
+			std::make_unique<StaticRC>(getFile("/bg.raw"), PixelDim{ 160, 128 }),
+			nullptr
+	);
 	bg->getRenderComponent()->setLayer(-1);
 	addObject(bg);
 
-	duck = std::make_shared<GameObject>(std::make_unique<AnimRC>(getFile("/duck.gif")),
-										std::make_unique<CircleCC>(8, glm::vec2 { 7, 7 }));
-	duck->setPos({ startingX, startingY });
+
+	duck = std::make_shared<GameObject>(
+			std::make_unique<AnimRC>(getFile("/duck.gif")),
+			std::make_unique<CircleCC>(8, glm::vec2{ 7, 7 })
+	);
+
+	anim = std::static_pointer_cast<AnimRC>(duck->getRenderComponent());
+	anim->setLoopMode(GIF::Single);
+
 	addObject(duck);
-
-	collision.wallBot(*duck, [this](){
-		gameOver();
-	});
-}
-
-void Game2::onLoop(float deltaTime){
-	if(!firstPress) return;
-
-	updateDuck(deltaTime);
-	updateObstacles(deltaTime);
+	resetDuck();
 }
 
 void Game2::onStart(){
 	Input::getInstance()->addListener(this);
-	std::static_pointer_cast<AnimRC>(duck->getRenderComponent())->start();
+
+	anim->start();
 }
 
 void Game2::onStop(){
 	Input::getInstance()->removeListener(this);
-	std::static_pointer_cast<AnimRC>(duck->getRenderComponent())->stop();
+
+	anim->stop();
+	anim->reset();
 }
 
 void Game2::onRender(Sprite* canvas){
+	if(score == 0) return;
+
+	canvas->setTextSize(2);
+	canvas->setTextColor(TFT_WHITE);
+	canvas->setTextFont(0);
+	canvas->setCursor(0, 3);
+	canvas->printCenter(score);
 }
 
-void Game2::buttonPressed(uint i){
-	if(i == BTN_B){
-		pop();
-	}else if(i == BTN_LEFT){
-		if(!firstPress){
-			firstPress = true;
-		}
+void Game2::onLoop(float deltaTime){
+	updateDuck(deltaTime);
+	updateObstacles(deltaTime);
 
-		if(duckSpeed < 0){
-			duckSpeed = max(duckSpeed - flapSpeed, -3 * flapSpeed);
-		}else{
-			duckSpeed = -flapSpeed;
+	if(state == Play){
+		if(obstacles.empty() || obstacles.back().top->getPos().x <= 128 - obstacleSpacing){
+			createObstaclePair();
 		}
 	}
 
-}
+	if(!obstacles.empty()){
+		if(obstacles.front().bot->getPos().x < -40){
+			removeObject(obstacles.front().top);
+			removeObject(obstacles.front().bot);
+			obstacles.pop_front();
+		}
+	}
 
-void Game2::gameOver(){
-	pop();
+	for(auto& obstacle : obstacles){
+		if(obstacle.top->getPos().x + 15 <= duckPosX && !obstacle.passed && state == Play){
+			score++;
+			obstacle.passed = true;
+		}
+	}
+
+	if(state == FallOut && obstacles.empty()){
+		resetDuck();
+	}
 }
 
 void Game2::updateDuck(float delta){
-	float y = duck->getPos().y;
+	if(state != FlyIn && state != Play && state != FallOut) return;
 
-	duckSpeed += gravity * delta;
+	glm::vec2 pos = duck->getPos();
 
-	y += duckSpeed * delta;
+	if(state == FlyIn){
+		entry += delta / entryDuration;
+		float tX = entry;
+		float tY = 1.f - pow(max(0.0f, 1.f - (entry * 1.1f)), 2);
 
-	if(y < 0.f){
-		duckSpeed = 0;
-		y = 0;
+		glm::vec2 newPos = { duckPosX * tX, -20 + (64 + 20) * tY };
+		duck->setPos(newPos);
+
+		pos.x -= entry * duckPosX;
+		glm::vec2 dir = newPos - pos;
+		float angle = glm::orientedAngle(glm::normalize(dir), glm::vec2{ 1, 0 });
+		duck->setRot(-glm::degrees(angle));
+
+		newPos.x = duckPosX;
+		duck->setPos(newPos);
+
+		if(entry >= 1){
+			duck->setPos({ duckPosX, 64 });
+			duck->setRot(0);
+			velocity.y = 0;
+			state = Wait;
+		}
+
+		return;
 	}
 
+	velocity += delta * glm::vec2{ 0, gravity };
+	pos += delta * velocity;
+	pos.x = duckPosX;
 
-	duck->setPos({ duck->getPos().x, y });
+	if(pos.y < 0){
+		velocity.y = 0;
+		pos.y = 0;
+	}
+
+	float angle = glm::orientedAngle(glm::normalize(velocity), glm::vec2{ 1, 0 });
+	angle = -glm::degrees(angle);
+
+	duck->setRot(angle);
+	duck->setPos(pos);
 }
 
 void Game2::updateObstacles(float delta){
+	auto move = [delta](ObjPtr& obj){
+		glm::vec2 pos = obj->getPos();
+		pos.x -= delta * speedX;
+		obj->setPos(pos);
+	};
 
-
-	for(auto obstacle : obstacles){
-		obstacle->setPos({ obstacle->getPos().x - obstacleSpeed * delta, obstacle->getPos().y });
+	for(auto& obstacle : obstacles){
+		move(obstacle.top);
+		move(obstacle.bot);
 	}
+}
+
+void Game2::buttonPressed(uint i){
+	if(i == BTN_BACK){
+		pop();
+		return;
+	}else if(i != BTN_MID) return;
+
+	if(state == Wait || state == FlyIn){
+		anim->setLoopMode(GIF::Single);
+		state = Play;
+	}
+
+	if(state != Play) return;
+
+	anim->reset();
+	anim->start();
+
+	velocity.y = -flapSpeedY;
+}
+
+void Game2::resetDuck(){
+	duck->setPos({ 0, -20 });
+	duck->setRot(0);
+	anim->setLoopMode(GIF::Infinite);
+	velocity.y = 0;
+	state = FlyIn;
+	entry = 0;
+	score = 0;
+}
+
+void Game2::createObstaclePair(){
+	int topi = rand() % (sizeof(TopObstacles) / sizeof(TopObstacles[0]));
+	int boti = rand() % (sizeof(BotObstacles) / sizeof(BotObstacles[0]));
+
+	auto topDesc = TopObstacles[topi];
+	auto botDesc = BotObstacles[boti];
+
+	auto topObj = std::make_shared<GameObject>(
+		std::make_unique<StaticRC>(getFile(topDesc.path), topDesc.dim),
+		std::make_unique<PolygonCC>(topDesc.collision)
+	);
+
+	auto botObj = std::make_shared<GameObject>(
+			std::make_unique<StaticRC>(getFile(botDesc.path), botDesc.dim),
+			std::make_unique<PolygonCC>(botDesc.collision)
+	);
+
+	int offsetBoth = rand() % 40;
+	int offsetTop = rand() % 10;
+	int offsetBot = rand() % 20;
+
+	topObj->setPos({ 160, offsetBoth + offsetTop });
+	botObj->setPos({ 160 + 15, (128 - botDesc.dim.y) + 10 + offsetBoth + offsetBot });
+
+	auto die = [this](){
+		if(state != Play) return;
+
+		state = FallOut;
+
+		for(const auto& obstacle : obstacles){
+			collision.removePair(*duck, *obstacle.top);
+			collision.removePair(*duck, *obstacle.bot);
+		}
+	};
+
+	collision.addPair(*duck, *topObj, die);
+	collision.addPair(*duck, *botObj, die);
+
+	addObject(topObj);
+	addObject(botObj);
+	obstacles.push_back({ topObj, botObj, false });
 }
