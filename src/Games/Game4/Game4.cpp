@@ -21,9 +21,7 @@ Game4::Game4() : Game("/Games/Game4", {
 		{ "/DuckDucked.gif",     {}, false },
 		{ "/DuckDucking.gif",    {}, false },
 		{ "/DuckUnDucking.gif",  {}, false },
-		{ "/DuckPreJump.gif",    {}, false },
-		{ "/DuckMidJump.gif",    {}, false },
-		{ "/DuckAfterJump.gif",  {}, false },
+		{ "/DuckJump.gif",       {}, false },
 		{ "/DuckDown.gif",       {}, false },
 		{ "/DuckWalk.gif",       {}, false }
 }){}
@@ -72,9 +70,7 @@ void Game4::onLoad(){
 	duck = new Duck(duckGO, this);
 	duck->setFiles(getFile("/DuckWalk.gif"),
 				   getFile("/DuckDown.gif"),
-				   getFile("/DuckPreJump.gif"),
-				   getFile("/DuckMidJump.gif"),
-				   getFile("/DuckAfterJump.gif"),
+				   getFile("/DuckJump.gif"),
 				   getFile("/DuckDucking.gif"),
 				   getFile("/DuckDucked.gif"),
 				   getFile("/DuckUnDucking.gif"));

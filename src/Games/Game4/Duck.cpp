@@ -46,12 +46,8 @@ void Duck::buttonPressed(uint i){
 		isJumping = true;
 		velocity = jumpVelocity;
 		walk();
-		animRc->setAnim(preJump);
-		animRc->setLoopDoneCallback([this](uint32_t){
-			animRc->setAnim(midJump);
-			//animRc->stop();
-
-		});
+		animRc->setAnim(jump);
+		animRc->setLoopMode(GIF::Single);
 	}
 }
 
@@ -63,7 +59,7 @@ void Duck::buttonReleased(uint i){
 }
 
 void Duck::walk(){
-	animRc->start();
+	animRc->setLoopMode(GIF::Infinite);
 	animRc->setAnim(unDucking);
 	animRc->setLoopDoneCallback([this](uint32_t){
 		animRc->setAnim(walking);
@@ -84,12 +80,10 @@ std::shared_ptr<GameObject> Duck::getGameObject(){
 	return gameObject;
 }
 
-void Duck::setFiles(File walk, File down, File preJump, File midJump, File afterJump, File ducking, File ducked, File unDucking){
+void Duck::setFiles(File walk, File down, File jump, File ducking, File ducked, File unDucking){
 	this->walking = walk;
 	this->down = down;
-	this->preJump = preJump;
-	this->midJump = midJump;
-	this->afterJump = afterJump;
+	this->jump = jump;
 	this->ducking = ducking;
 	this->ducked = ducked;
 	this->unDucking = unDucking;

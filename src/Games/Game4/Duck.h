@@ -20,7 +20,7 @@ public:
 	void update(float deltaTime);
 
 	std::shared_ptr<GameObject> getGameObject();
-	void setFiles(File walk, File down, File preJump, File midJump, File afterJump, File ducking, File ducked, File unDucking);
+	void setFiles(File walk, File down, File jump, File ducking, File ducked, File unDucking);
 
 private:
 	void buttonPressed(uint i) override;
@@ -35,14 +35,12 @@ private:
 	const int startPosY = 50;
 	float velocity;
 	float multiplier = 1.0f;
-	const float jumpVelocity = -45.0f;
-	const float gravity = -jumpVelocity/1.8f;
+	const float jumpVelocity = -40.0f;
+	const float gravity = -jumpVelocity/2.0f;
 	bool isJumping = false;
 	File walking;
 	File down;
-	File preJump;
-	File midJump;
-	File afterJump;
+	File jump;
 	File ducking;
 	File ducked;
 	File unDucking;
