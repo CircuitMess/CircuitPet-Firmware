@@ -162,7 +162,7 @@ void Game2::buttonPressed(uint i){
 	if(i == BTN_BACK){
 		pop();
 		return;
-	}else if(i != BTN_MID) return;
+	}else if(i != BTN_A) return;
 
 	if(state == Wait || state == FlyIn){
 		anim->setLoopMode(GIF::Single);
@@ -180,6 +180,16 @@ void Game2::buttonPressed(uint i){
 void Game2::resetDuck(){
 	duck->setPos({ 0, -20 });
 	duck->setRot(0);
+	collision.wallBot(*duck, [this](){
+		collision.wallBot(*duck, {});
+		state = FallOut;
+
+		for(const auto& obstacle : obstacles){
+			collision.removePair(*duck, *obstacle.top);
+			collision.removePair(*duck, *obstacle.bot);
+		}
+	});
+
 	anim->setLoopMode(GIF::Infinite);
 	velocity.y = 0;
 	state = FlyIn;
