@@ -1,5 +1,6 @@
 #include "Game2.h"
 #include "../../GameEngine/Rendering/StaticRC.h"
+#include "../../GameEngine/Rendering/SpriteRC.h"
 #include "../../GameEngine/Rendering/AnimRC.h"
 #include "../../GameEngine/Collision/CircleCC.h"
 #include "../../GameEngine/Collision/RectCC.h"
@@ -14,6 +15,7 @@ constexpr Game2::ObstacleDesc Game2::BotObstacles[];
 Game2::Game2() : Game("/Games/2", {
 		{ "/duck.gif",          {}, true },
 		{ "/bg.raw",            {}, true },
+		{ "/heart.raw",            {}, true },
 		{ TopObstacles[0].path, {}, true },
 		{ TopObstacles[1].path, {}, true },
 		{ BotObstacles[0].path, {}, true },
@@ -31,6 +33,20 @@ void Game2::onLoad(){
 	);
 	bg->getRenderComponent()->setLayer(-1);
 	addObject(bg);
+
+	for(uint8_t i = 0; i < 3; i++){
+		hearts[i] = std::make_shared<GameObject>(std::make_unique<StaticRC>(getFile("/heart.raw"), PixelDim{7, 6}), nullptr);
+		hearts[i]->setPos({2 + i*9, 3});
+		hearts[i]->getRenderComponent()->setLayer(1);
+		addObject(hearts[i]);
+		hearts[i]->getRenderComponent()->setVisible(false);
+	}
+
+	auto scoreObj = std::make_shared<GameObject>(std::make_unique<SpriteRC>(PixelDim{ 50, 7}), nullptr);
+	scoreObj->setPos({ 160 - 50 - 1, 2});
+	scoreSprite = std::static_pointer_cast<SpriteRC>(scoreObj->getRenderComponent())->getSprite();
+	scoreSprite->clear(TFT_TRANSPARENT);
+	addObject(scoreObj);
 
 
 	duck = std::make_shared<GameObject>(
@@ -59,13 +75,6 @@ void Game2::onStop(){
 }
 
 void Game2::onRender(Sprite* canvas){
-	if(score == 0) return;
-
-	canvas->setTextSize(2);
-	canvas->setTextColor(TFT_WHITE);
-	canvas->setTextFont(0);
-	canvas->setCursor(0, 3);
-	canvas->printCenter(score);
 }
 
 void Game2::onLoop(float deltaTime){
@@ -90,11 +99,19 @@ void Game2::onLoop(float deltaTime){
 		if(obstacle.top->getPos().x + 15 <= duckPosX && !obstacle.passed && state == Play){
 			score++;
 			obstacle.passed = true;
+			scoreSprite->clear(TFT_TRANSPARENT);
+			scoreSprite->setTextColor(TFT_WHITE);
+			scoreSprite->setCursor(0, 0);
+			scoreSprite->printf("Score: %d", score);
 		}
 	}
 
 	if(state == FallOut && obstacles.empty()){
-		resetDuck();
+		if(life == 0){
+			pop();
+		}else{
+			resetDuck();
+		}
 	}
 }
 
@@ -165,6 +182,12 @@ void Game2::buttonPressed(uint i){
 	}else if(i != BTN_A) return;
 
 	if(state == Wait || state == FlyIn){
+		if(firstPress){
+			firstPress = false;
+			for(auto& heart : hearts){
+				heart->getRenderComponent()->setVisible(true);
+			}
+		}
 		anim->setLoopMode(GIF::Single);
 		state = Play;
 	}
@@ -180,21 +203,12 @@ void Game2::buttonPressed(uint i){
 void Game2::resetDuck(){
 	duck->setPos({ 0, -20 });
 	duck->setRot(0);
-	collision.wallBot(*duck, [this](){
-		collision.wallBot(*duck, {});
-		state = FallOut;
-
-		for(const auto& obstacle : obstacles){
-			collision.removePair(*duck, *obstacle.top);
-			collision.removePair(*duck, *obstacle.bot);
-		}
-	});
+	collision.wallBot(*duck, [this](){ die(); });
 
 	anim->setLoopMode(GIF::Infinite);
 	velocity.y = 0;
 	state = FlyIn;
 	entry = 0;
-	score = 0;
 }
 
 void Game2::createObstaclePair(){
@@ -221,21 +235,26 @@ void Game2::createObstaclePair(){
 	topObj->setPos({ 160, offsetBoth + offsetTop });
 	botObj->setPos({ 160 + 15, (128 - botDesc.dim.y) + 10 + offsetBoth + offsetBot });
 
-	auto die = [this](){
-		if(state != Play) return;
-
-		state = FallOut;
-
-		for(const auto& obstacle : obstacles){
-			collision.removePair(*duck, *obstacle.top);
-			collision.removePair(*duck, *obstacle.bot);
-		}
-	};
-
-	collision.addPair(*duck, *topObj, die);
-	collision.addPair(*duck, *botObj, die);
+	collision.addPair(*duck, *topObj, [this](){ die(); });
+	collision.addPair(*duck, *botObj, [this](){ die(); });
 
 	addObject(topObj);
 	addObject(botObj);
 	obstacles.push_back({ topObj, botObj, false });
+}
+
+void Game2::die(){
+	if(state != Play) return;
+
+	life--;
+	hearts[life]->getRenderComponent()->setVisible(false);
+
+	state = FallOut;
+
+	collision.wallBot(*duck, {});
+
+	for(const auto& obstacle : obstacles){
+		collision.removePair(*duck, *obstacle.top);
+		collision.removePair(*duck, *obstacle.bot);
+	}
 }

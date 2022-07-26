@@ -32,6 +32,13 @@ private:
 	float entry = 0;
 	float entryDuration = 1.0f;
 
+	ObjPtr hearts[3];
+	bool firstPress = true;
+
+	std::shared_ptr<Sprite> scoreSprite;
+	uint8_t life = 3;
+	void die();
+
 	ObjPtr duck;
 	std::shared_ptr<AnimRC> anim;
 	glm::vec2 velocity = { speedX, 0 };
