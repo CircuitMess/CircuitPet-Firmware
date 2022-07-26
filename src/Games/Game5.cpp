@@ -61,7 +61,7 @@ void Game5::onStart(){
 }
 
 void Game5::onStop(){
-	Input::getInstance()->addListener(this);
+	Input::getInstance()->removeListener(this);
 	duckRC->stop();
 }
 
