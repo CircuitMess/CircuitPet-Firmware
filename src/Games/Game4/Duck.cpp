@@ -3,9 +3,8 @@
 #include "Game4.h"
 #include <Input/Input.h>
 
-Duck::Duck(std::shared_ptr<GameObject> duckGO, Game4* game4) : gameObject(duckGO), game4(game4){
-	animRc = std::static_pointer_cast<AnimRC>(gameObject->getRenderComponent());
-	circleCc = std::static_pointer_cast<CircleCC>(gameObject->getCollisionComponent());
+Duck::Duck(std::shared_ptr<GameObject> duckGoRc, std::shared_ptr<GameObject> duckGoCc, Game4* game4) : gameObjectRc(duckGoRc), gameObjectCc(duckGoCc), game4(game4){
+	animRc = std::static_pointer_cast<AnimRC>(gameObjectRc->getRenderComponent());
 	animRc->start();
 	Input::getInstance()->addListener(this);
 }
@@ -16,13 +15,15 @@ Duck::~Duck(){
 
 void Duck::update(float deltaTime){
 	if(!isJumping) return;
-	float y = gameObject->getPos().y;
+	float y = gameObjectRc->getPos().y;
 	y += velocity * deltaTime;
 	velocity += gravity * deltaTime * multiplier;
 	Serial.printf("y = %f\tvelocity = %f\tdeltaTime = %f\n", y, velocity, deltaTime);
-	gameObject->setPos({ 5, y });
+	gameObjectRc->setPos({ 5, y });
+	gameObjectCc->setPos({ 5, y });
 	if(y > startPosY){
-		gameObject->setPos({5,startPosY});
+		gameObjectRc->setPos({ 5, startPosY});
+		gameObjectCc->setPos({ 5, startPosY});
 		multiplier = 1.0f;
 		isJumping = false;
 		walk();
@@ -38,7 +39,7 @@ void Duck::buttonPressed(uint i){
 			animRc->setLoopDoneCallback([this](uint32_t){
 				animRc->setAnim(ducked);
 			});
-			circleCc->setOffset({ 30, 30 });
+			gameObjectCc->setRot(-90.0f);
 		}
 	}
 	if(i == BTN_UP){
@@ -64,7 +65,7 @@ void Duck::walk(){
 	animRc->setLoopDoneCallback([this](uint32_t){
 		animRc->setAnim(walking);
 	});
-	circleCc->setOffset({ 25, 20 });
+	gameObjectCc->setRot(0.0f);
 }
 
 void Duck::death(){
@@ -76,8 +77,8 @@ void Duck::death(){
 	});
 }
 
-std::shared_ptr<GameObject> Duck::getGameObject(){
-	return gameObject;
+std::shared_ptr<GameObject> Duck::getGameObjectCc(){
+	return gameObjectCc;
 }
 
 void Duck::setFiles(File walk, File down, File jump, File ducking, File ducked, File unDucking){

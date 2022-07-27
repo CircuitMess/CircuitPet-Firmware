@@ -14,12 +14,12 @@ class Game4;
 
 class Duck : private InputListener {
 public:
-	Duck(std::shared_ptr<GameObject> duckGO, Game4* game4);
+	Duck(std::shared_ptr<GameObject> duckGoRc, std::shared_ptr<GameObject> duckGoCc, Game4* game4);
 	~Duck();
 	void death();
 	void update(float deltaTime);
 
-	std::shared_ptr<GameObject> getGameObject();
+	std::shared_ptr<GameObject> getGameObjectCc();
 	void setFiles(File walk, File down, File jump, File ducking, File ducked, File unDucking);
 
 private:
@@ -28,15 +28,15 @@ private:
 	void walk();
 
 	Game4* game4;
-	std::shared_ptr<GameObject> gameObject;
+	std::shared_ptr<GameObject> gameObjectRc;
+	std::shared_ptr<GameObject> gameObjectCc;
 	std::shared_ptr<AnimRC> animRc;
-	std::shared_ptr<CircleCC> circleCc;
 
 	const int startPosY = 50;
 	float velocity;
 	float multiplier = 1.0f;
-	const float jumpVelocity = -40.0f;
-	const float gravity = -jumpVelocity/2.0f;
+	const float jumpVelocity = -15.0f;
+	const float gravity = 9.81f;
 	bool isJumping = false;
 	File walking;
 	File down;

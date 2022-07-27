@@ -59,15 +59,23 @@ void Game4::onLoad(){
 	bg->getRenderComponent()->setLayer(-1);
 	addObject(bg);
 
-	auto duckGO = std::make_shared<GameObject>(
-			std::make_unique<AnimRC>(getFile("/DuckWalk.gif")),
-			std::make_unique<CircleCC>(10.0f, glm::vec2{ 25, 20 })
+	std::initializer_list<glm::vec2> points = {{11,23},{21,8},{31,16},{28,35},{19,40},{9,34}};
+	auto duckGoCc = std::make_shared<GameObject>(
+			nullptr,
+			std::make_unique<PolygonCC>(points,glm::vec2{23,27} )
 	);
-	addObject(duckGO);
-	duckGO->getRenderComponent()->setLayer(0);
-	duckGO->setPos({ 5, 50 });
+	addObject(duckGoCc);
+	duckGoCc->setPos({ 5, 50 });
 
-	duck = new Duck(duckGO, this);
+	auto duckGoRc = std::make_shared<GameObject>(
+			std::make_unique<AnimRC>(getFile("/DuckWalk.gif")),
+			nullptr
+	);
+	addObject(duckGoRc);
+	duckGoRc->getRenderComponent()->setLayer(0);
+	duckGoRc->setPos({ 5, 50 });
+
+	duck = new Duck(duckGoRc, duckGoCc, this);
 	duck->setFiles(getFile("/DuckWalk.gif"),
 				   getFile("/DuckDown.gif"),
 				   getFile("/DuckJump.gif"),
@@ -153,9 +161,9 @@ void Game4::spawn(){
 	gObj->setPos({ 160, posY });
 	gObj->getRenderComponent()->setLayer(1);
 
-	collision.addPair(*duck->getGameObject(), *gObj, [this, gObj](){
+	collision.addPair(*duck->getGameObjectCc(), *gObj, [this, gObj](){
 		speed = 0.0f;
-		collision.removePair(*duck->getGameObject(), *gObj);
+		collision.removePair(*duck->getGameObjectCc(), *gObj);
 		duck->death();
 	});
 	collision.addPair(*leftWall, *gObj, [this, gObj](){ removeObject(gObj); });
