@@ -10,8 +10,9 @@
 #include "Sprites/StatsSprite.h"
 #include "Menu/Menu.h"
 #include "Menu/MenuHider.h"
+#include "../Stats/StatsChangedListener.h"
 
-class DuckScreen : public LoopListener, public State, private InputListener {
+class DuckScreen : public LoopListener, public State, private InputListener, private StatsChangedListener {
 public:
 	DuckScreen(Sprite* base);
 	void loop(uint micros) override;
@@ -26,7 +27,15 @@ private:
 	BgSprite bgSprite;
 	OSSprite osSprite;
 	CharacterSprite characterSprite;
+
+	void statsChanged(const Stats& stats, bool leveledUp) override;
+	constexpr static float easeTime = 0.6f;
+	float easeTimer = 0;
+	Stats currentStats;
+	Stats targetStats;
+	Stats prevStats;
 	StatsSprite statsSprite;
+
 	Menu menu;
 	MenuHider hider;
 

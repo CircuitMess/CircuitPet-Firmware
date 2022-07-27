@@ -41,6 +41,9 @@ DuckScreen::DuckScreen(Sprite* base) : State(), base(base), bgSprite(base, StatM
 	};
 
 	menu.setItems(menuItems);
+
+	currentStats = targetStats = prevStats = StatMan.get();
+	StatMan.addListener(this);
 }
 
 
@@ -56,6 +59,28 @@ void DuckScreen::onStop(){
 }
 
 void DuckScreen::loop(uint micros){
+
+	//stats display easing when a change occurs
+	if(currentStats != targetStats){
+
+		easeTimer += micros / 1000000.0;
+		float x = easeTimer / easeTime;
+
+		if(x >= 1.f){
+			currentStats = targetStats;
+		}else{
+
+			float ease = 1.0f - cos((x * PI) / 2);
+
+
+			currentStats.oilLevel = prevStats.oilLevel + ((float)(targetStats.oilLevel - prevStats.oilLevel)) * ease;
+			currentStats.happiness = prevStats.happiness + ((float)(targetStats.happiness - prevStats.happiness)) * ease;
+		}
+
+		statsSprite.setHappiness(currentStats.happiness);
+		statsSprite.setOilLevel(currentStats.oilLevel);
+	}
+
 	bgSprite.push();
 
 	statsSprite.push();
@@ -84,5 +109,16 @@ void DuckScreen::buttonPressed(uint i){
 			return;
 		}
 	}
+}
+
+void DuckScreen::statsChanged(const Stats& stats, bool leveledUp){
+	if(leveledUp){
+		//TODO - levelup anims
+	}
+
+	targetStats = stats;
+	prevStats = currentStats;
+
+	easeTimer = 0;
 }
 
