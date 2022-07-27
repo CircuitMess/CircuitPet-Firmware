@@ -16,7 +16,7 @@ void StatsManager::begin(){
 
 void StatsManager::update(Stats delta){
 	uint8_t oldLevel = getLevel();
-	stats -= delta;
+	stats += delta;
 	ESP_LOGI(tag, "%d, %d, %d\n", stats.happiness, stats.experience, stats.oilLevel);
 
 	bool levelUp = (oldLevel != getLevel());
@@ -68,6 +68,14 @@ void StatsManager::load(){
 	}
 
 	f.read((uint8_t*)&stats, sizeof(Stats));
+
+	if(stats.happiness > 100 || stats.oilLevel > 100){
+		ESP_LOGW(tag, "Stats file not found or corrupt! Setting defaults.");
+		stats.happiness = 100;
+		stats.oilLevel = 100;
+		stats.experience = 0;
+		return;
+	}
 	gameOverCount = f.read();
 	f.close();
 }
