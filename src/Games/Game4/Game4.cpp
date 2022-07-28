@@ -156,7 +156,7 @@ void Game4::setupObstacles(){
 	obstacleOver.push_back({ getFile("/ObstacleOver1.raw"), { 40, 31 }, {{ 0, 30 }, { 25, 0 }, { 39, 0 }}});
 	obstacleOver.push_back({ getFile("/ObstacleOver2.raw"), { 24, 19 }, {{ 3, 18 }, { 20, 0 }, { 21, 18 }}});
 	obstacleOver.push_back({ getFile("/ObstacleOver3.raw"), { 22, 19 }, {}});
-	obstacleOver.push_back({ getFile("/ObstacleOver4.raw"), { 33, 19 }, {{ 2, 19 },{ 2, 7 },{ 10, 7 },{ 10, 1 },{ 22, 1 },{ 22, 11 },{ 30, 11 },{ 30, 19 }}});
+	obstacleOver.push_back({ getFile("/ObstacleOver4.raw"), { 33, 19 }, {{2, 18}, {2, 6}, {10, 1}, {21, 1}, {30, 18}}});
 
 	obstacleUnder.push_back({ getFile("/ObstacleUnder1.raw"), { 36, 27 }, {{ 1, 17 }, { 11, 8 }, { 22, 8 }, { 35, 17 }, { 22, 26 }, { 11, 26 }}});
 	obstacleUnder.push_back({ getFile("/ObstacleUnder2.raw"), { 40, 30 }, {{ 0, 20 }, { 9, 11 }, { 27, 20 }, { 9, 29 }}});
@@ -209,7 +209,7 @@ void Game4::spawn(){
 	gObj->setPos({ 160, posY });
 	gObj->getRenderComponent()->setLayer(1);
 
-	collision.addPair(*duck->getGameObjectCc(), *gObj, [this, gObj](){
+	collision.addPair(*gObj, *duck->getGameObjectCc(), [this, gObj](){
 		speed = 0.0f;
 		spawnRate = 10000.0f;
 		collision.removePair(*duck->getGameObjectCc(), *gObj);
