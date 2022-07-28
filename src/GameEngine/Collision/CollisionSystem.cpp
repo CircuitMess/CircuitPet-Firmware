@@ -242,6 +242,9 @@ bool CollisionSystem::polyCircle(const GameObject& poly, const GameObject& circl
 		glm::vec2 end = points[(i + 1) % points.size()];
 		if(intersectSegmentCircle(start, end, center, circle.getCollisionComponent()->getCircle()->getRadius())) return true;
 	}
+
+	if(polyContainsPoint(points, center)) return true;
+
 	return false;
 }
 
@@ -264,8 +267,14 @@ bool CollisionSystem::polyContainsPoint(const CollisionSystem::Polygon& polygon,
 CollisionSystem::Polygon CollisionSystem::getRotatedTranslatedPoly(const GameObject& poly){
 	float rot = poly.getRot();
 	auto polyPoints = poly.getCollisionComponent()->getPolygon()->getPoints();
+	auto pos = poly.getPos();
 
-	if( rot == 0) return polyPoints;
+	if( rot == 0){
+		std::transform(polyPoints.begin(), polyPoints.end(), polyPoints.begin(), [&pos](glm::vec2& point){
+			return point + pos;
+		});
+		return polyPoints;
+	}
 
 	auto center = poly.getPos() + poly.getCollisionComponent()->getPolygon()->getCenter();
 
@@ -274,7 +283,6 @@ CollisionSystem::Polygon CollisionSystem::getRotatedTranslatedPoly(const GameObj
 	rotMat = glm::rotate(rotMat, glm::radians(rot));
 	rotMat = glm::translate(rotMat, -center);
 
-	auto pos = poly.getPos();
 	auto polyCopy = polyPoints;
 
 	std::transform(polyCopy.begin(), polyCopy.end(), polyCopy.begin(), [&rotMat, &pos](glm::vec2& point){

@@ -20,6 +20,7 @@ public:
 
 	void start() final;
 	void stop() final;
+	void pop() final;
 
 protected:
 	Game(const char* root, std::vector<ResDescriptor> resources);
@@ -43,6 +44,8 @@ private:
 
 	bool loaded = false;
 	Task loadTask;
+
+	volatile bool popped = false;
 
 	RenderSystem render;
 
