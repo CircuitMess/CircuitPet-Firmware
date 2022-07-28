@@ -68,5 +68,8 @@ void Duck::buttonReleased(uint i){
 
 void Duck::filled(Game3* game){
 	anim->setAnim(win);
-	anim->setLoopDoneCallback([game](uint32_t){game->pop(); printf("popped\n");});
+	anim->setLoopDoneCallback([game](uint32_t){
+		delay(500);
+		game->pop();
+	});
 }

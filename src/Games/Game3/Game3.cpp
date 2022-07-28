@@ -34,10 +34,10 @@ void Game3::onLoad(){
 			nullptr,
 			std::make_unique<RectCC>(PixelDim{ 160, 15 })
 	);
-	collectorBot->setPos({ 0, 140 });
+	collectorBot->setPos({ 0, 160 });
 	addObject(collectorBot);
 
-	duck = new Duck(getFile("/DuckWalk.gif"), getFile("/DuckEat.gif"), getFile("/DuckEatBad.gif"), getFile("/DuckWin.gif"));
+	duck = std::make_unique<Duck>(getFile("/DuckWalk.gif"), getFile("/DuckEat.gif"), getFile("/DuckEatBad.gif"), getFile("/DuckWin.gif"));
 	addObject(duck->getGameObject());
 	duck->getGameObject()->getRenderComponent()->setLayer(-1);
 
@@ -57,15 +57,15 @@ void Game3::onLoad(){
 	heartsGO->getRenderComponent()->setLayer(0);
 	drawHearts();
 
-	auto barRC = std::make_unique<SpriteRC>(PixelDim{8, 122});
+	auto barRC = std::make_unique<SpriteRC>(PixelDim{ 8, 122 });
 	hungerBar = barRC->getSprite();
-	auto barGO  = std::make_shared<GameObject>(
+	auto barGO = std::make_shared<GameObject>(
 			move(barRC),
 			nullptr
 	);
 	addObject(barGO);
-	barGO->setPos({1,2});
-	hungerBar->drawIcon(getFile("/BarFrame.raw"),0,0,8,122);
+	barGO->setPos({ 1, 2 });
+	hungerBar->drawIcon(getFile("/BarFrame.raw"), 0, 0, 8, 122);
 }
 
 void Game3::onLoop(float deltaTime){
@@ -154,8 +154,8 @@ void Game3::collisionHandler(Item item){
 		lives--;
 		drawHearts();
 	}
-	Serial.printf("lives: %d\thunger: %d\n", lives, hugerMeter);
 	if(lives <= 0){
+		delay(1500);
 		pop();
 	}
 }
@@ -241,12 +241,12 @@ rgb hsv2rgb(hsv in){
 
 
 void Game3::drawBar(){
-	float fillPercent = ((float)hugerMeter/(float)hugerMeterMax) * 118.0f;
+	float fillPercent = ((float) hugerMeter / (float) hugerMeterMax) * 118.0f;
 
 	float difference = abs(118 - fillPercent);
 	double hue = (118.0f - difference) / 100.0 * 60.0 / 255.0 * 360;
 	rgb rgbColor0 = hsv2rgb({ hue, 1.0, 1.0 });
 	uint16_t c0 = lgfx::color565(rgbColor0.r * 255.0, rgbColor0.g * 255.0, rgbColor0.b * 255.0);
 
-	hungerBar->fillRect(2,118-fillPercent,4,fillPercent,c0);
+	hungerBar->fillRect(2, 118 - fillPercent, 4, fillPercent, c0);
 }

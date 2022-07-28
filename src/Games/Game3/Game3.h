@@ -25,12 +25,12 @@ private:
 	void drawHearts();
 	void drawBar();
 
-	struct Item{
+	struct Item {
 		std::shared_ptr<GameObject> go;
 		int value;
 	};
 
-	struct Template{
+	struct Template {
 		std::string path;
 		PixelDim dim;
 		int value;
@@ -46,7 +46,7 @@ private:
 	const int speedMax = 50;
 	const float spawnRate = 1.3f;
 	float timeToSpawn = 0.0f;
-	Duck* duck;
+	std::unique_ptr<Duck> duck;
 
 	std::shared_ptr<Sprite> hearts;
 	std::shared_ptr<Sprite> hungerBar;
