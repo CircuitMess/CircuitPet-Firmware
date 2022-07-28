@@ -2,7 +2,7 @@
 #include <Chatter.h>
 #include <CircuitOS.h>
 #include <SPIFFS.h>
-#include "src/Home/DuckScreen.h"
+#include "src/Intro.h"
 
 Display* display;
 Sprite* baseSprite;
@@ -33,7 +33,7 @@ void setup(){
 	baseSprite->setTextFont(0);
 	baseSprite->setTextSize(0);
 
-	auto duck = new DuckScreen(baseSprite);
+	auto duck = new Intro(baseSprite);
 	duck->start();
 }
 
