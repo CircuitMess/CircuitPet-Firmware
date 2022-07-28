@@ -2,7 +2,6 @@
 #include <Loop/LoopManager.h>
 
 MenuHider::MenuHider(Menu* menu): menu(menu){
-	activity(); // used to set inactivityCount
 }
 
 void MenuHider::activity(){

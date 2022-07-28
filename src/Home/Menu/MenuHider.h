@@ -4,7 +4,7 @@
 #include "Menu.h"
 
 
-class MenuHider : LoopListener{
+class MenuHider : private LoopListener{
 public:
 	MenuHider(Menu* menu);
 	void activity();

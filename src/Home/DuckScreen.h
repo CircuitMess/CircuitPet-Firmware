@@ -35,8 +35,8 @@ private:
 	constexpr static uint8_t osX = 125;
 	constexpr static uint8_t osY = 1;
 
-	constexpr static uint8_t characterX = 53;
-	constexpr static uint8_t characterY = 29;
+	constexpr static uint8_t characterX = 50;
+	constexpr static uint8_t characterY = 36;
 
 	constexpr static uint8_t statsX = 1;
 	constexpr static uint8_t statsY = 0;

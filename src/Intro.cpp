@@ -1,6 +1,7 @@
 #include "Intro.h"
 #include <SPIFFS.h>
-#include "Home/DuckScreen.h"
+#include "HatchingState.h"
+
 #include <Loop/LoopManager.h>
 #include <FS/RamFile.h>
 #include <FS/CompressedFile.h>
@@ -14,12 +15,7 @@ void Intro::onStart(){
 	gif.start();
 	gif.setLoop(false);
 	gif.setLoopDoneCallback([](){
-		auto duck = new DuckScreen(instance->base);
-		instance->stop();
-		delete instance;
-		//TODO - start hatch instead of DuckScreen if necessary
-		duck->start();
-		return;
+		instance->exit = true;
 	});
 
 	LoopManager::addListener(this);
@@ -33,6 +29,18 @@ void Intro::onStop(){
 }
 
 void Intro::loop(uint micros){
+	if(exit){
+		delay(500);
+		volatile auto temp = instance->base;
+		instance->stop();
+		delete instance;
+		auto hatch = new HatchingState(temp);
+		LoopManager::loop();
+		hatch->start();
+		return;
+	}
+
+
 	if(gif.checkFrame()){
 		gif.nextFrame();
 	}

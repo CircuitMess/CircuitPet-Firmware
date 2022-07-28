@@ -20,6 +20,8 @@ private:
 
 	AnimatedSprite gif;
 	Sprite* base;
+
+	bool exit = false;
 };
 
 
