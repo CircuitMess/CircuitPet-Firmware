@@ -10,7 +10,6 @@ Game1::Game1() : Game("/Games/Game1", {
 		{ "/Background.raw", {}, true },
 		{ "/EmptyCan.raw",   {}, true },
 		{ "/FullCan.raw",    {}, true },
-		{ "/Heart.raw",     {}, true },
 		{ "/OilyDone.gif",   {}, false },
 		{ "/OilyIdle.gif",   {}, true },
 		{ "/OilyJump.gif",   {}, true }
@@ -18,7 +17,7 @@ Game1::Game1() : Game("/Games/Game1", {
 
 void Game1::onLoad(){
 	auto spriteBar = std::make_unique<SpriteRC>(PixelDim{ 9, 120 });
-	bar = new Bar(spriteBar->getSprite());
+	bar = std::make_unique<Bar>(spriteBar->getSprite());
 	bar->resetGoal();
 	barGO = std::make_shared<GameObject>(
 			std::move(spriteBar),
@@ -34,17 +33,17 @@ void Game1::onLoad(){
 	);
 	addObject(indicatorGO);
 	indicatorGO->getRenderComponent()->setLayer(1);
-	indicator = new Indicator(indicatorGO);
+	indicator = std::make_unique<Indicator>(indicatorGO);
 	indicator->setGoal(bar->getY());
 
 	auto spriteCan = std::make_unique<SpriteRC>(PixelDim{ 24, 21 });
-	oilCan = new OilCan(spriteCan->getSprite(), getFile("/FullCan.raw"), getFile("/EmptyCan.raw"));
+	oilCan = std::make_unique<OilCan>(spriteCan->getSprite(), getFile("/FullCan.raw"), getFile("/EmptyCan.raw"));
 	oilCanGO = std::make_shared<GameObject>(
 			std::move(spriteCan),
 			nullptr
 	);
 	addObject(oilCanGO);
-	oilCanGO->setPos({ 99, 60 });
+	oilCanGO->setPos({ 99, 50 });
 	oilCanGO->getRenderComponent()->setLayer(1);
 	oilCan->setGameObject(oilCanGO);
 
@@ -64,16 +63,15 @@ void Game1::onLoad(){
 	addObject(bg);
 	bg->getRenderComponent()->setLayer(0);
 
-	auto heartsSprite =	std::make_unique<SpriteRC>(PixelDim{48,6});
-	hearts = heartsSprite->getSprite();
-	auto heartsGO = std::make_shared<GameObject>(
-			move(heartsSprite),
+	auto scoreRc = std::make_unique<SpriteRC>(PixelDim{ 50, 7 });
+	scoreSprite = scoreRc->getSprite();
+	auto scoreGo = std::make_shared<GameObject>(
+			move(scoreRc),
 			nullptr
 	);
-	addObject(heartsGO);
-	heartsGO->setPos({5 ,5});
-
-	drawHearts();
+	addObject(scoreGo);
+	scoreGo->setPos({ 5, 5 });
+	scoreSprite->clear(TFT_TRANSPARENT);
 }
 
 void Game1::onLoop(float deltaTime){
@@ -82,8 +80,10 @@ void Game1::onLoop(float deltaTime){
 		duckGo->setPos({ 17, 16 }); //manually set for the gif to fit
 		duckAnim->setAnim(getFile("/OilyDone.gif"));
 		duckAnim->setLoopDoneCallback([this](uint32_t i){
-			printf("popped\n");
-			pop();});
+			delay(700);
+			pop();
+			return;
+		});
 	};
 }
 
@@ -104,12 +104,15 @@ void Game1::onStop(){
 void Game1::buttonPressed(uint i){
 	if(i == BTN_BACK){
 		pop();
+		return;
 	}
 	if(i == BTN_ENTER){
-		tries--;
-		drawHearts();
-		if(tries < 0){ pop(); }
+		tries++;
 		addPoints(indicator->getDifference());
+		scoreSprite->clear(TFT_TRANSPARENT);
+		scoreSprite->setTextColor(TFT_WHITE);
+		scoreSprite->setCursor(0, 0);
+		scoreSprite->printf("Tries: %d", tries);
 	}
 }
 
@@ -120,11 +123,9 @@ void Game1::resetAnim(){
 
 void Game1::addPoints(int difference){
 	multiplier = (length - (float) difference) / length;
-	multiplier = pow(multiplier, 4);
+	multiplier = pow(multiplier, 12);
 	fillPercent += multiplier * maxPoints;
 	oilCan->fill(fillPercent);
-	Serial.printf("multi: %f, diff: %d\n", multiplier, difference);
-	Serial.printf("FillPRCNT: %f\n", fillPercent);
 	bar->resetGoal();
 	indicator->setGoal(bar->getY());
 
@@ -132,8 +133,6 @@ void Game1::addPoints(int difference){
 		Input::getInstance()->removeListener(this);
 		removeObject(barGO);
 		removeObject(indicatorGO);
-		delete (indicator);
-		delete (bar);
 		oilCan->startMoving();
 	}else{
 		duckAnim->setAnim(getFile("/OilyJump.gif"));
@@ -143,9 +142,3 @@ void Game1::addPoints(int difference){
 	}
 }
 
-void Game1::drawHearts(){
-	hearts->clear(TFT_TRANSPARENT);
-	for(int i = 0; i < tries; i++){
-		hearts->drawIcon(getFile("/Heart.raw"),0 + i*8,0,7,6);
-	}
-}
