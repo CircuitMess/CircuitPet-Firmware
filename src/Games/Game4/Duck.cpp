@@ -16,16 +16,23 @@ Duck::~Duck(){
 void Duck::update(float deltaTime){
 	if(!isJumping) return;
 	float y = gameObjectRc->getPos().y;
-	y += velocity * deltaTime;
+	y += velocity * deltaTime + 0.5f * gravity * pow(deltaTime, 2);
 	velocity += gravity * deltaTime * multiplier;
-	Serial.printf("y = %f\tvelocity = %f\tdeltaTime = %f\n", y, velocity, deltaTime);
+
+	if(time < peakTime){
+		time += deltaTime;
+	}else{
+		multiplier = 5;
+	}
+
 	gameObjectRc->setPos({ 5, y });
 	gameObjectCc->setPos({ 5, y });
 	if(y > startPosY){
-		gameObjectRc->setPos({ 5, startPosY});
-		gameObjectCc->setPos({ 5, startPosY});
+		gameObjectRc->setPos({ 5, startPosY });
+		gameObjectCc->setPos({ 5, startPosY });
 		multiplier = 1.0f;
 		isJumping = false;
+		time = 0.0f;
 		walk();
 	}
 }
@@ -45,7 +52,9 @@ void Duck::buttonPressed(uint i){
 	if(i == BTN_UP){
 		if(isJumping) return;
 		isJumping = true;
-		velocity = jumpVelocity;
+		velocity = 2 * maxHeight * game4->getSpeed() / posXForMaxHeight;
+		gravity = -2 * maxHeight * pow(game4->getSpeed(), 2) / pow(posXForMaxHeight, 2);
+		peakTime = posXForMaxHeight / game4->getSpeed();
 		walk();
 		animRc->setAnim(jump);
 		animRc->setLoopMode(GIF::Single);
@@ -69,6 +78,7 @@ void Duck::walk(){
 }
 
 void Duck::death(){
+	isJumping = false;
 	Input::getInstance()->removeListener(this);
 	animRc->setAnim(down);
 	animRc->setLoopDoneCallback([this](uint32_t){

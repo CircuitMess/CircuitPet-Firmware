@@ -33,10 +33,13 @@ private:
 	std::shared_ptr<AnimRC> animRc;
 
 	const int startPosY = 50;
-	float velocity;
 	float multiplier = 1.0f;
-	const float jumpVelocity = -15.0f;
-	const float gravity = 9.81f;
+	const float maxHeight = -35.0f;
+	const float posXForMaxHeight = 55.0f;
+	float time = 0.0f;
+	float peakTime;
+	float velocity;
+	float gravity;
 	bool isJumping = false;
 	File walking;
 	File down;
