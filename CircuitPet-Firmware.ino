@@ -33,8 +33,9 @@ void setup(){
 	baseSprite->setTextFont(0);
 	baseSprite->setTextSize(0);
 
-	auto duck = new Intro(baseSprite);
-	duck->start();
+	auto intro = new Intro(baseSprite);
+	LoopManager::loop();
+	intro->start();
 }
 
 uint32_t t = 0;
