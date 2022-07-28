@@ -3,7 +3,8 @@
 #include "Game4.h"
 #include <Input/Input.h>
 
-Duck::Duck(std::shared_ptr<GameObject> duckGoRc, std::shared_ptr<GameObject> duckGoCc, Game4* game4) : gameObjectRc(duckGoRc), gameObjectCc(duckGoCc), game4(game4){
+Duck::Duck(std::shared_ptr<GameObject> duckGoRc, std::shared_ptr<GameObject> duckGoCc, Game4* game4) : gameObjectRc(duckGoRc), gameObjectCc(duckGoCc),
+																									   game4(game4){
 	animRc = std::static_pointer_cast<AnimRC>(gameObjectRc->getRenderComponent());
 	animRc->start();
 	Input::getInstance()->addListener(this);
@@ -14,6 +15,21 @@ Duck::~Duck(){
 }
 
 void Duck::update(float deltaTime){
+	if(isDone){
+		int x = gameObjectRc->getPos().x;
+		x += 30 * deltaTime;
+		gameObjectRc->setPos({ x, gameObjectRc->getPos().y });
+		if(x >= 63){ //ručno izračunato
+			walk();
+			isDone = false;
+			gameObjectRc->setPos({ 63, startPosY - 15 });
+			animRc->setAnim(up);
+			animRc->setLoopDoneCallback([this](uint32_t){
+				delay(500);
+				game4->pop();
+			});
+		}
+	}
 	if(!isJumping) return;
 	float y = gameObjectRc->getPos().y;
 	y += velocity * deltaTime + 0.5f * gravity * pow(deltaTime, 2);
@@ -91,11 +107,17 @@ std::shared_ptr<GameObject> Duck::getGameObjectCc(){
 	return gameObjectCc;
 }
 
-void Duck::setFiles(File walk, File down, File jump, File ducking, File ducked, File unDucking){
+void Duck::setFiles(File walk, File down, File jump, File ducking, File ducked, File unDucking, File up){
 	this->walking = walk;
 	this->down = down;
 	this->jump = jump;
 	this->ducking = ducking;
 	this->ducked = ducked;
 	this->unDucking = unDucking;
+	this->up = up;
+}
+
+void Duck::win(){
+	Input::getInstance()->removeListener(this);
+	isDone = true;
 }

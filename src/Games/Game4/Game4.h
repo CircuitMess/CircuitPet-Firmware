@@ -8,11 +8,14 @@
 #include "TileManager.h"
 #include "../../GameEngine/Rendering/AnimRC.h"
 #include "Duck.h"
+#include "../../GameEngine/Rendering/SpriteRC.h"
 
 class Game4 : public Game, private InputListener{
 public:
 	Game4();
 	~Game4();
+	float getSpeed();
+
 protected:
 	void onLoad() override;
 	void onLoop(float deltaTime) override;
@@ -23,9 +26,9 @@ protected:
 private:
 	TileManager* tileManager;
 	Duck* duck;
+	std::shared_ptr<Sprite> scoreSprite;
 
 	void buttonPressed(uint i) override;
-	void buttonReleased(uint i) override;
 
 	struct Obstacle{
 		File file;
@@ -38,15 +41,22 @@ private:
 	const int tileDim = 16;
 	const int topY = 128 - 32;
 	const int tilesPerArray = 5;
-	const float spawnRate = 4.0f;
-	float speed = 30.0f;
-	float value = 0.0f;
+	float spawnValue = 0.0f;
+	float spawnRate = 3.3f;
+	float speed = 50.0f;
+	const float speedMax = 70.0f;
+	const float speedIncrement = 0.5f;
+	bool isDone = false;
+	int score = 0;
 
 	std::shared_ptr<GameObject> leftWall;
+	std::shared_ptr<GameObject> leftWallObject;
 	std::shared_ptr<GameObject> bg;
+	std::shared_ptr<GameObject> goal;
 	std::vector<Obstacle> obstacleUnder;
 	std::vector<Obstacle> obstacleOver;
 	std::vector<std::shared_ptr<GameObject>> movingObjects;
+	std::vector<std::shared_ptr<GameObject>> movingTiles;
 };
 
 

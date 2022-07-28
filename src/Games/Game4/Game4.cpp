@@ -7,6 +7,7 @@
 
 Game4::Game4() : Game("/Games/Game4", {
 		{ "/Background.raw",     {}, true },
+		{ "/Goal.raw",           {}, false },
 		{ "/TileTop1.raw",       {}, true },
 		{ "/TileTop2.raw",       {}, true },
 		{ "/TileBot1.raw",       {}, true },
@@ -23,11 +24,13 @@ Game4::Game4() : Game("/Games/Game4", {
 		{ "/DuckUnDucking.gif",  {}, false },
 		{ "/DuckJump.gif",       {}, false },
 		{ "/DuckDown.gif",       {}, false },
+		{ "/DuckWin.gif",        {}, false },
 		{ "/DuckWalk.gif",       {}, false }
 }){}
 
 Game4::~Game4(){
 	delete (duck);
+	delete (tileManager);
 }
 
 void Game4::onLoad(){
@@ -35,10 +38,10 @@ void Game4::onLoad(){
 
 	setupObstacles();
 
-	tileManager = new TileManager(movingObjects);
+	tileManager = new TileManager(movingTiles);
 	tileManager->addFilePair(getFile("/TileTop1.raw"), getFile("/TileBot1.raw"));
 	tileManager->addFilePair(getFile("/TileTop2.raw"), getFile("/TileBot2.raw"));
-	tileManager->create(); // creates GameObjects into movingObjects
+	tileManager->create(); // creates GameObjects into movingTiles
 
 	leftWall = std::make_shared<GameObject>(
 			nullptr,
@@ -47,7 +50,14 @@ void Game4::onLoad(){
 	leftWall->setPos({ -tileDim * tilesPerArray, 0 });
 	addObject(leftWall);
 
-	for(auto obj: movingObjects){
+	leftWallObject = std::make_shared<GameObject>(
+			nullptr,
+			std::make_unique<RectCC>(glm::vec2{ 1, 128 })
+	);
+	leftWallObject->setPos({ -45, 0 });
+	addObject(leftWallObject);
+
+	for(auto obj: movingTiles){
 		addObject(obj);
 		collision.addPair(*leftWall, *obj, [this, obj](){ tileManager->reset(obj); });
 	}
@@ -59,10 +69,15 @@ void Game4::onLoad(){
 	bg->getRenderComponent()->setLayer(-1);
 	addObject(bg);
 
-	std::initializer_list<glm::vec2> points = {{11,23},{21,8},{31,16},{28,35},{19,40},{9,34}};
+	std::initializer_list<glm::vec2> points = {{ 11, 23 },
+											   { 21, 8 },
+											   { 31, 16 },
+											   { 28, 35 },
+											   { 19, 40 },
+											   { 9,  34 }};
 	auto duckGoCc = std::make_shared<GameObject>(
 			nullptr,
-			std::make_unique<PolygonCC>(points,glm::vec2{23,27} )
+			std::make_unique<PolygonCC>(points, glm::vec2{ 23, 27 })
 	);
 	addObject(duckGoCc);
 	duckGoCc->setPos({ 5, 50 });
@@ -81,21 +96,41 @@ void Game4::onLoad(){
 				   getFile("/DuckJump.gif"),
 				   getFile("/DuckDucking.gif"),
 				   getFile("/DuckDucked.gif"),
-				   getFile("/DuckUnDucking.gif"));
+				   getFile("/DuckUnDucking.gif"),
+				   getFile("/DuckWin.gif"));
+
+	auto scoreObj = std::make_shared<GameObject>(std::make_unique<SpriteRC>(PixelDim{ 50, 7}), nullptr);
+	scoreObj->setPos({ 160 - 60 - 1, 2});
+	scoreSprite = std::static_pointer_cast<SpriteRC>(scoreObj->getRenderComponent())->getSprite();
+	scoreSprite->clear(TFT_TRANSPARENT);
+	addObject(scoreObj);
 }
 
 void Game4::onLoop(float deltaTime){
+	duck->update(deltaTime);
 	for(auto obj: movingObjects){
 		float x = obj->getPos().x - deltaTime * speed;
 		float y = obj->getPos().y;
 		obj->setPos({ x, y });
 	}
-	value += deltaTime;
-	if(value >= spawnRate){
-		value -= spawnRate;
-		spawn();
+	for(auto obj: movingTiles){
+		float x = obj->getPos().x - deltaTime * speed;
+		float y = obj->getPos().y;
+		obj->setPos({ x, y });
 	}
-	duck->update(deltaTime);
+	if(isDone){
+		if(speed == 0) return;
+		if(goal->getPos().x  <= 58){
+			duck->win();
+			speed = 0;
+		}
+	}else{
+		spawnValue += deltaTime;
+		if(spawnValue >= spawnRate){
+			spawnValue -= spawnRate;
+			spawn();
+		}
+	}
 }
 
 void Game4::onStart(){
@@ -116,22 +151,35 @@ void Game4::buttonPressed(uint i){
 	}
 }
 
-void Game4::buttonReleased(uint i){
-
-}
 
 void Game4::setupObstacles(){
 	obstacleOver.push_back({ getFile("/ObstacleOver1.raw"), { 40, 31 }, {{ 0, 30 }, { 25, 0 }, { 39, 0 }}});
 	obstacleOver.push_back({ getFile("/ObstacleOver2.raw"), { 24, 19 }, {{ 3, 18 }, { 20, 0 }, { 21, 18 }}});
 	obstacleOver.push_back({ getFile("/ObstacleOver3.raw"), { 22, 19 }, {}});
-	obstacleOver.push_back({ getFile("/ObstacleOver4.raw"), { 33, 19 }, {}});
+	obstacleOver.push_back({ getFile("/ObstacleOver4.raw"), { 33, 19 }, {{ 2, 19 },{ 2, 7 },{ 10, 7 },{ 10, 1 },{ 22, 1 },{ 22, 11 },{ 30, 11 },{ 30, 19 }}});
 
 	obstacleUnder.push_back({ getFile("/ObstacleUnder1.raw"), { 36, 27 }, {{ 1, 17 }, { 11, 8 }, { 22, 8 }, { 35, 17 }, { 22, 26 }, { 11, 26 }}});
-	obstacleUnder.push_back({ getFile("/ObstacleUnder2.raw"), { 40, 30 }, {{ 0, 20 }, { 9, 11 }, { 27, 20 }, { 9, 29 } }});
+	obstacleUnder.push_back({ getFile("/ObstacleUnder2.raw"), { 40, 30 }, {{ 0, 20 }, { 9, 11 }, { 27, 20 }, { 9, 29 }}});
 	obstacleUnder.push_back({ getFile("/ObstacleUnder3.raw"), { 19, 19 }, {}});
 }
 
 void Game4::spawn(){
+	speed += speedIncrement;
+	spawnRate -= speedIncrement / 10;
+	if(speed > speedMax){
+		isDone = true;
+		goal = std::make_shared<GameObject>(
+				std::make_unique<StaticRC>(getFile("/Goal.raw"), PixelDim{ 44, 20 }),
+				nullptr
+		);
+		addObject(goal);
+		goal->getRenderComponent()->setLayer(0);
+		goal->setPos({ 160, topY - 20 });
+		movingObjects.push_back(goal) ;
+		return;
+	}
+
+
 	int coinFlip = rand() % 2;
 	Obstacle obstacle;
 	int posY;
@@ -163,10 +211,22 @@ void Game4::spawn(){
 
 	collision.addPair(*duck->getGameObjectCc(), *gObj, [this, gObj](){
 		speed = 0.0f;
+		spawnRate = 10000.0f;
 		collision.removePair(*duck->getGameObjectCc(), *gObj);
 		duck->death();
 	});
-	collision.addPair(*leftWall, *gObj, [this, gObj](){ removeObject(gObj); });
 	movingObjects.push_back(gObj);
+	collision.addPair(*leftWallObject, *gObj, [this](){
+		removeObject(movingObjects[0]);
+		movingObjects.erase(movingObjects.begin());
+		score++;
+		scoreSprite->clear(TFT_TRANSPARENT);
+		scoreSprite->setTextColor(TFT_DARKGREEN);
+		scoreSprite->setCursor(0, 0);
+		scoreSprite->printf("Score:%d", score);
+	});
 }
 
+float Game4::getSpeed(){
+	return speed;
+}

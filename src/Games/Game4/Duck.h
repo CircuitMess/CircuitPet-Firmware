@@ -20,7 +20,8 @@ public:
 	void update(float deltaTime);
 
 	std::shared_ptr<GameObject> getGameObjectCc();
-	void setFiles(File walk, File down, File jump, File ducking, File ducked, File unDucking);
+	void setFiles(File walk, File down, File jump, File ducking, File ducked, File unDucking, File up);
+	void win();
 
 private:
 	void buttonPressed(uint i) override;
@@ -41,12 +42,15 @@ private:
 	float velocity;
 	float gravity;
 	bool isJumping = false;
+	bool isDone = false;
+
 	File walking;
 	File down;
 	File jump;
 	File ducking;
 	File ducked;
 	File unDucking;
+	File up;
 };
 
 
