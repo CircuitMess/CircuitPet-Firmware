@@ -2,7 +2,7 @@
 #include <Loop/LoopManager.h>
 #include "../Stats/StatsManager.h"
 #include "../Games/TestGame.h"
-#include <Chatter.h>
+#include <CircuitPet.h>
 
 DuckScreen::DuckScreen(Sprite* base) : State(), base(base), bgSprite(base, StatMan.getLevel()),
 									   osSprite(base, StatMan.getLevel()),

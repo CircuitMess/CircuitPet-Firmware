@@ -1,5 +1,6 @@
 #include <Arduino.h>
-#include <Chatter.h>
+#include <CircuitPet.h>
+#include <Loop/LoopManager.h>
 #include <CircuitOS.h>
 #include <SPIFFS.h>
 #include "src/Home/DuckScreen.h"
@@ -21,10 +22,10 @@ void setup(){
 	Serial.begin(115200);
 	initLog();
 
-	Chatter.begin();
-	Input* input = Chatter.getInput();
+	CircuitPet.begin(false);
+	Input* input = CircuitPet.getInput();
 
-	display = Chatter.getDisplay();
+	display = CircuitPet.getDisplay();
 	baseSprite = display->getBaseSprite();
 
 	baseSprite->clear(TFT_BLACK);
@@ -35,6 +36,7 @@ void setup(){
 
 	auto duck = new DuckScreen(baseSprite);
 	duck->start();
+	CircuitPet.fadeIn();
 }
 
 uint32_t t = 0;
