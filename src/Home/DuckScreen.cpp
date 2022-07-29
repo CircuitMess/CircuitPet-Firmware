@@ -3,6 +3,7 @@
 #include "../Stats/StatsManager.h"
 #include "../Games/TestGame.h"
 #include <CircuitPet.h>
+#include "../Settings/SettingsScreen.h"
 
 DuckScreen::DuckScreen(Sprite* base) : State(), base(base), bgSprite(base, StatMan.getLevel()),
 									   osSprite(base, StatMan.getLevel()),
@@ -38,6 +39,10 @@ DuckScreen::DuckScreen(Sprite* base) : State(), base(base), bgSprite(base, StatM
 			{ "Jump & Duck", GameImage(base, "/MenuIcons/Icon4.raw"), {} },
 			{ "Disco danceoff", GameImage(base, "/MenuIcons/Icon5.raw"), {} },
 			{ "Space duck", GameImage(base, "/MenuIcons/Icon6.raw"), {} },
+			{ "Settings", GameImage(base, "/MenuIcons/Icon6.raw"), [this](){
+				auto settings = new SettingsScreen::SettingsScreen(*CircuitPet.getDisplay());
+				settings->push(this);
+			} }
 	};
 
 	menu.setItems(menuItems);
