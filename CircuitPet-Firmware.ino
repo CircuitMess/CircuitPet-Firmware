@@ -4,6 +4,9 @@
 #include <CircuitOS.h>
 #include <SPIFFS.h>
 #include "src/Home/DuckScreen.h"
+extern "C" {
+#include <bootloader_random.h>
+}
 
 Display* display;
 Sprite* baseSprite;
@@ -21,6 +24,10 @@ void initLog(){
 void setup(){
 	Serial.begin(115200);
 	initLog();
+
+	bootloader_random_enable();
+	srand(esp_random());
+	bootloader_random_disable();
 
 	CircuitPet.begin(false);
 	Input* input = CircuitPet.getInput();
