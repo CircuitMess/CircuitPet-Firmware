@@ -48,6 +48,12 @@ void DuckScreen::onStart(){
 	Input::getInstance()->addListener(this);
 	LoopManager::addListener(this); //Note - possible crash if start() is called before constructor finishes
 	hider.activity();
+
+	characterSprite.setRusty(StatMan.get().oilLevel < 25);
+	characterSprite.setCharLevel(StatMan.getLevel());
+	characterSprite.setAnim(Anim::General);
+
+	randInterval = rand() % 2000000 + 2000000;
 }
 
 void DuckScreen::onStop(){
@@ -56,6 +62,24 @@ void DuckScreen::onStop(){
 }
 
 void DuckScreen::loop(uint micros){
+	randCounter+=micros;
+	if(randCounter >= randInterval){
+		randCounter = 0;
+		Anim anim;
+		if(!specialAnimPlaying){
+			specialAnimPlaying = true;
+			randInterval = 300000;
+			int num = 1 + rand() % ((uint8_t)Anim::Count-1);
+			anim = (Anim)(num);
+		}else{
+			specialAnimPlaying = false;
+			randInterval = rand() % 2000000 + 2000000;
+			anim = Anim::General;
+		}
+
+		characterSprite.setAnim(anim);
+	}
+
 	bgSprite.push();
 
 	statsSprite.push();
