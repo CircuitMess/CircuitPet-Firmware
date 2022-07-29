@@ -79,6 +79,8 @@ void DuckScreen::buttonPressed(uint i){
 			menu.next();
 			break;
 		case BTN_A: {
+			if(hider.getState() != MenuHider::Shown) return;
+
 			auto func = menuItems[menu.getSelectedIndex()].primary;
 			if(func) func();
 			return;
