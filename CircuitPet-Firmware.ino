@@ -1,8 +1,12 @@
 #include <Arduino.h>
-#include <Chatter.h>
+#include <CircuitPet.h>
+#include <Loop/LoopManager.h>
 #include <CircuitOS.h>
 #include <SPIFFS.h>
 #include "src/Home/DuckScreen.h"
+extern "C" {
+#include <bootloader_random.h>
+}
 
 Display* display;
 Sprite* baseSprite;
@@ -21,10 +25,14 @@ void setup(){
 	Serial.begin(115200);
 	initLog();
 
-	Chatter.begin();
-	Input* input = Chatter.getInput();
+	bootloader_random_enable();
+	srand(esp_random());
+	bootloader_random_disable();
 
-	display = Chatter.getDisplay();
+	CircuitPet.begin(false);
+	Input* input = CircuitPet.getInput();
+
+	display = CircuitPet.getDisplay();
 	baseSprite = display->getBaseSprite();
 
 	baseSprite->clear(TFT_BLACK);
@@ -35,6 +43,7 @@ void setup(){
 
 	auto duck = new DuckScreen(baseSprite);
 	duck->start();
+	CircuitPet.fadeIn();
 }
 
 uint32_t t = 0;

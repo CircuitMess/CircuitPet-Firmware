@@ -2,13 +2,13 @@
 
 #include <utility>
 #include <Loop/LoopManager.h>
-#include <Chatter.h>
+#include <CircuitPet.h>
 
 Game::Game(const char* root, std::vector<ResDescriptor> resources) : resMan(root), resources(std::move(resources)),
 loadTask("loadTask", [](Task* t){
 	 auto game = (Game*) t->arg;
 	 game->loadFunc();
-}, 4096, this), render(this, Chatter.getDisplay()->getBaseSprite()), collision(this){
+}, 4096, this), render(this, CircuitPet.getDisplay()->getBaseSprite()), collision(this){
 
 }
 
@@ -54,17 +54,28 @@ void Game::addObject(std::shared_ptr<GameObject> obj){
 	objects.insert(obj);
 }
 
-void Game::removeObject(std::shared_ptr<GameObject> obj){
-	objects.erase(obj);
+void Game::removeObject(std::shared_ptr<GameObject> obj){ 
 	collision.removeObject(*obj);
+	objects.erase(obj); 
 }
 
 void Game::loop(uint micros){
+	if(popped) goto poppedLabel;
+
 	collision.update(micros);
-	onLoop((float) micros / 1000000.0f);
+	onLoop((float)micros / 1000000.0f);
+	if(popped) goto poppedLabel;
+
 	render.update(micros);
-	onRender(Chatter.getDisplay()->getBaseSprite());
-	collision.drawDebug(Chatter.getDisplay()->getBaseSprite());
+	onRender(CircuitPet.getDisplay()->getBaseSprite());
+	if(popped) goto poppedLabel;
+
+	collision.drawDebug(CircuitPet.getDisplay()->getBaseSprite());
+
+	return;
+
+	poppedLabel:
+	State::pop();
 }
 
 void Game::onStart(){ }
@@ -76,3 +87,7 @@ void Game::onLoad(){ }
 void Game::onLoop(float deltaTime){ }
 
 void Game::onRender(Sprite* canvas){ }
+
+void Game::pop(){
+	popped = true;
+}

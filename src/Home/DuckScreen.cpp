@@ -2,7 +2,7 @@
 #include <Loop/LoopManager.h>
 #include "../Stats/StatsManager.h"
 #include "../Games/TestGame.h"
-#include <Chatter.h>
+#include <CircuitPet.h>
 
 DuckScreen::DuckScreen(Sprite* base) : State(), base(base), bgSprite(base, StatMan.getLevel()),
 									   osSprite(base, StatMan.getLevel()),
@@ -73,13 +73,15 @@ void DuckScreen::buttonPressed(uint i){
 
 	switch(i){
 		case BTN_LEFT:
-			menu.prev();
+			selection = menu.prev();
 			break;
 		case BTN_RIGHT:
-			menu.next();
+			selection = menu.next();
 			break;
 		case BTN_A: {
-			auto func = menuItems[menu.getSelectedIndex()].primary;
+			if(hider.getState() != MenuHider::Shown) return;
+
+			auto func = menuItems[selection].primary;
 			if(func) func();
 			return;
 		}

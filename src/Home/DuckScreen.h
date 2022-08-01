@@ -30,6 +30,8 @@ private:
 	Menu menu;
 	MenuHider hider;
 
+	uint8_t selection = 0;
+
 	std::vector<MenuItem> menuItems;
 
 	constexpr static uint8_t osX = 125;

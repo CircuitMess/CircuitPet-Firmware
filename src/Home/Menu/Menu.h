@@ -1,5 +1,5 @@
-#ifndef BYTEBOI_GAMESCROLLER_H
-#define BYTEBOI_GAMESCROLLER_H
+#ifndef CIRCUITPET_GAMESCROLLER_H
+#define CIRCUITPET_GAMESCROLLER_H
 
 #include <Arduino.h>
 #include <CircuitOS.h>
@@ -79,4 +79,4 @@ private:
 };
 
 
-#endif //BYTEBOI_GAMESCROLLER_H
+#endif //CIRCUITPET_GAMESCROLLER_H
