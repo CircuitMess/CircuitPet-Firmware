@@ -13,7 +13,6 @@
 class Game4 : public Game, private InputListener{
 public:
 	Game4();
-	~Game4();
 	float getSpeed();
 
 protected:
@@ -24,9 +23,8 @@ protected:
 	void onRender(Sprite* canvas) override;
 
 private:
-	TileManager* tileManager;
-	Duck* duck;
-	std::shared_ptr<Sprite> scoreSprite;
+	std::unique_ptr<TileManager> tileManager;
+	std::unique_ptr<Duck> duck;
 
 	void buttonPressed(uint i) override;
 
@@ -37,6 +35,7 @@ private:
 	};
 	void setupObstacles();
 	void spawn();
+	void scoreUp();
 
 	const int tileDim = 16;
 	const int topY = 128 - 32;
@@ -48,7 +47,9 @@ private:
 	const float speedIncrement = 0.5f;
 	bool isDone = false;
 	int score = 0;
+	const int scoreMax = 5;
 
+	std::shared_ptr<Sprite> scoreSprite;
 	std::shared_ptr<GameObject> leftWall;
 	std::shared_ptr<GameObject> leftWallObject;
 	std::shared_ptr<GameObject> bg;

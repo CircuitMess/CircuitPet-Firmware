@@ -28,14 +28,8 @@ Game4::Game4() : Game("/Games/Game4", {
 		{ "/DuckWalk.gif",       {}, false }
 }){}
 
-Game4::~Game4(){
-	delete (duck);
-	delete (tileManager);
-}
 
 void Game4::onLoad(){
-	srand(time(nullptr));
-
 	setupObstacles();
 
 	tileManager = new TileManager(movingTiles);
@@ -90,7 +84,7 @@ void Game4::onLoad(){
 	duckGoRc->getRenderComponent()->setLayer(0);
 	duckGoRc->setPos({ 5, 50 });
 
-	duck = new Duck(duckGoRc, duckGoCc, this);
+	duck = std::make_unique<Duck>(duckGoRc, duckGoCc, this);
 	duck->setFiles(getFile("/DuckWalk.gif"),
 				   getFile("/DuckDown.gif"),
 				   getFile("/DuckJump.gif"),
@@ -99,10 +93,13 @@ void Game4::onLoad(){
 				   getFile("/DuckUnDucking.gif"),
 				   getFile("/DuckWin.gif"));
 
-	auto scoreObj = std::make_shared<GameObject>(std::make_unique<SpriteRC>(PixelDim{ 50, 7}), nullptr);
-	scoreObj->setPos({ 160 - 60 - 1, 2});
+	auto scoreObj = std::make_shared<GameObject>(std::make_unique<SpriteRC>(PixelDim{ 60, 7}), nullptr);
+	scoreObj->setPos({ 160 - 65 - 1, 2});
 	scoreSprite = std::static_pointer_cast<SpriteRC>(scoreObj->getRenderComponent())->getSprite();
 	scoreSprite->clear(TFT_TRANSPARENT);
+	scoreSprite->setTextColor(TFT_BLACK);
+	scoreSprite->setCursor(0, 0);
+	scoreSprite->printf("Score:%d/%d", score,scoreMax);
 	addObject(scoreObj);
 }
 
@@ -164,9 +161,12 @@ void Game4::setupObstacles(){
 }
 
 void Game4::spawn(){
-	speed += speedIncrement;
-	spawnRate -= speedIncrement / 10;
-	if(speed > speedMax){
+	if(speed < speedMax){
+		speed += speedIncrement;
+		spawnRate -= speedIncrement / 10;
+	}
+
+	if(score == scoreMax - 1){
 		isDone = true;
 		goal = std::make_shared<GameObject>(
 				std::make_unique<StaticRC>(getFile("/Goal.raw"), PixelDim{ 44, 20 }),
@@ -219,14 +219,18 @@ void Game4::spawn(){
 	collision.addPair(*leftWallObject, *gObj, [this](){
 		removeObject(movingObjects[0]);
 		movingObjects.erase(movingObjects.begin());
-		score++;
-		scoreSprite->clear(TFT_TRANSPARENT);
-		scoreSprite->setTextColor(TFT_DARKGREEN);
-		scoreSprite->setCursor(0, 0);
-		scoreSprite->printf("Score:%d", score);
+		scoreUp();
 	});
 }
 
 float Game4::getSpeed(){
 	return speed;
+}
+
+void Game4::scoreUp(){
+	score++;
+	scoreSprite->clear(TFT_TRANSPARENT);
+	scoreSprite->setTextColor(TFT_BLACK);
+	scoreSprite->setCursor(0, 0);
+	scoreSprite->printf("Score:%d/%d", score,scoreMax);
 }

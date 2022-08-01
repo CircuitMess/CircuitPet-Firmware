@@ -99,6 +99,7 @@ void Duck::death(){
 	animRc->setAnim(down);
 	animRc->setLoopDoneCallback([this](uint32_t){
 		animRc->stop();
+		delay(1400);
 		game4->pop();
 	});
 }
