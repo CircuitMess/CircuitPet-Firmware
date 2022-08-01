@@ -31,8 +31,8 @@ Game4::Game4() : Game("/Games/Game4", {
 
 void Game4::onLoad(){
 	setupObstacles();
-
-	tileManager = new TileManager(movingTiles);
+	///Tiles
+	tileManager = std::make_unique<TileManager>(movingTiles);
 	tileManager->addFilePair(getFile("/TileTop1.raw"), getFile("/TileBot1.raw"));
 	tileManager->addFilePair(getFile("/TileTop2.raw"), getFile("/TileBot2.raw"));
 	tileManager->create(); // creates GameObjects into movingTiles
@@ -51,18 +51,19 @@ void Game4::onLoad(){
 	leftWallObject->setPos({ -45, 0 });
 	addObject(leftWallObject);
 
-	for(auto obj: movingTiles){
+	for(int i = 0; i < movingTiles.size(); i++){
+		auto obj = movingTiles[i];
 		addObject(obj);
-		collision.addPair(*leftWall, *obj, [this, obj](){ tileManager->reset(obj); });
+		collision.addPair(*leftWall, *obj, [this, i](){ tileManager->reset(i); });
 	}
-
+	///Background
 	bg = std::make_shared<GameObject>(
 			std::make_unique<StaticRC>(getFile("/Background.raw"), PixelDim{ 160, topY }),
 			nullptr
 	);
 	bg->getRenderComponent()->setLayer(-1);
 	addObject(bg);
-
+	///Duck
 	std::initializer_list<glm::vec2> points = {{ 11, 23 },
 											   { 21, 8 },
 											   { 31, 16 },
@@ -92,9 +93,9 @@ void Game4::onLoad(){
 				   getFile("/DuckDucked.gif"),
 				   getFile("/DuckUnDucking.gif"),
 				   getFile("/DuckWin.gif"));
-
-	auto scoreObj = std::make_shared<GameObject>(std::make_unique<SpriteRC>(PixelDim{ 60, 7}), nullptr);
-	scoreObj->setPos({ 160 - 65 - 1, 2});
+	///Score
+	auto scoreObj = std::make_shared<GameObject>(std::make_unique<SpriteRC>(PixelDim{ 70, 7}), nullptr);
+	scoreObj->setPos({ 160 - 75 - 1, 2});
 	scoreSprite = std::static_pointer_cast<SpriteRC>(scoreObj->getRenderComponent())->getSprite();
 	scoreSprite->clear(TFT_TRANSPARENT);
 	scoreSprite->setTextColor(TFT_BLACK);

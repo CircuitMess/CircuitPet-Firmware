@@ -47,7 +47,7 @@ private:
 	const float speedIncrement = 0.5f;
 	bool isDone = false;
 	int score = 0;
-	const int scoreMax = 5;
+	const int scoreMax = 30;
 
 	std::shared_ptr<Sprite> scoreSprite;
 	std::shared_ptr<GameObject> leftWall;

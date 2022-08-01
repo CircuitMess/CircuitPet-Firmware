@@ -19,18 +19,18 @@ void TileManager::create(){
 				std::make_unique<RectCC>(glm::vec2{ tileDim, tileDim })
 		);
 		movingObjects.push_back(setOfTiles);
-		drawTiles(setOfTiles);
+		drawTiles(iArray);
 		setOfTiles->setPos({ iArray * tilesPerArray * tileDim, topY });
 	}
 }
 
-void TileManager::reset(std::shared_ptr<GameObject> tiles){
-	drawTiles(tiles);
-	tiles->setPos({ (arrays-1) * (tilesPerArray) * tileDim, topY });
+void TileManager::reset(int objectIndex){
+	drawTiles(objectIndex);
+	movingObjects[objectIndex]->setPos({ (arrays - 1) * (tilesPerArray) * tileDim, topY });
 }
 
-void TileManager::drawTiles(std::shared_ptr<GameObject> tiles){
-	auto sprite = std::static_pointer_cast<SpriteRC>(tiles->getRenderComponent())->getSprite();
+void TileManager::drawTiles(int objectIndex){
+	auto sprite = std::static_pointer_cast<SpriteRC>(movingObjects[objectIndex]->getRenderComponent())->getSprite();
 
 	for(int iTile = 0; iTile < tilesPerArray; iTile++){
 		int randTop = rand() % topFiles.size();

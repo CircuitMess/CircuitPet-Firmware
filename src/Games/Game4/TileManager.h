@@ -11,11 +11,11 @@ class TileManager {
 public:
 	TileManager(std::vector<std::shared_ptr<GameObject>>& movingObjects);
 	void addFilePair(File topFile, File botFile);
-	void reset(std::shared_ptr<GameObject> tiles);
+	void reset(int objectIndex);
 	void create();
 
 private:
-	void drawTiles(std::shared_ptr<GameObject> tiles);
+	void drawTiles(int objectIndex);
 
 	const int tileDim = 16;
 	const int topY = 96;
