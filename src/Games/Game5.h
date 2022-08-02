@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <Input/InputListener.h>
 #include "../GameEngine/Game.h"
-#include "Chatter.h"
+#include "CircuitPet.h"
 #include "../GameEngine/Rendering/AnimRC.h"
 #include <deque>
 
