@@ -13,10 +13,13 @@ public:
 
 	void update(Stats delta);
 
-	bool hasDied();
+	bool hasDied() const;
 
-	const Stats& get();
-	uint8_t getLevel();
+	bool isHatched() const;
+	void setHatched(bool hatched);
+
+	const Stats& get() const;
+	uint8_t getLevel() const;
 
 	void setPaused(bool pause);
 
@@ -32,6 +35,7 @@ private:
 	static const uint16_t levelupThresholds[];
 
 	uint8_t gameOverCount = 0;
+	bool hatched = false;
 	bool paused = false;
 
 	ClockListener timedUpdateListener;
