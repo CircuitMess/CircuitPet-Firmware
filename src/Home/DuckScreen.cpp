@@ -16,8 +16,6 @@ DuckScreen::DuckScreen(Sprite* base) : State(), base(base), characterSprite(base
 
 void DuckScreen::onStart(){
 	Input::getInstance()->addListener(this);
-	LoopManager::addListener(this); //Note - possible crash if start() is called before constructor finishes
-	hider.activity();
 
 	//load resources
 	bgSprite = std::make_unique<BgSprite>(base, StatMan.getLevel());
@@ -56,6 +54,11 @@ void DuckScreen::onStart(){
 
 	menu.setOffsetY(menuY);
 	menu.setItems(menuItems);
+
+	LoopManager::loop();
+	LoopManager::addListener(this); //Note - possible crash if start() is called before constructor finishes
+	hider.activity();
+
 }
 
 void DuckScreen::onStop(){

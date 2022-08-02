@@ -3,7 +3,7 @@
 #include <Loop/LoopManager.h>
 #include <CircuitOS.h>
 #include <SPIFFS.h>
-#include "src/Home/DuckScreen.h"
+#include "src/Intro.h"
 extern "C" {
 #include <bootloader_random.h>
 }
@@ -41,8 +41,10 @@ void setup(){
 	baseSprite->setTextFont(0);
 	baseSprite->setTextSize(0);
 
-	auto duck = new DuckScreen(baseSprite);
-	duck->start();
+	auto intro = new Intro(baseSprite);
+	LoopManager::loop();
+	intro->start();
+
 	CircuitPet.fadeIn();
 }
 

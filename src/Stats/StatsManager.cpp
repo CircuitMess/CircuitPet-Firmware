@@ -26,16 +26,16 @@ void StatsManager::update(Stats delta){
 	});
 }
 
-bool StatsManager::hasDied(){
+bool StatsManager::hasDied() const{
 	return gameOverCount > 24; //dies after 24hrs of zero happiness
 }
 
 
-const Stats& StatsManager::get(){
+const Stats& StatsManager::get() const{
 	return stats;
 }
 
-uint8_t StatsManager::getLevel(){
+uint8_t StatsManager::getLevel() const{
 	const uint8_t levelupsNum = sizeof(levelupThresholds) / sizeof(uint16_t);
 	for(uint8_t i = 0; i < levelupsNum; i++){
 		if(stats.experience < levelupThresholds[i]){
@@ -53,6 +53,7 @@ void StatsManager::store(){
 	File f = SPIFFS.open("/stats.bin", "w");
 	f.write((uint8_t*)&stats, sizeof(Stats));
 	f.write(gameOverCount);
+	f.write(hatched);
 	f.close();
 }
 
@@ -69,6 +70,8 @@ void StatsManager::load(){
 
 	f.read((uint8_t*)&stats, sizeof(Stats));
 	gameOverCount = f.read();
+	hatched = f.read();
+
 	f.close();
 }
 
@@ -87,4 +90,12 @@ void StatsManager::timedUpdate(){
 		listener->statsChanged(stats, false);
 	});
 
+}
+
+bool StatsManager::isHatched() const{
+	return hatched;
+}
+
+void StatsManager::setHatched(bool hatched){
+	StatsManager::hatched = hatched;
 }
