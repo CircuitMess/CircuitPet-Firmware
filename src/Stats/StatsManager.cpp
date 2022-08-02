@@ -1,5 +1,6 @@
 #include "StatsManager.h"
 #include <SPIFFS.h>
+#include "../Clock/ClockMaster.h"
 
 StatsManager StatMan;
 static const char* tag = "StatsManager";
@@ -11,7 +12,8 @@ StatsManager::StatsManager() : timedUpdateListener(3600000, false, true, "StatsM
 }
 
 void StatsManager::begin(){
-
+	load();
+	Clock.addListener(&timedUpdateListener);
 }
 
 void StatsManager::update(Stats delta){
@@ -24,18 +26,20 @@ void StatsManager::update(Stats delta){
 	iterateListeners([this, &levelUp](StatsChangedListener* listener){
 		listener->statsChanged(stats, levelUp);
 	});
+
+	store();
 }
 
-bool StatsManager::hasDied(){
+bool StatsManager::hasDied() const{
 	return gameOverCount > 24; //dies after 24hrs of zero happiness
 }
 
 
-const Stats& StatsManager::get(){
+const Stats& StatsManager::get() const{
 	return stats;
 }
 
-uint8_t StatsManager::getLevel(){
+uint8_t StatsManager::getLevel() const{
 	const uint8_t levelupsNum = sizeof(levelupThresholds) / sizeof(uint16_t);
 	for(uint8_t i = 0; i < levelupsNum; i++){
 		if(stats.experience < levelupThresholds[i]){
@@ -53,17 +57,20 @@ void StatsManager::store(){
 	File f = SPIFFS.open("/stats.bin", "w");
 	f.write((uint8_t*)&stats, sizeof(Stats));
 	f.write(gameOverCount);
+	f.write(hatched);
 	f.close();
 }
 
 void StatsManager::load(){
 	File f = SPIFFS.open("/stats.bin", "r");
 
-	if(!f || f.available() != sizeof(Stats) + sizeof(gameOverCount)){
+	if(!f || f.available() != sizeof(Stats) + sizeof(gameOverCount) + sizeof(hatched)){
 		ESP_LOGW(tag, "Stats file not found or corrupt! Setting defaults.");
 		stats.happiness = 100;
 		stats.oilLevel = 100;
 		stats.experience = 0;
+		gameOverCount = 0;
+		hatched = false;
 		return;
 	}
 
@@ -77,6 +84,8 @@ void StatsManager::load(){
 		return;
 	}
 	gameOverCount = f.read();
+	hatched = f.read();
+
 	f.close();
 }
 
@@ -95,4 +104,14 @@ void StatsManager::timedUpdate(){
 		listener->statsChanged(stats, false);
 	});
 
+	store();
+}
+
+bool StatsManager::isHatched() const{
+	return hatched;
+}
+
+void StatsManager::setHatched(bool hatched){
+	StatsManager::hatched = hatched;
+	store();
 }
