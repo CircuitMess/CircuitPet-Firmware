@@ -30,6 +30,10 @@ private:
 	Menu menu;
 	MenuHider hider;
 
+	uint32_t randCounter = 0;
+	uint32_t randInterval = 0; //between 2s and 6s
+	bool specialAnimPlaying = false;
+
 	uint8_t selection = 0;
 
 	std::vector<MenuItem> menuItems;

@@ -6,7 +6,7 @@
 #include "../Games/Game5.h"
 #include <CircuitPet.h>
 
-DuckScreen::DuckScreen(Sprite* base) : State(), base(base), characterSprite(base, StatMan.getLevel(), StatMan.get().oilLevel, Anim::General),
+DuckScreen::DuckScreen(Sprite* base) : State(), base(base), characterSprite(base, StatMan.getLevel(), StatMan.get().oilLevel < 25, Anim::General),
 									   menu(base), hider(&menu){
 
 
@@ -59,6 +59,12 @@ void DuckScreen::onStart(){
 	LoopManager::addListener(this); //Note - possible crash if start() is called before constructor finishes
 	hider.activity();
 
+	characterSprite.setRusty(StatMan.get().oilLevel < 25);
+	characterSprite.setCharLevel(StatMan.getLevel());
+	characterSprite.setAnim(Anim::General);
+
+	randInterval = rand() % 4000000 + 2000000;
+
 }
 
 void DuckScreen::onStop(){
@@ -73,6 +79,24 @@ void DuckScreen::onStop(){
 }
 
 void DuckScreen::loop(uint micros){
+	randCounter+=micros;
+	if(randCounter >= randInterval){
+		randCounter = 0;
+		Anim anim;
+		if(!specialAnimPlaying){
+			specialAnimPlaying = true;
+			randInterval = 1000000;
+			int num = 1 + rand() % ((uint8_t)Anim::Count-1);
+			anim = (Anim)(num);
+		}else{
+			specialAnimPlaying = false;
+			randInterval = rand() % 4000000 + 2000000;
+			anim = Anim::General;
+		}
+
+		characterSprite.setAnim(anim);
+	}
+
 	bgSprite->push();
 
 	statsSprite->push();
