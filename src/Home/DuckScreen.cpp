@@ -6,7 +6,7 @@
 #include "../Games/Game5.h"
 #include <CircuitPet.h>
 
-DuckScreen::DuckScreen(Sprite* base) : State(), base(base), characterSprite(base, StatMan.getLevel(), StatMan.get().oilLevel, Anim::General),
+DuckScreen::DuckScreen(Sprite* base) : State(), base(base), characterSprite(base, StatMan.getLevel(), StatMan.get().oilLevel < 25, Anim::General),
 									   menu(base), hider(&menu){
 
 
