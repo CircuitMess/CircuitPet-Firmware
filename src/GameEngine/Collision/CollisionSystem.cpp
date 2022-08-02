@@ -27,6 +27,10 @@ CollisionSystem::CollisionSystem(const Game* game) : GameSystem(game), Walls({
 void CollisionSystem::update(uint32_t deltaMicros){
 	for(auto& pair : pairs){
 
+		if(std::find(removedPairs.begin(), removedPairs.end(), pair) != removedPairs.end()){
+			continue;
+		}
+
 		auto type1 = pair.first->getCollisionComponent()->getType();
 		auto type2 = pair.second->getCollisionComponent()->getType();
 
