@@ -55,3 +55,7 @@ void MenuHider::loop(uint deltaMicros){
 			break;
 	}
 }
+
+MenuHider::State MenuHider::getState() const{
+	return state;
+}
