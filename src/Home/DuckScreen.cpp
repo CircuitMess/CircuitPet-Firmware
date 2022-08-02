@@ -100,8 +100,8 @@ void DuckScreen::loop(uint micros){
 			currentStats.happiness = prevStats.happiness + ((float)(targetStats.happiness - prevStats.happiness)) * ease;
 		}
 
-		statsSprite.setHappiness(currentStats.happiness);
-		statsSprite.setOilLevel(currentStats.oilLevel);
+		statsSprite->setHappiness(currentStats.happiness);
+		statsSprite->setOilLevel(currentStats.oilLevel);
 	}
 
 	//playing random duck animations while idling
