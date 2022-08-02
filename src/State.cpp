@@ -25,8 +25,8 @@ void State::push(State* parent){
 void State::pop(){
 	if(parent == nullptr) return;
 	stop();
-	parent->start();
 	delete this;
+	parent->start();
 }
 
 bool State::isStarted() const{
