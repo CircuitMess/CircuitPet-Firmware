@@ -391,6 +391,9 @@ void Game6::gameOver(){
 
 	for(auto& asteroid : asteroidPool){
 		collision.removePair(*asteroid.gObj, *player.getObj());
+		for(auto& bullet : bulletPool){
+			collision.removePair(*asteroid.gObj, *bullet.gObj);
+		}
 	}
 
 	state = DeathAnim;
