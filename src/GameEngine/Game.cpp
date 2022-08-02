@@ -2,13 +2,13 @@
 
 #include <utility>
 #include <Loop/LoopManager.h>
-#include <Chatter.h>
+#include <CircuitPet.h>
 
 Game::Game(const char* root, std::vector<ResDescriptor> resources) : resMan(root), resources(std::move(resources)),
 loadTask("loadTask", [](Task* t){
 	 auto game = (Game*) t->arg;
 	 game->loadFunc();
-}, 4096, this), render(this, Chatter.getDisplay()->getBaseSprite()), collision(this){
+}, 4096, this), render(this, CircuitPet.getDisplay()->getBaseSprite()), collision(this){
 
 }
 
@@ -67,10 +67,10 @@ void Game::loop(uint micros){
 	if(popped) goto poppedLabel;
 
 	render.update(micros);
-	onRender(Chatter.getDisplay()->getBaseSprite());
+	onRender(CircuitPet.getDisplay()->getBaseSprite());
 	if(popped) goto poppedLabel;
 
-	collision.drawDebug(Chatter.getDisplay()->getBaseSprite());
+	collision.drawDebug(CircuitPet.getDisplay()->getBaseSprite());
 
 	return;
 
