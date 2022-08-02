@@ -2,6 +2,7 @@
 #include <Loop/LoopManager.h>
 #include "../Stats/StatsManager.h"
 #include "../Games/TestGame.h"
+#include "../Games/Game6/Game6.h"
 #include <CircuitPet.h>
 
 DuckScreen::DuckScreen(Sprite* base) : State(), base(base), characterSprite(base, StatMan.getLevel(), StatMan.get().oilLevel, Anim::General),
@@ -24,30 +25,32 @@ void DuckScreen::onStart(){
 	osSprite->setPos(osX, osY);
 	statsSprite->setPos(statsX, statsY);
 
+	auto pushGame = [this](Game* game){
+		stop();
+
+		game->load();
+
+		printf("Loading.");
+		while(!game->isLoaded()){
+			delay(500);
+			printf(".");
+		}
+		printf("\n");
+		printf("Free heap: %d B\n", ESP.getFreeHeap());
+
+		printf("\nStarting...\n");
+
+		LoopManager::loop();
+		game->push(this);
+	};
+
 	menuItems = {
-			{ "Oily", GameImage(base, "/MenuIcons/Icon1.raw"), [this](){
-				stop();
-				Game* game = new TestGame();
-				game->load();
-
-				printf("Loading.");
-				while(!game->isLoaded()){
-					delay(500);
-					printf(".");
-				}
-				printf("\n");
-				printf("Free heap: %d B\n", ESP.getFreeHeap());
-
-				printf("\nStarting...\n");
-
-				LoopManager::loop();
-				game->push(this);
-			} },
+			{ "Oily", GameImage(base, "/MenuIcons/Icon1.raw"), [pushGame](){pushGame(new TestGame());}},
 			{ "Flappy", GameImage(base, "/MenuIcons/Icon2.raw"), {} },
 			{ "Eaty", GameImage(base, "/MenuIcons/Icon3.raw"), {} },
 			{ "Jump & Duck", GameImage(base, "/MenuIcons/Icon4.raw"), {} },
 			{ "Disco danceoff", GameImage(base, "/MenuIcons/Icon5.raw"), {} },
-			{ "Space duck", GameImage(base, "/MenuIcons/Icon6.raw"), {} },
+			{ "Space duck", GameImage(base, "/MenuIcons/Icon6.raw"), [pushGame](){pushGame(new Game6());}},
 	};
 
 	menu.setOffsetY(menuY);
