@@ -19,3 +19,13 @@ void StaticRC::push(Sprite* parent, PixelDim pos, float rot) const{
 		rotated.pushRotateZoomWithAA(pos.x + dim.x/2, pos.y + dim.y/2, rot, 1, 1, TFT_TRANSPARENT);
 	}
 }
+
+void StaticRC::setFile(File file){
+	StaticRC::file = file;
+}
+
+void StaticRC::setFile(File file, PixelDim dim){
+	StaticRC::file = file;
+	StaticRC::dim = dim;
+}
+
