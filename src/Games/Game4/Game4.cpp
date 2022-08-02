@@ -210,10 +210,9 @@ void Game4::spawn(){
 	gObj->setPos({ 160, posY });
 	gObj->getRenderComponent()->setLayer(1);
 
-	collision.addPair(*gObj, *duck->getGameObjectCc(), [this, gObj](){
+	collision.addPair(*gObj, *duck->getGameObjectCc(), [this](){
 		speed = 0.0f;
 		spawnRate = 10000.0f;
-		collision.removePair(*duck->getGameObjectCc(), *gObj);
 		duck->death();
 	});
 	movingObjects.push_back(gObj);
