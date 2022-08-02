@@ -1,7 +1,8 @@
 #include "Intro.h"
 #include <SPIFFS.h>
 #include "HatchingState.h"
-
+#include "Home/DuckScreen.h"
+#include "Stats/StatsManager.h"
 #include <Loop/LoopManager.h>
 #include <FS/RamFile.h>
 #include <FS/CompressedFile.h>
@@ -34,9 +35,20 @@ void Intro::loop(uint micros){
 		volatile auto temp = instance->base;
 		instance->stop();
 		delete instance;
-		auto hatch = new HatchingState(temp);
-		LoopManager::loop();
-		hatch->start();
+
+		StatMan.begin();
+
+		if(StatMan.isHatched()){
+			auto duck = new DuckScreen(temp);
+			LoopManager::loop();
+			duck->start();
+		}else{
+			StatMan.setPaused(true);
+			auto hatch = new HatchingState(temp);
+			LoopManager::loop();
+			hatch->start();
+		}
+
 		return;
 	}
 

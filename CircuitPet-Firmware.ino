@@ -4,6 +4,9 @@
 #include <CircuitOS.h>
 #include <SPIFFS.h>
 #include "src/Intro.h"
+#include "src/Stats/StatsManager.h"
+#include "src/Clock/ClockMaster.h"
+
 extern "C" {
 #include <bootloader_random.h>
 }
@@ -31,6 +34,8 @@ void setup(){
 
 	CircuitPet.begin(false);
 	Input* input = CircuitPet.getInput();
+
+	Clock.begin();
 
 	display = CircuitPet.getDisplay();
 	baseSprite = display->getBaseSprite();

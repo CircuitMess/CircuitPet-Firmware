@@ -26,12 +26,13 @@ void HatchingState::onStop(){
 
 void HatchingState::loop(uint micros){
 	if(exit){
+		StatMan.setPaused(false);
+
 		volatile auto temp = base;
 		StatMan.setHatched(true);
 		stop();
 		delete this;
 		auto duck = new DuckScreen(temp);
-		LoopManager::loop();
 
 		duck->start();
 		return;

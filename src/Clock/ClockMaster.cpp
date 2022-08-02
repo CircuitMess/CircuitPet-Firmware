@@ -1,6 +1,8 @@
 #include "ClockMaster.h"
 #include <SPIFFS.h>
 
+ClockMaster Clock;
+
 static const char* tag = "ClockMaster";
 
 void ClockMaster::begin(){
