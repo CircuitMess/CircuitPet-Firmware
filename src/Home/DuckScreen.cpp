@@ -53,7 +53,8 @@ void DuckScreen::onStart(){
 	characterSprite.setCharLevel(StatMan.getLevel());
 	characterSprite.setAnim(Anim::General);
 
-	randInterval = rand() % 2000000 + 2000000;
+	randInterval = rand() % 4000000 + 2000000;
+
 }
 
 void DuckScreen::onStop(){
@@ -68,12 +69,12 @@ void DuckScreen::loop(uint micros){
 		Anim anim;
 		if(!specialAnimPlaying){
 			specialAnimPlaying = true;
-			randInterval = 300000;
+			randInterval = 1000000;
 			int num = 1 + rand() % ((uint8_t)Anim::Count-1);
 			anim = (Anim)(num);
 		}else{
 			specialAnimPlaying = false;
-			randInterval = rand() % 2000000 + 2000000;
+			randInterval = rand() % 4000000 + 2000000;
 			anim = Anim::General;
 		}
 
