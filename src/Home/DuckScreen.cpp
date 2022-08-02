@@ -55,9 +55,13 @@ void DuckScreen::onStart(){
 	menu.setOffsetY(menuY);
 	menu.setItems(menuItems);
 
+
 	LoopManager::loop();
 	LoopManager::addListener(this); //Note - possible crash if start() is called before constructor finishes
 	hider.activity();
+
+	currentStats = targetStats = prevStats = StatMan.get();
+	StatMan.addListener(this);
 
 	characterSprite.setRusty(StatMan.get().oilLevel < 25);
 	characterSprite.setCharLevel(StatMan.getLevel());
@@ -79,6 +83,28 @@ void DuckScreen::onStop(){
 }
 
 void DuckScreen::loop(uint micros){
+	//stats display easing when a change occurs
+	if(currentStats != targetStats){
+
+		easeTimer += micros / 1000000.0;
+		float x = easeTimer / easeTime;
+
+		if(x >= 1.f){
+			currentStats = targetStats;
+		}else{
+
+			float ease = 1.0f - cos((x * PI) / 2);
+
+
+			currentStats.oilLevel = prevStats.oilLevel + ((float)(targetStats.oilLevel - prevStats.oilLevel)) * ease;
+			currentStats.happiness = prevStats.happiness + ((float)(targetStats.happiness - prevStats.happiness)) * ease;
+		}
+
+		statsSprite->setHappiness(currentStats.happiness);
+		statsSprite->setOilLevel(currentStats.oilLevel);
+	}
+
+	//playing random duck animations while idling
 	randCounter+=micros;
 	if(randCounter >= randInterval){
 		randCounter = 0;
@@ -129,3 +155,13 @@ void DuckScreen::buttonPressed(uint i){
 	}
 }
 
+void DuckScreen::statsChanged(const Stats& stats, bool leveledUp){
+	if(leveledUp){
+		//TODO - levelup anims
+	}
+
+	targetStats = stats;
+	prevStats = currentStats;
+
+	easeTimer = 0;
+}

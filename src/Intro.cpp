@@ -40,7 +40,6 @@ void Intro::loop(uint micros){
 
 		if(StatMan.isHatched()){
 			auto duck = new DuckScreen(temp);
-			LoopManager::loop();
 			duck->start();
 		}else{
 			StatMan.setPaused(true);
