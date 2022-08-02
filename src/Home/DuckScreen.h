@@ -23,10 +23,10 @@ protected:
 private:
 	Sprite* base;
 
-	BgSprite bgSprite;
-	OSSprite osSprite;
+	std::unique_ptr<BgSprite> bgSprite;
+	std::unique_ptr<OSSprite> osSprite;
 	CharacterSprite characterSprite;
-	StatsSprite statsSprite;
+	std::unique_ptr<StatsSprite> statsSprite;
 	Menu menu;
 	MenuHider hider;
 
