@@ -4,15 +4,19 @@
 #include "Menu.h"
 
 
-class MenuHider : LoopListener{
+class MenuHider : private LoopListener{
 public:
+	enum State{Shown, Hiding, Hidden, Showing};
+
 	MenuHider(Menu* menu);
 	void activity();
 	void loop(uint micros) override;
+	State getState() const;
+
 private:
 	Menu* menu;
 
-	enum State{Shown, Hiding, Hidden, Showing} state = Hidden;
+	State state = Hidden;
 
 	const uint32_t duration = 300000; //micros
 	const uint8_t deltaY = 64;

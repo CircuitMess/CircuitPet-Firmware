@@ -23,10 +23,11 @@ void State::push(State* parent){
 }
 
 void State::pop(){
+	auto volatile p = parent;
 	if(parent == nullptr) return;
 	stop();
-	parent->start();
 	delete this;
+	p->start();
 }
 
 bool State::isStarted() const{
