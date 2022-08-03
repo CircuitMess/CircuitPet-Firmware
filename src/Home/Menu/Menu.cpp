@@ -161,7 +161,6 @@ void Menu::push(){
 		}
 	}
 
-
 	canvas->drawIcon(borderFile, origin-2, originY+offsetY-2, width+4, width+4);
 }
 
@@ -169,6 +168,23 @@ void Menu::loop(uint micros){
 	if(items.size() < 4){
 		reset();
 		LoopManager::removeListener(this);
+		return;
+	}
+
+	if(shaking){
+		if(time >= duration){
+			time = 0;
+			shaking = false;
+			LoopManager::removeListener(this);
+			delta = 0;
+			repos();
+		}else{
+			time += micros / 1000000.0f;
+			float x = peakAmplitude* cos(velocity*time) + 64;
+			Serial.printf("x: %f\n",x);
+			getCGame()->setX(x);
+		}
+
 		return;
 	}
 
@@ -288,3 +304,7 @@ uint Menu::getSelectedIndex() const{
 	return selectedGame;
 }
 
+void Menu::shake(){
+	LoopManager::addListener(this);
+	shaking = true;
+}

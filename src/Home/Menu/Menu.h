@@ -53,6 +53,8 @@ public:
 
 	void setOffsetY(uint8_t y);
 
+	void shake();
+
 private:
 	const uint8_t gutter = 25;
 	const uint8_t width = 32;
@@ -71,6 +73,13 @@ private:
 	float delta = 0;
 	bool queued = false;
 	uint8_t multiplier = 1;
+
+	//////////Shaking
+	float peakAmplitude = 4.0f;
+	const float duration = 0.7f;
+	float time = 0.0f;
+	float velocity = 30.0f;
+	bool shaking = false;
 
 	void selectNext();
 	void selectPrev();

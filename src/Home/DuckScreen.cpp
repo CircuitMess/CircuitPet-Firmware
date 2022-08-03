@@ -147,7 +147,10 @@ void DuckScreen::buttonPressed(uint i){
 			break;
 		case BTN_A: {
 			if(hider.getState() != MenuHider::Shown) return;
-
+			if(menuItems[selection].levelRequired > StatMan.getLevel()){
+				menu.shake();
+				return;
+			}
 			auto func = menuItems[selection].primary;
 			if(func) func();
 			return;
