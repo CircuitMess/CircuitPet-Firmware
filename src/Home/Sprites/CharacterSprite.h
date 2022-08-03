@@ -5,7 +5,7 @@
 #include <experimental/optional>
 
 enum class Anim : uint8_t{
-	General, Scratch, LookAround, Stretch, Wave, Dance, Knock
+	General, Scratch, LookAround, Count // Stretch, Wave, Dance, Knock, TODO - add other anims when available
 };
 
 struct CharacterAnim{

@@ -3,7 +3,7 @@
 #define CIRCUITPET_FIRMWARE_COLLISIONSYSTEM_H
 
 #include <functional>
-#include <vector>
+#include <list>
 #include "../GameSystem.h"
 
 class CollisionSystem : public GameSystem {
@@ -35,6 +35,10 @@ private:
 		const GameObject* second;
 		std::function<void()> handler;
 		bool colliding = false;
+
+		bool operator==(const Pair& other) const {
+			return (first == other.first && second == other.second) || (first == other.second && second == other.first);
+		}
 	};
 
 	struct {
@@ -44,7 +48,9 @@ private:
 		GameObject right;
 	} Walls;
 
-	std::vector<Pair> pairs;
+	std::list<Pair> pairs;
+	std::list<Pair> removedPairs;
+	std::list<Pair> addedPairs;
 	void removeObject(const GameObject& GO);
 
 	static bool circleCircle(const GameObject& circle1, const GameObject& circle2);
