@@ -26,7 +26,7 @@ private:
 	static const char* paths[];
 	static const char* barPath;
 
-	void draw();
+	void drawLevel();
 };
 
 

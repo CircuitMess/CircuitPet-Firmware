@@ -29,6 +29,16 @@ struct Stats {
 		*this = *this - right;
 		return *this;
 	}
+
+	bool operator==(const Stats& right){
+		return oilLevel == right.oilLevel &&
+			   happiness == right.happiness &&
+			   experience == right.experience;
+	}
+
+	bool operator!=(const Stats& right){
+		return !(*this == right);
+	}
 };
 
 #endif //CIRCUITPET_FIRMWARE_STATS_HPP
