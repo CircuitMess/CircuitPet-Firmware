@@ -125,23 +125,6 @@ const char* StatSprite::paths[] = {
 const char* StatSprite::barPath = "/Stats/Bar.raw";
 
 StatSprite::StatSprite(Sprite* parent, StatSprite::Type type, uint8_t level) : sprite(parent, iconWidth + barWidth, iconHeight), type(type), level(level){
-	draw();
-}
-
-void StatSprite::setLevel(uint8_t level){
-	this->level = level;
-}
-
-void StatSprite::push(){
-	sprite.push();
-}
-
-void StatSprite::setPos(int16_t x, int16_t y){
-	sprite.setPos(x, y);
-}
-
-void StatSprite::draw(){
-	//draw icon
 	sprite.clear(TFT_TRANSPARENT);
 
 	sprite.fillRect(iconWidth - 3, 2, 6, barHeight, TFT_WHITE);
@@ -154,7 +137,42 @@ void StatSprite::draw(){
 		sprite.drawIcon(statTypeFile, 4, 0, iconWidth, iconHeight);
 	}else{
 		sprite.drawIcon(statTypeFile, 1, 0, iconWidth, iconHeight);
-	};
+	}
+
+	drawLevel();
+}
+
+void StatSprite::setLevel(uint8_t level){
+	this->level = level;
+	drawLevel();
+}
+
+void StatSprite::push(){
+	sprite.push();
+}
+
+void StatSprite::setPos(int16_t x, int16_t y){
+	sprite.setPos(x, y);
+}
+
+void StatSprite::drawLevel(){
+
+	//clear bar to white
+	rgb white0 = hsv2rgb({ 0, 0, 1.0 });
+	rgb white1 = hsv2rgb({ 0, 0, 0.8 });
+	rgb white2 = hsv2rgb({ 0, 0, 0.65 });
+
+	uint16_t w0 = lgfx::color565(white0.r * 255.0, white0.g * 255.0, white0.b * 255.0);
+	uint16_t w1 = lgfx::color565(white1.r * 255.0, white1.g * 255.0, white1.b * 255.0);
+	uint16_t w2 = lgfx::color565(white2.r * 255.0, white2.g * 255.0, white2.b * 255.0);
+
+	sprite.fillRect(iconWidth + 2, 4, barWidth - 4, 1, w0); //+2 pixels from the edge bar
+	sprite.fillRect(iconWidth + 2, 5, barWidth - 4, 1, w1); //+2 pixels from the edge bar
+	sprite.fillRect(iconWidth + 2, 6, barWidth - 4, 1, w2); //+2 pixels from the edge bar
+
+
+	//color bar according to level
+
 	int width = map(level, 0, 100, 0, barWidth - 4); //-4 pixels from the edge bar
 
 	double hue = (float) level / 100.0 * 60.0 / 255.0 * 360;
