@@ -16,11 +16,15 @@ class Launcher;
 struct MenuItem {
 	String text;
 	GameImage image;
+	GameImage imageLocked;
+	uint8_t levelRequired;
 	std::function<void()> primary;
 	std::function<void()> secondary;
 	bool loaded = false;
 
-	MenuItem(String text, const GameImage& image = GameImage(), std::function<void()> primary = {}, std::function<void()> secondary = {});
+	MenuItem(String text, uint8_t levelRequired, const GameImage& image = GameImage(), const GameImage& imageLocked = GameImage(), std::function<void()> primary = {},
+			 std::function<void()> secondary = {});
+
 };
 
 class Menu : public LoopListener {

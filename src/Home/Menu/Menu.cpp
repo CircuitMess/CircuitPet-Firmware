@@ -4,9 +4,11 @@
 #include <SPIFFS.h>
 #include <SD.h>
 #include <FS/RamFile.h>
+#include "../../Stats/StatsManager.h"
 
-MenuItem::MenuItem(String text, const GameImage& image, std::function<void()> primary, std::function<void()> secondary) :
-					text(std::move(text)), image(image), primary(primary), secondary(secondary){}
+MenuItem::MenuItem(String text, uint8_t levelRequired, const GameImage& image, const GameImage& imageLocked, std::function<void()> primary,
+				   std::function<void()> secondary) :
+					text(std::move(text)), levelRequired(levelRequired),image(image), imageLocked(imageLocked), primary(primary), secondary(secondary){}
 
 
 Menu::Menu(Sprite* canvas) : canvas(canvas), origin((canvas->width() - width) / 2){
@@ -27,6 +29,8 @@ void Menu::setItems(std::vector<MenuItem>& items){
 	for(auto& item : this->items){
 		item.image.setX(-width);
 		item.image.setY(originY);
+		item.imageLocked.setX(-width);
+		item.imageLocked.setY(originY);
 	}
 
 	repos();
@@ -39,6 +43,7 @@ void Menu::setOffsetY(uint8_t y){
 	offsetY = y;
 	for(auto& item : items){
 		item.image.setY(originY + offsetY);
+		item.imageLocked.setY(originY + offsetY);
 	}
 }
 
@@ -80,6 +85,8 @@ void Menu::repos(){
 	for(auto& item : items){
 		item.image.setX(-width);
 		item.image.setY(originY);
+		item.imageLocked.setX(-width);
+		item.imageLocked.setY(originY);
 	}
 
 	if(items.size() < 4) return;
@@ -215,25 +222,55 @@ void Menu::selectPrev(){
 }
 
 GameImage* Menu::getCGame(){
-	return &items[selectedGame].image;
+	if(items[selectedGame].levelRequired <= StatMan.getLevel()){
+		return &items[selectedGame].image;
+	}else{
+		return &items[selectedGame].imageLocked;
+	}
 }
 
 GameImage* Menu::getLGame(){
-	if(selectedGame == 0) return &items.back().image;
-	return &items[selectedGame - 1].image;
+	if(selectedGame == 0){
+		if(items.back().levelRequired <= StatMan.getLevel()){
+			return &items.back().image;
+		}
+		return &items.back().imageLocked;
+	}else{
+		if(items[selectedGame-1].levelRequired <= StatMan.getLevel()){
+			return &items[selectedGame - 1].image;
+		}
+		return &items[selectedGame - 1].imageLocked;
+	}
 }
 
 GameImage* Menu::getRGame(){
-	return &items[(selectedGame + 1) % items.size()].image;
+	if(items[(selectedGame + 1) % items.size()].levelRequired <= StatMan.getLevel()){
+		return &items[(selectedGame + 1) % items.size()].image;
+	}else{
+		return &items[(selectedGame + 1) % items.size()].imageLocked;
+	}
 }
 
 GameImage* Menu::getLLGame(){
-	if(selectedGame <= 1) return &items[items.size() - 2 + selectedGame].image;
-	return &items[selectedGame - 2].image;
+	if(selectedGame <= 1){
+		if(items[items.size() - 2 + selectedGame].levelRequired <= StatMan.getLevel()){
+			return &items[items.size() - 2 + selectedGame].image;
+		}
+		return &items[items.size() - 2 + selectedGame].imageLocked;
+	}else{
+		if(items[selectedGame - 2].levelRequired <= StatMan.getLevel()){
+			return &items[selectedGame - 2].image;
+		}
+		return &items[selectedGame - 2].imageLocked;
+	}
 }
 
 GameImage* Menu::getRRGame(){
-	return &items[(selectedGame + 2) % items.size()].image;
+	if(items[(selectedGame + 2) % items.size()].levelRequired <= StatMan.getLevel()){
+		return &items[(selectedGame + 2) % items.size()].image;
+	}else{
+		return &items[(selectedGame + 2) % items.size()].imageLocked;
+	}
 }
 
 void Menu::setCanvas(Sprite* canvas){
@@ -242,6 +279,8 @@ void Menu::setCanvas(Sprite* canvas){
 	for(auto& item : items){
 		if(!item.image) continue;
 		item.image.setCanvas(canvas);
+		if(!item.imageLocked) continue;
+		item.imageLocked.setCanvas(canvas);
 	}
 }
 
