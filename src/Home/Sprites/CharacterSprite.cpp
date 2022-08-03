@@ -67,7 +67,7 @@ void CharacterSprite::startNextAnim(){
 File CharacterSprite::getAnimFile(uint8_t charLevel, bool rusty, Anim anim){
 	char path[50];
 	if(rusty){
-		sprintf(path, "/Home/%02d_r_%s.gif", charLevel, animNames[(uint8_t)anim]);
+		sprintf(path, "/Home/rusty/%02d_%s.gif", charLevel, animNames[(uint8_t)anim]);
 	}else{
 		sprintf(path, "/Home/%02d_%s.gif", charLevel, animNames[(uint8_t)anim]);
 	}
