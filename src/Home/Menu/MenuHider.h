@@ -4,7 +4,7 @@
 #include "Menu.h"
 
 
-class MenuHider : LoopListener{
+class MenuHider : private LoopListener{
 public:
 	enum State{Shown, Hiding, Hidden, Showing};
 
