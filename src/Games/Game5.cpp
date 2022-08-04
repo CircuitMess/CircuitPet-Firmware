@@ -41,7 +41,7 @@ Game5::Game5() : Game("/Games/5", {
 		{ "/win.gif",            {}, false },
 		{ "/starFull.raw",            {}, true },
 		{ "/starEmpty.raw",            {}, true },
-		{ "/heart.raw",            {}, true }}),
+		RES_HEART}),
 				 bottomWall(nullptr, std::make_unique<RectCC>(glm::vec2 { 160, 20 })),
 				 scoreBar(std::make_shared<GameObject>(std::make_unique<SpriteRC>(PixelDim { 7, 110 }), nullptr)){
 
@@ -77,14 +77,9 @@ void Game5::onLoad(){
 	scoreStar->getRenderComponent()->setLayer(1);
 	addObject(scoreStar);
 
-	for(uint8_t i = 0; i < 3; i++){
-		hearts[i] = std::make_shared<GameObject>(std::make_unique<StaticRC>(getFile("/heart.raw"), PixelDim{7, 6}), nullptr);
-		hearts[i]->setPos({104 + i*9, 5});
-		hearts[i]->getRenderComponent()->setLayer(1);
-		addObject(hearts[i]);
-		hearts[i]->getRenderComponent()->setVisible(true);
-	}
-
+	hearts = std::make_unique<Hearts>(getFile(FILE_HEART));
+	hearts->getGO()->setPos({ 113, 4 });
+	addObject(hearts->getGO());
 
 	for(uint8_t i = 0; i < 3; ++i){
 		bars[i] = std::make_shared<GameObject>(std::make_unique<StaticRC>(getFile(barsIcons[i]), PixelDim { 14, 115 }), nullptr);
@@ -238,7 +233,7 @@ void Game5::noteHit(uint8_t track){
 
 	}else{
 		life--;
-		hearts[life]->getRenderComponent()->setVisible(false);
+		hearts->setLives(life);
 		if(life <= 0){
 			gameDone(false);
 			return;

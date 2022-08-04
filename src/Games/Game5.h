@@ -6,6 +6,7 @@
 #include "../GameEngine/Game.h"
 #include "CircuitPet.h"
 #include "../GameEngine/Rendering/AnimRC.h"
+#include "Common/Hearts.h"
 #include <deque>
 
 class Game5 : public Game, private InputListener {
@@ -30,7 +31,7 @@ private:
 	GameObject bottomWall;
 	ObjPtr scoreBar;
 	std::shared_ptr<Sprite> scoreBarSprite;
-	ObjPtr hearts[3];
+	std::unique_ptr<Hearts> hearts;
 
 	ObjPtr scoreStar;
 	ObjPtr bars[3];
