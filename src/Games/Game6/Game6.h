@@ -6,6 +6,8 @@
 #include "../../GameEngine/Game.h"
 #include "Player.h"
 #include "../../GameEngine/Rendering/AnimRC.h"
+#include "../Common/Hearts.h"
+#include "../Common/Score.h"
 
 class Game6 : public Game, private InputListener {
 protected:
@@ -20,8 +22,9 @@ protected:
 	void onRender(Sprite* canvas) override;
 
 private:
-	std::shared_ptr<Sprite> levelSprite;
-	std::shared_ptr<GameObject> hearts[3];
+	std::unique_ptr<Hearts> hearts;
+	std::unique_ptr<Score> scoreDisplay;
+	int score = 0;
 
 	enum {
 		Intro, Running, DeathAnim, DeathPause, Win
