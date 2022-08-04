@@ -5,6 +5,8 @@
 #include <Input/InputListener.h>
 #include "../../GameEngine/Game.h"
 #include "../../GameEngine/Rendering/AnimRC.h"
+#include "../Common/Hearts.h"
+#include "../Common/Score.h"
 #include <deque>
 #include <glm/vec2.hpp>
 
@@ -32,10 +34,9 @@ private:
 	float entry = 0;
 	float entryDuration = 1.0f;
 
-	ObjPtr hearts[3];
-	bool firstPress = true;
+	std::unique_ptr<Hearts> hearts;
+	std::unique_ptr<Score> scoreDisplay;
 
-	std::shared_ptr<Sprite> scoreSprite;
 	uint8_t life = 3;
 	void die();
 

@@ -15,7 +15,8 @@ constexpr Game2::ObstacleDesc Game2::BotObstacles[];
 Game2::Game2() : Game("/Games/2", {
 		{ "/duck.gif",          {}, true },
 		{ "/bg.raw",            {}, true },
-		{ "/heart.raw",            {}, true },
+		RES_HEART,
+		RES_GOBLET,
 		{ TopObstacles[0].path, {}, true },
 		{ TopObstacles[1].path, {}, true },
 		{ BotObstacles[0].path, {}, true },
@@ -34,19 +35,13 @@ void Game2::onLoad(){
 	bg->getRenderComponent()->setLayer(-1);
 	addObject(bg);
 
-	for(uint8_t i = 0; i < 3; i++){
-		hearts[i] = std::make_shared<GameObject>(std::make_unique<StaticRC>(getFile("/heart.raw"), PixelDim{7, 6}), nullptr);
-		hearts[i]->setPos({2 + i*9, 3});
-		hearts[i]->getRenderComponent()->setLayer(1);
-		addObject(hearts[i]);
-		hearts[i]->getRenderComponent()->setVisible(false);
-	}
+	hearts = std::make_unique<Hearts>(getFile(FILE_HEART));
+	hearts->getGO()->setPos({ 2, 2 });
+	addObject(hearts->getGO());
 
-	auto scoreObj = std::make_shared<GameObject>(std::make_unique<SpriteRC>(PixelDim{ 50, 7}), nullptr);
-	scoreObj->setPos({ 160 - 50 - 1, 2});
-	scoreSprite = std::static_pointer_cast<SpriteRC>(scoreObj->getRenderComponent())->getSprite();
-	scoreSprite->clear(TFT_TRANSPARENT);
-	addObject(scoreObj);
+	scoreDisplay = std::make_unique<Score>(getFile(FILE_GOBLET));
+	scoreDisplay->getGO()->setPos({ 160 - 2 - 28, 2 });
+	addObject(scoreDisplay->getGO());
 
 
 	duck = std::make_shared<GameObject>(
@@ -99,10 +94,7 @@ void Game2::onLoop(float deltaTime){
 		if(obstacle.top->getPos().x + 15 <= duckPosX && !obstacle.passed && state == Play){
 			score++;
 			obstacle.passed = true;
-			scoreSprite->clear(TFT_TRANSPARENT);
-			scoreSprite->setTextColor(TFT_WHITE);
-			scoreSprite->setCursor(0, 0);
-			scoreSprite->printf("Score: %d", score);
+			scoreDisplay->setScore(score);
 		}
 	}
 
@@ -182,12 +174,6 @@ void Game2::buttonPressed(uint i){
 	}else if(i != BTN_A) return;
 
 	if(state == Wait || state == FlyIn){
-		if(firstPress){
-			firstPress = false;
-			for(auto& heart : hearts){
-				heart->getRenderComponent()->setVisible(true);
-			}
-		}
 		anim->setLoopMode(GIF::Single);
 		state = Play;
 	}
@@ -247,7 +233,7 @@ void Game2::die(){
 	if(state != Play) return;
 
 	life--;
-	hearts[life]->getRenderComponent()->setVisible(false);
+	hearts->setLives(life);
 
 	state = FallOut;
 
