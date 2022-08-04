@@ -112,6 +112,7 @@ uint8_t Menu::prev(){
 		delta = (float) width + (float) gutter - delta;
 		queued = false;
 	}else{
+		state = moving;
 		delta = 1;
 		multiplier = 1;
 		getLLGame()->setX(origin - 2 * width - 2 * gutter);
@@ -137,6 +138,7 @@ uint8_t Menu::next(){
 		delta = (float) width + (float) gutter - delta;
 		queued = false;
 	}else{
+		state = moving;
 		delta = 1;
 		multiplier = 1;
 		getRRGame()->setX(origin + 2 * width + 2 * gutter);
@@ -170,54 +172,56 @@ void Menu::loop(uint micros){
 		LoopManager::removeListener(this);
 		return;
 	}
-
-	if(shaking){
-		if(time >= duration){
-			time = 0;
-			shaking = false;
+	switch (state){
+		case neutral:
 			LoopManager::removeListener(this);
-			delta = 0;
 			repos();
-		}else{
-			time += micros / 1000000.0f;
-			float x = peakAmplitude* cos(velocity*time) + 64;
-			Serial.printf("x: %f\n",x);
-			getCGame()->setX(x);
-		}
+			break;
 
-		return;
-	}
+		case shaking:
+			if(time >= duration){
+				time = 0;
+				state = neutral;
+				LoopManager::removeListener(this);
+				delta = 0;
+				repos();
+			}else{
+				time += micros / 1000000.0f;
+				float x = peakAmplitude* sin(velocity*time) + 64;
+				getCGame()->setX(x);
+			}
+			break;
 
-	delta += speed * (micros / 1000000.0f) * (float) multiplier;
+		case moving:
+			delta += speed * (micros / 1000000.0f) * (float) multiplier;
+			if(direction == PREV){
+				getLLGame()->setX(origin - 2 * width - 2 * gutter + delta);
+				getLGame()->setX(origin - width - gutter + delta);
+				getCGame()->setX(origin + delta);
+				getRGame()->setX(origin + width + gutter + delta);
+			}else{
+				getRRGame()->setX(origin + 2 * width + 2 * gutter - delta);
+				getRGame()->setX(origin + width + gutter - delta);
+				getCGame()->setX(origin - delta);
+				getLGame()->setX(origin - width - gutter - delta);
+			}
 
-	if(direction == PREV){
-		getLLGame()->setX(origin - 2 * width - 2 * gutter + delta);
-		getLGame()->setX(origin - width - gutter + delta);
-		getCGame()->setX(origin + delta);
-		getRGame()->setX(origin + width + gutter + delta);
-	}else{
-		getRRGame()->setX(origin + 2 * width + 2 * gutter - delta);
-		getRGame()->setX(origin + width + gutter - delta);
-		getCGame()->setX(origin - delta);
-		getLGame()->setX(origin - width - gutter - delta);
-	}
+			if(delta >= (width + gutter)){
+				if(direction == NEXT){
+					selectNext();
+				}else{
+					selectPrev();
+				}
 
-	if(delta >= (width + gutter)){
-		if(direction == NEXT){
-			selectNext();
-		}else{
-			selectPrev();
-		}
-
-		if(queued){
-			queued = false;
-			delta = 1;
-			return;
-		}
-
-		LoopManager::removeListener(this);
-		delta = 0;
-		repos();
+				if(queued){
+					queued = false;
+					delta = 1;
+					return;
+				}
+				delta = 0;
+				state = neutral;
+			}
+			break;
 	}
 }
 
@@ -305,6 +309,12 @@ uint Menu::getSelectedIndex() const{
 }
 
 void Menu::shake(){
+	if(state != neutral) return;
 	LoopManager::addListener(this);
-	shaking = true;
+	state = shaking;
+}
+
+bool Menu::isNeutral(){
+	if(state == neutral) return  true;
+	return false;
 }

@@ -7,6 +7,7 @@
 #include <Util/Vector.h>
 #include <functional>
 #include "GameImage.h"
+#include <math.h>
 
 class Sprite;
 class Launcher;
@@ -54,6 +55,7 @@ public:
 	void setOffsetY(uint8_t y);
 
 	void shake();
+	bool isNeutral();
 
 private:
 	const uint8_t gutter = 25;
@@ -74,12 +76,15 @@ private:
 	bool queued = false;
 	uint8_t multiplier = 1;
 
+	//////////States
+	enum State{neutral, moving, shaking};
+	State state = neutral;
+
 	//////////Shaking
 	float peakAmplitude = 4.0f;
-	const float duration = 0.7f;
-	float time = 0.0f;
 	float velocity = 30.0f;
-	bool shaking = false;
+	const float duration = 4*M_PI/velocity;
+	float time = 0.0f;
 
 	void selectNext();
 	void selectPrev();
