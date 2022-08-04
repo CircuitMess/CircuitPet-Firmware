@@ -171,6 +171,7 @@ void Game6::buttonPressed(uint i){
 			break;
 
 		case BTN_ENTER:
+			if(state != Running) return;
 			shootBullet();
 			break;
 	}
