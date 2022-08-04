@@ -10,8 +10,9 @@
 #include "Sprites/StatsSprite.h"
 #include "Menu/Menu.h"
 #include "Menu/MenuHider.h"
+#include "../Stats/StatsChangedListener.h"
 
-class DuckScreen : public LoopListener, public State, private InputListener {
+class DuckScreen : public LoopListener, public State, private InputListener, private StatsChangedListener {
 public:
 	DuckScreen(Sprite* base);
 	void loop(uint micros) override;
@@ -23,12 +24,24 @@ protected:
 private:
 	Sprite* base;
 
-	BgSprite bgSprite;
-	OSSprite osSprite;
+	std::unique_ptr<BgSprite> bgSprite;
+	std::unique_ptr<OSSprite> osSprite;
 	CharacterSprite characterSprite;
-	StatsSprite statsSprite;
+
+	std::unique_ptr<StatsSprite> statsSprite;
+	void statsChanged(const Stats& stats, bool leveledUp) override;
+	constexpr static float easeTime = 0.6f;
+	float easeTimer = 0;
+	Stats currentStats;
+	Stats targetStats;
+	Stats prevStats;
+
 	Menu menu;
 	MenuHider hider;
+
+	uint32_t randCounter = 0;
+	uint32_t randInterval = 0; //between 2s and 6s
+	bool specialAnimPlaying = false;
 
 	uint8_t selection = 0;
 
@@ -37,8 +50,8 @@ private:
 	constexpr static uint8_t osX = 125;
 	constexpr static uint8_t osY = 1;
 
-	constexpr static uint8_t characterX = 53;
-	constexpr static uint8_t characterY = 29;
+	constexpr static uint8_t characterX = 50;
+	constexpr static uint8_t characterY = 36;
 
 	constexpr static uint8_t statsX = 1;
 	constexpr static uint8_t statsY = 0;
