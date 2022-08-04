@@ -2,7 +2,6 @@
 #include <Loop/LoopManager.h>
 
 MenuHider::MenuHider(Menu* menu): menu(menu){
-	activity(); // used to set inactivityCount
 }
 
 void MenuHider::activity(){
@@ -55,4 +54,8 @@ void MenuHider::loop(uint deltaMicros){
 			}
 			break;
 	}
+}
+
+MenuHider::State MenuHider::getState() const{
+	return state;
 }

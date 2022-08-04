@@ -1,4 +1,3 @@
-
 #include <Pins.hpp>
 #include "Game1.h"
 #include <Input/Input.h>
@@ -53,7 +52,7 @@ void Game1::onLoad(){
 	);
 	addObject(duckGo);
 	duckGo->getRenderComponent()->setLayer(1);
-	duckGo->setPos({ 50, 30 });
+	duckGo->setPos({ 55, 30 });
 	duckAnim = std::static_pointer_cast<AnimRC>(duckGo->getRenderComponent());
 
 	bg = std::make_shared<GameObject>(
@@ -77,7 +76,7 @@ void Game1::onLoad(){
 void Game1::onLoop(float deltaTime){
 	indicator->move(deltaTime);
 	if(oilCan->move(deltaTime)){
-		duckGo->setPos({ 17, 16 }); //manually set for the gif to fit
+		duckGo->setPos({ 23, 16 }); //manually set for the gif to fit
 		duckAnim->setAnim(getFile("/OilyDone.gif"));
 		duckAnim->setLoopDoneCallback([this](uint32_t i){
 			delay(700);

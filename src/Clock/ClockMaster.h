@@ -14,6 +14,8 @@ struct PersistentListener{
 	uint64_t lastTick;
 };
 
+extern ClockMaster Clock;
+
 class ClockMaster : public LoopListener{
 public:
 	void begin();
