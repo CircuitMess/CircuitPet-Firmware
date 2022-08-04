@@ -26,8 +26,8 @@ Game6::Game6() : wrapWalls({ .top =  { nullptr, std::make_unique<RectCC>(glm::ve
 						 { asteroidIcons[2].path, {}, true },
 						 { "/player.gif", {}, true },
 						 { "/explosion.gif", {}, true },
-						 { "/heart.raw", {}, true },
-						 { "/goblet.raw", {}, true }
+						 RES_HEART,
+						 RES_GOBLET
 				 }){
 
 	wrapWalls.top.setPos(glm::vec2 { 0, -100 } - (2 * asteroidRadius[(uint8_t)AsteroidSize::Large] + 1));
@@ -54,11 +54,11 @@ void Game6::onLoad(){
 	addObject(bg);
 	bg->getRenderComponent()->setLayer(-1);
 
-	hearts = std::make_unique<Hearts>(getFile("/heart.raw"));
+	hearts = std::make_unique<Hearts>(getFile(FILE_HEART));
 	hearts->getGO()->setPos({ 2, 2 });
 	addObject(hearts->getGO());
 
-	scoreDisplay = std::make_unique<Score>(getFile("/goblet.raw"));
+	scoreDisplay = std::make_unique<Score>(getFile(FILE_GOBLET));
 	scoreDisplay->getGO()->setPos({ 160 - 2 - 28, 2 });
 	addObject(scoreDisplay->getGO());
 }

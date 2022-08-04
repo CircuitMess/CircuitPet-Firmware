@@ -6,6 +6,12 @@
 #include <map>
 #include <string>
 
+#define RES_HEART { "c/heart.raw", {}, true }
+#define RES_GOBLET { "c/goblet.raw", {}, true }
+
+#define FILE_HEART "/heart.raw"
+#define FILE_GOBLET "/goblet.raw"
+
 struct CompParams {
 	uint8_t lookahead = 0;
 	uint8_t expansion = 0;
