@@ -41,9 +41,9 @@ private:
 	const int topY = 128 - 32;
 	const int tilesPerArray = 5;
 	float spawnValue = 0.0f;
-	float spawnRate = 3.3f;
-	float speed = 50.0f;
-	const float speedMax = 70.0f;
+	float spawnRate = 3.0f;
+	float speed = 60.0f;
+	const float speedMax = 80.0f;
 	const float speedIncrement = 0.5f;
 	bool isDone = false;
 	int score = 0;

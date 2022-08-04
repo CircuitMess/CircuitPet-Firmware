@@ -22,7 +22,7 @@ void Duck::update(float deltaTime){
 		if(x >= 63){ //ručno izračunato
 			walk();
 			isDone = false;
-			gameObjectRc->setPos({ 63, startPosY - 15 });
+			gameObjectRc->setPos({ 62, startPosY - 15 });
 			animRc->setAnim(up);
 			animRc->setLoopDoneCallback([this](uint32_t){
 				delay(500);

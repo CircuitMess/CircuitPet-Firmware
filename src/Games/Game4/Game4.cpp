@@ -31,6 +31,13 @@ Game4::Game4() : Game("/Games/Game4", {
 
 void Game4::onLoad(){
 	setupObstacles();
+	leftWallObject = std::make_shared<GameObject>(
+			nullptr,
+			std::make_unique<RectCC>(glm::vec2{ 10, 128 })
+	);
+	leftWallObject->setPos({ -55, 0 });
+	addObject(leftWallObject);
+
 	///Tiles
 	tileManager = std::make_unique<TileManager>(movingTiles);
 	tileManager->addFilePair(getFile("/TileTop1.raw"), getFile("/TileBot1.raw"));
@@ -43,13 +50,6 @@ void Game4::onLoad(){
 	);
 	leftWall->setPos({ -tileDim * tilesPerArray, 0 });
 	addObject(leftWall);
-
-	leftWallObject = std::make_shared<GameObject>(
-			nullptr,
-			std::make_unique<RectCC>(glm::vec2{ 1, 128 })
-	);
-	leftWallObject->setPos({ -45, 0 });
-	addObject(leftWallObject);
 
 	for(int i = 0; i < movingTiles.size(); i++){
 		auto obj = movingTiles[i];
@@ -167,7 +167,7 @@ void Game4::spawn(){
 		spawnRate -= speedIncrement / 10;
 	}
 
-	if(score == scoreMax - 1){
+	if(score >= scoreMax - 1){
 		isDone = true;
 		goal = std::make_shared<GameObject>(
 				std::make_unique<StaticRC>(getFile("/Goal.raw"), PixelDim{ 44, 20 }),
