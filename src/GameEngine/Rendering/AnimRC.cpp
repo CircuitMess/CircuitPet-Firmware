@@ -8,6 +8,7 @@ AnimRC::AnimRC(File file) : gif(std::make_unique<GIFAnimatedSprite>(nullptr, fil
 }
 
 void AnimRC::setAnim(File file){
+	gif.reset();
 	gif = std::make_unique<GIFAnimatedSprite>(nullptr, file);
 	gif->setLoopMode(loopMode);
 
