@@ -10,6 +10,10 @@ class StatsManager : public WithListeners<StatsChangedListener> {
 public:
 	StatsManager();
 	void begin();
+	/**
+	 * Resets the stats to starting numbers, used when pet dies or when factory reset occurs.
+	 */
+	void reset();
 
 	void update(Stats delta);
 

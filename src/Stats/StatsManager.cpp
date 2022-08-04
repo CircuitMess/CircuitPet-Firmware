@@ -16,6 +16,15 @@ void StatsManager::begin(){
 	Clock.addListener(&timedUpdateListener);
 }
 
+void StatsManager::reset(){
+	stats.happiness = 100;
+	stats.oilLevel = 100;
+	stats.experience = 0;
+	gameOverCount = 0;
+	hatched = false;
+	store();
+}
+
 void StatsManager::update(Stats delta){
 	uint8_t oldLevel = getLevel();
 	stats += delta;
