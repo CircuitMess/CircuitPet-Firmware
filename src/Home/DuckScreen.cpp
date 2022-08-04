@@ -48,7 +48,7 @@ void DuckScreen::onStart(){
 			{ "Oily", GameImage(base, "/MenuIcons/Icon1.raw"), [pushGame](){pushGame(new TestGame());}},
 			{ "Flappy", GameImage(base, "/MenuIcons/Icon2.raw"), {} },
 			{ "Eaty", GameImage(base, "/MenuIcons/Icon3.raw"), {} },
-			{ "Jump & Duck", GameImage(base, "/MenuIcons/Icon4.raw"), {} },
+			{ "Jump & Duck", GameImage(base, "/MenuIcons/Icon4.raw"), [pushGame](){pushGame(new Game4());} },
 			{ "Disco danceoff", GameImage(base, "/MenuIcons/Icon5.raw"), [pushGame](){pushGame(new Game5());} },
 			{ "Space duck", GameImage(base, "/MenuIcons/Icon6.raw"), [pushGame](){pushGame(new Game6());}},
 	};

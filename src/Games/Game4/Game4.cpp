@@ -136,7 +136,7 @@ void Game4::onStart(){
 }
 
 void Game4::onStop(){
-	Game::onStop();
+	Input::getInstance()->removeListener(this);
 }
 
 void Game4::onRender(Sprite* canvas){
