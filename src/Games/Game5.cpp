@@ -135,7 +135,15 @@ void Game5::onLoop(float deltaTime){
 			}
 			break;
 
+		case DoneAnim:
+			hideBars(deltaTime);
+			updateNotes(deltaTime);
+			break;
+
 		case DonePause:
+			hideBars(deltaTime);
+			updateNotes(deltaTime);
+
 			gameDoneTimer += deltaTime;
 			if(gameDoneTimer >= gameDonePause){
 				pop();
@@ -156,6 +164,8 @@ void Game5::buttonPressed(uint i){
 		pop();
 		return;
 	}
+
+	if(state != Running) return;
 
 	if(!btnBarMap.count(i)) return;
 
@@ -251,10 +261,6 @@ void Game5::adjustTempo(){
 }
 
 void Game5::gameDone(bool success){
-	for(auto& track : notes){
-		track.clear();
-	}
-
 	if(success){
 		duckRC->setAnim(getFile("/win.gif"));
 		std::static_pointer_cast<StaticRC>(scoreStar->getRenderComponent())->setFile(getFile("/starFull.raw"));
@@ -276,4 +282,16 @@ void Game5::adjustScoreBar(){
 	int infill = (int)((float)(scoreBarSprite->height() - 2) * ((float)(min(score, goal)) / (float)goal));
 
 	scoreBarSprite->fillRect(1, scoreBarSprite->height() - 1 - infill, scoreBarSprite->width() - 2, infill, C_RGB(246, 242, 65));
+}
+
+void Game5::hideBars(float deltaTime){
+	for(int i = 0; i < 3; i++){
+		auto pos = bars[i]->getPos();
+		pos.y -= 80.0f * deltaTime;
+		bars[i]->setPos(pos);
+
+		pos = circles[i]->getPos();
+		pos.y -= 80.0f * deltaTime;
+		circles[i]->setPos(pos);
+	}
 }

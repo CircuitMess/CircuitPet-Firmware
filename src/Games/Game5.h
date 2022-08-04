@@ -84,6 +84,8 @@ private:
 	void adjustScoreBar();
 	void buttonPressed(uint i) override;
 	void buttonReleased(uint i) override;
+
+	void hideBars(float deltaTime);
 };
 
 
