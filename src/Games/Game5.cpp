@@ -216,9 +216,13 @@ void Game5::createNote(uint8_t track){
 }
 
 void Game5::noteHit(uint8_t track){
-	if(notes[track].empty()) return;
+	float diff;
+	if(notes[track].empty()){
+		diff = noteTolerance + 1; //incorrect note hit even when no notes are present on track
+	}else{
+		diff = abs(notePerfectY - notes[track].front()->getPos().y);
+	}
 
-	float diff = abs(notePerfectY - notes[track].front()->getPos().y);
 
 	if(diff <= noteTolerance){
 		score += notePoints + (int)(diff * perfectBonus / noteTolerance);
