@@ -40,7 +40,6 @@ private:
 
 	uint8_t gameOverCount = 0;
 	bool hatched = false;
-	bool paused = false;
 
 	ClockListener timedUpdateListener;
 
