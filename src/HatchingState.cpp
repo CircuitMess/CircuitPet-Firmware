@@ -11,6 +11,8 @@ HatchingState::HatchingState(Sprite* base) : gif(base, SPIFFS.open("/hatching.gi
 }
 
 void HatchingState::onStart(){
+	LoopManager::loop();
+
 	gif.start();
 	gif.stop();
 	gif.setLoopMode(GIF::Single);
@@ -22,16 +24,15 @@ void HatchingState::onStart(){
 }
 
 void HatchingState::onStop(){
+	StatMan.reset();
+	StatMan.setHatched(true);
 	gif.stop();
 	LoopManager::removeListener(this);
 }
 
 void HatchingState::loop(uint micros){
 	if(exit){
-		StatMan.setPaused(false);
-
 		volatile auto temp = base;
-		StatMan.setHatched(true);
 		stop();
 		delete this;
 		auto duck = new DuckScreen(temp);

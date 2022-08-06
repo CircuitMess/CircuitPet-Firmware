@@ -4,9 +4,10 @@
 #include "../Games/TestGame.h"
 #include "../Games/Game6/Game6.h"
 #include "../Games/Game5.h"
+#include "../DeathState.h"
 #include <CircuitPet.h>
 
-DuckScreen::DuckScreen(Sprite* base) : State(), base(base), characterSprite(base, StatMan.getLevel(), StatMan.get().oilLevel < 25, Anim::General),
+DuckScreen::DuckScreen(Sprite* base) : State(), base(base), characterSprite(base, StatMan.getLevel(), StatMan.get().oilLevel < rustThreshold, Anim::General),
 									   menu(base), hider(&menu){
 
 
@@ -62,8 +63,9 @@ void DuckScreen::onStart(){
 
 	currentStats = targetStats = prevStats = StatMan.get();
 	StatMan.addListener(this);
+	StatMan.setPaused(false);
 
-	characterSprite.setRusty(StatMan.get().oilLevel < 25);
+	characterSprite.setRusty(StatMan.get().oilLevel < rustThreshold);
 	characterSprite.setCharLevel(StatMan.getLevel());
 	characterSprite.setAnim(Anim::General);
 
@@ -83,6 +85,17 @@ void DuckScreen::onStop(){
 }
 
 void DuckScreen::loop(uint micros){
+
+	if(dead){
+		volatile auto temp = base;
+		stop();
+		delete this;
+
+		auto duck = new DeathState(temp);
+		duck->start();
+		return;
+	}
+
 	//stats display easing when a change occurs
 	if(currentStats != targetStats){
 
@@ -156,9 +169,21 @@ void DuckScreen::buttonPressed(uint i){
 }
 
 void DuckScreen::statsChanged(const Stats& stats, bool leveledUp){
+
+	if(StatMan.hasDied()){
+		dead = true;
+		StatMan.setPaused(true);
+		return;
+	}
+
 	if(leveledUp){
 		//TODO - levelup anims
+		bgSprite->setLevel(StatMan.getLevel());
+		characterSprite.setCharLevel(StatMan.getLevel());
+		osSprite->setLevel(StatMan.getLevel());
 	}
+
+	characterSprite.setRusty(stats.oilLevel < rustThreshold);
 
 	targetStats = stats;
 	prevStats = currentStats;
