@@ -8,7 +8,6 @@ static const char* tag = "ClockMaster";
 
 void ClockMaster::begin(){
 	lastRTCTime = syncTime();
-	storage = SPIFFS.open("/clock.bin", "r");
 	read();
 
 	LoopManager::addListener(this);
@@ -96,21 +95,17 @@ void ClockMaster::removeListener(ClockListener* listener){
 }
 
 void ClockMaster::write(){
-	storage.close();
 
-	storage = SPIFFS.open("/clock.bin", "w");
+	storage.seek(0);
 	for(auto key : persistentListeners){
 		storage.write((uint8_t*)&key.second.ID, 10);
 		storage.write((uint8_t*)&key.second.lastTick, 8);
 	}
-	storage.close();
-
-	storage = SPIFFS.open("/clock.bin", "r");
-
 }
 
 void ClockMaster::read(){
-	storage.seek(0);
+	storage.close();
+	storage = SPIFFS.open("/clock.bin", "r");
 
 	while(storage.available()){
 		PersistentListener listener;
@@ -121,6 +116,7 @@ void ClockMaster::read(){
 
 		persistentListeners[listener.ID] = listener;
 	}
+	storage = SPIFFS.open("/clock.bin", "w");
 }
 
 uint64_t ClockMaster::syncTime(){
