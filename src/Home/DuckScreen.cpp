@@ -143,11 +143,11 @@ void DuckScreen::buttonPressed(uint i){
 
 	switch(i){
 		case BTN_LEFT:
-			if(!menu.isNeutral()) return;
+			if(menu.isShaking()) return;
 			selection = menu.prev();
 			break;
 		case BTN_RIGHT:
-			if(!menu.isNeutral()) return;
+			if(menu.isShaking()) return;
 			selection = menu.next();
 			break;
 		case BTN_A: {

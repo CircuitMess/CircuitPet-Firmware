@@ -314,7 +314,7 @@ void Menu::shake(){
 	state = shaking;
 }
 
-bool Menu::isNeutral(){
-	if(state == neutral) return  true;
+bool Menu::isShaking(){
+	if(state == shaking) return  true;
 	return false;
 }

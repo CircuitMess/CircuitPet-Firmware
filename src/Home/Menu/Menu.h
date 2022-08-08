@@ -55,7 +55,7 @@ public:
 	void setOffsetY(uint8_t y);
 
 	void shake();
-	bool isNeutral();
+	bool isShaking();
 
 private:
 	const uint8_t gutter = 25;
