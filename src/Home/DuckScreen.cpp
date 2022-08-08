@@ -4,6 +4,7 @@
 #include "../Games/TestGame.h"
 #include "../Games/Game6/Game6.h"
 #include "../Games/Game5.h"
+#include "../Games/2/Game2.h"
 #include <CircuitPet.h>
 
 DuckScreen::DuckScreen(Sprite* base) : State(), base(base), characterSprite(base, StatMan.getLevel(), StatMan.get().oilLevel < 25, Anim::General),
@@ -16,6 +17,8 @@ DuckScreen::DuckScreen(Sprite* base) : State(), base(base), characterSprite(base
 
 void DuckScreen::onStart(){
 	Input::getInstance()->addListener(this);
+	LoopManager::addListener(this); //Note - possible crash if start() is called before constructor finishes
+	hider.activity();
 
 	//load resources
 	bgSprite = std::make_unique<BgSprite>(base, StatMan.getLevel());
@@ -45,7 +48,7 @@ void DuckScreen::onStart(){
 
 	menuItems = {
 			{ "Oily",1, GameImage(base, "/MenuIcons/Icon1.raw"), GameImage(base, "/MenuIcons/Icon1.raw"), [pushGame](){pushGame(new TestGame());}},
-			{ "Flappy",2, GameImage(base, "/MenuIcons/Icon2.raw"),GameImage(base, "/MenuIcons/Locked2.raw"),  {} },
+			{ "Flappy",2, GameImage(base, "/MenuIcons/Icon2.raw"),GameImage(base, "/MenuIcons/Locked2.raw"),  [pushGame](){pushGame(new Game2());} },
 			{ "Eaty", 3,GameImage(base, "/MenuIcons/Icon3.raw"),GameImage(base, "/MenuIcons/Locked3.raw"),  {} },
 			{ "Jump & Duck",4, GameImage(base, "/MenuIcons/Icon4.raw"), GameImage(base, "/MenuIcons/Locked4.raw"), {} },
 			{ "Disco danceoff", 5,GameImage(base, "/MenuIcons/Icon5.raw"), GameImage(base, "/MenuIcons/Locked5.raw"), [pushGame](){pushGame(new Game5());} },
