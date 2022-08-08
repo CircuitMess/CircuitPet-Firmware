@@ -6,6 +6,7 @@
 #include "../Games/Game5.h"
 #include "../Games/2/Game2.h"
 #include <CircuitPet.h>
+#include "../RGBIndicator.h"
 
 DuckScreen::DuckScreen(Sprite* base) : State(), base(base), characterSprite(base, StatMan.getLevel(), StatMan.get().oilLevel < 25, Anim::General),
 									   menu(base), hider(&menu){
@@ -72,6 +73,7 @@ void DuckScreen::onStart(){
 
 	randInterval = rand() % 4000000 + 2000000;
 
+	OilRGBIndicator.start();
 }
 
 void DuckScreen::onStop(){
@@ -83,6 +85,8 @@ void DuckScreen::onStop(){
 	osSprite.reset();
 	statsSprite.reset();
 	menuItems.clear();
+
+	OilRGBIndicator.stop();
 }
 
 void DuckScreen::loop(uint micros){
