@@ -115,29 +115,17 @@ void Game5::onLoop(float deltaTime){
 
 			updateNotes(deltaTime);
 
-			for(uint8_t i = 0; i < 3; i++){
-				if(fail[i]){
-					failTime[i] += deltaTime;
-
-					auto rc = std::static_pointer_cast<StaticRC>(bars[i]->getRenderComponent());
-					if((int)(failTime[i] / failBlinkDuration) % 2 == 0){
-						rc->setFile(getFile(barsIcons[3]));
-					}else{
-						rc->setFile(getFile(barsIcons[i]));
-					}
-
-					if(failTime[i] >= failDuration){
-						failTime[i] = 0;
-						fail[i] = false;
-						rc->setFile(getFile(barsIcons[i]));
-					}
-				}
-			}
+			updateTracks(deltaTime);
 			break;
 
 		case DoneAnim:
-			hideBars(deltaTime);
-			updateNotes(deltaTime);
+			if(fail[0] || fail[1] || fail[2]){
+				updateTracks(deltaTime);
+			}else{
+				hideBars(deltaTime);
+				updateNotes(deltaTime);
+			}
+
 			break;
 
 		case DonePause:
@@ -216,9 +204,13 @@ void Game5::createNote(uint8_t track){
 }
 
 void Game5::noteHit(uint8_t track){
-	if(notes[track].empty()) return;
+	float diff;
+	if(notes[track].empty()){
+		diff = noteTolerance + 1; //incorrect note hit even when no notes are present on track
+	}else{
+		diff = abs(notePerfectY - notes[track].front()->getPos().y);
+	}
 
-	float diff = abs(notePerfectY - notes[track].front()->getPos().y);
 
 	if(diff <= noteTolerance){
 		score += notePoints + (int)(diff * perfectBonus / noteTolerance);
@@ -244,13 +236,14 @@ void Game5::noteHit(uint8_t track){
 	}else{
 		life--;
 		hearts->setLives(life);
+
+		fail[track] = true;
+		failTime[track] = 0;
+
 		if(life <= 0){
 			gameDone(false);
 			return;
 		}
-
-		fail[track] = true;
-		failTime[track] = 0;
 	}
 }
 
@@ -293,5 +286,26 @@ void Game5::hideBars(float deltaTime){
 		pos = circles[i]->getPos();
 		pos.y -= 80.0f * deltaTime;
 		circles[i]->setPos(pos);
+	}
+}
+
+void Game5::updateTracks(float delta){
+	for(uint8_t i = 0; i < 3; i++){
+		if(fail[i]){
+			failTime[i] += delta;
+
+			auto rc = std::static_pointer_cast<StaticRC>(bars[i]->getRenderComponent());
+			if((int)(failTime[i] / failBlinkDuration) % 2 == 0){
+				rc->setFile(getFile(barsIcons[3]));
+			}else{
+				rc->setFile(getFile(barsIcons[i]));
+			}
+
+			if(failTime[i] >= failDuration){
+				failTime[i] = 0;
+				fail[i] = false;
+				rc->setFile(getFile(barsIcons[i]));
+			}
+		}
 	}
 }

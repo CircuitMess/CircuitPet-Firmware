@@ -4,6 +4,7 @@
 #include "../Games/Game1/Game1.h"
 #include "../Games/Game6/Game6.h"
 #include "../Games/Game5.h"
+#include "../Games/2/Game2.h"
 #include <CircuitPet.h>
 
 DuckScreen::DuckScreen(Sprite* base) : State(), base(base), characterSprite(base, StatMan.getLevel(), StatMan.get().oilLevel < 25, Anim::General),
@@ -46,8 +47,8 @@ void DuckScreen::onStart(){
 	};
 
 	menuItems = {
-			{ "Oily", GameImage(base, "/MenuIcons/Icon1.raw"), [pushGame](){pushGame(new Game1());}},
-			{ "Flappy", GameImage(base, "/MenuIcons/Icon2.raw"), {} },
+			{ "Oily", GameImage(base, "/MenuIcons/Icon1.raw"), [pushGame](){pushGame(new TestGame());}},
+			{ "Flappy", GameImage(base, "/MenuIcons/Icon2.raw"), [pushGame](){pushGame(new Game2());} },
 			{ "Eaty", GameImage(base, "/MenuIcons/Icon3.raw"), {} },
 			{ "Jump & Duck", GameImage(base, "/MenuIcons/Icon4.raw"), {} },
 			{ "Disco danceoff", GameImage(base, "/MenuIcons/Icon5.raw"), [pushGame](){pushGame(new Game5());} },

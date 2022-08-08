@@ -78,6 +78,7 @@ private:
 	void createNote(uint8_t track);
 	constexpr static float defaultNotesSpeed = 50.0f;
 	float notesSpeed = defaultNotesSpeed;
+	void updateTracks(float delta);
 
 	void noteHit(uint8_t track);
 	void adjustTempo();
