@@ -6,6 +6,8 @@
 #include "src/Intro.h"
 #include "src/Stats/StatsManager.h"
 #include "src/Clock/ClockMaster.h"
+#include <Settings.h>
+#include "src/UserHWTest.h"
 
 extern "C" {
 #include <bootloader_random.h>
@@ -46,11 +48,26 @@ void setup(){
 	baseSprite->setTextFont(0);
 	baseSprite->setTextSize(0);
 
-	auto intro = new Intro(baseSprite);
-	LoopManager::loop();
-	intro->start();
+	if(!Settings.get().hwTested){
+		auto test = new UserHWTest(baseSprite, [](){
+			Settings.get().hwTested = true;
+			Settings.store();
+			CircuitPet.fadeOut();
 
-	CircuitPet.fadeIn();
+			auto intro = new Intro(baseSprite);
+			LoopManager::loop();
+			intro->start();
+
+			CircuitPet.fadeIn();
+		});
+		test->start();
+		CircuitPet.fadeIn();
+	}else{
+		auto intro = new Intro(baseSprite);
+		LoopManager::loop();
+		intro->start();
+		CircuitPet.fadeIn();
+	}
 }
 
 uint32_t t = 0;
