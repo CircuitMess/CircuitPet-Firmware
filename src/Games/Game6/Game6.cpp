@@ -114,6 +114,7 @@ void Game6::onLoop(float deltaTime){
 
 			deathTimer+=deltaTime;
 			if(deathTimer >= deathPauseTime){
+				setScore(score,score);
 				pop();
 			}
 			break;
@@ -127,6 +128,7 @@ void Game6::onLoop(float deltaTime){
 				player.getObj()->setPos(player.getObj()->getPos() + direction * winAcceleration * (float)pow(winTimer - 1.0f, 2));
 			}
 			if(winTimer >= winTime){
+				setScore(score,score);
 				pop();
 			}
 			break;
@@ -392,4 +394,10 @@ void Game6::gameOver(){
 		state = DeathPause;
 		playerAnim->stop();
 	});
+}
+
+void Game6::setScore(uint8_t oil, uint8_t happiness){
+	returnStats.oilLevel = oil;
+	returnStats.happiness = happiness;
+	returnStats.experience = 35;
 }

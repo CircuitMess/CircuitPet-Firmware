@@ -143,6 +143,7 @@ void Game1::addPoints(int difference){
 		removeObject(barGO);
 		removeObject(indicatorGO);
 		oilCan->startMoving();
+		setScore(200, 100);
 	}else{
 		duckAnim->setAnim(getFile("/Games/Game1/OilyJump.gif"));
 		duckAnim->setLoopDoneCallback([this](uint32_t){
@@ -151,3 +152,8 @@ void Game1::addPoints(int difference){
 	}
 }
 
+void Game1::setScore(uint8_t oilMax, uint8_t happinessMax){
+	returnStats.oilLevel = oilMax/tries;
+	returnStats.happiness = happinessMax/tries;
+	returnStats.experience = 10;
+}

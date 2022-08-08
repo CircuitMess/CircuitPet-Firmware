@@ -10,6 +10,7 @@
 #include "GameSystem.h"
 #include "Collision/CollisionSystem.h"
 #include "Rendering/RenderSystem.h"
+#include "../Stats/Stats.hpp"
 #include <Loop/LoopListener.h>
 
 class Game : public State, private LoopListener {
@@ -30,6 +31,8 @@ protected:
 	virtual void onLoad();
 	virtual void onLoop(float deltaTime);
 	virtual void onRender(Sprite* canvas);
+	virtual void setScore(uint8_t oil, uint8_t happiness) = 0;
+	Stats returnStats = {0,0,0};
 
 	File getFile(std::string path);
 

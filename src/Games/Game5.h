@@ -22,6 +22,7 @@ protected:
 	void onLoad() override;
 	void onLoop(float deltaTime) override;
 	void onRender(Sprite* canvas) override;
+	void setScore(uint8_t oil, uint8_t happiness) override;
 
 private:
 	enum {

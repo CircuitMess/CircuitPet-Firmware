@@ -20,6 +20,7 @@ protected:
 	void onStart() override;
 	void onStop() override;
 	void onRender(Sprite* canvas) override;
+	void setScore(uint8_t oil, uint8_t happiness) override;
 
 private:
 	std::unique_ptr<Hearts> hearts;

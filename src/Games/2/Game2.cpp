@@ -100,6 +100,7 @@ void Game2::onLoop(float deltaTime){
 
 	if(state == FallOut && obstacles.empty()){
 		if(life == 0){
+			setScore(score*2, score*2);
 			pop();
 		}else{
 			resetDuck();
@@ -243,4 +244,10 @@ void Game2::die(){
 		collision.removePair(*duck, *obstacle.top);
 		collision.removePair(*duck, *obstacle.bot);
 	}
+}
+
+void Game2::setScore(uint8_t oil, uint8_t happiness){
+	returnStats.oilLevel = oil > 50 ? 50 : oil;
+	returnStats.happiness = happiness > 100 ? 100 : happiness;
+	returnStats.experience = happiness > 20 ? 15 : 0;
 }
