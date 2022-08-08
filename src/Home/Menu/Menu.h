@@ -19,12 +19,14 @@ struct MenuItem {
 	GameImage image;
 	GameImage imageLocked;
 	uint8_t levelRequired;
+	std::string splashPath;
+	std::string instructPath;
 	std::function<void()> primary;
 	std::function<void()> secondary;
 	bool loaded = false;
 
-	MenuItem(String text, uint8_t levelRequired, const GameImage& image = GameImage(), const GameImage& imageLocked = GameImage(), std::function<void()> primary = {},
-			 std::function<void()> secondary = {});
+	MenuItem(String text, uint8_t levelRequired, const GameImage& image = GameImage(), const GameImage& imageLocked = GameImage(), std::string splashPath = "",
+			 std::string instructPath = "", std::function<void()> primary = {}, std::function<void()> secondary = {});
 
 };
 

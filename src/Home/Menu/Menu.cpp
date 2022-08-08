@@ -6,9 +6,10 @@
 #include <FS/RamFile.h>
 #include "../../Stats/StatsManager.h"
 
-MenuItem::MenuItem(String text, uint8_t levelRequired, const GameImage& image, const GameImage& imageLocked, std::function<void()> primary,
-				   std::function<void()> secondary) :
-					text(std::move(text)), levelRequired(levelRequired),image(image), imageLocked(imageLocked), primary(primary), secondary(secondary){}
+MenuItem::MenuItem(String text, uint8_t levelRequired, const GameImage& image, const GameImage& imageLocked, std::string splashPath, std::string instructPath,
+				   std::function<void()> primary, std::function<void()> secondary) :
+					text(std::move(text)), levelRequired(levelRequired),image(image), imageLocked(imageLocked), splashPath(splashPath),
+					instructPath(instructPath), primary(primary), secondary(secondary){}
 
 
 Menu::Menu(Sprite* canvas) : canvas(canvas), origin((canvas->width() - width) / 2){
