@@ -24,7 +24,7 @@ private:
 	bool moving = false;
 
 	const float speed = 30.0f;
-	const PixelDim endPos = { 99, 102};
+	const PixelDim endPos = { 105, 101};
 
 };
 

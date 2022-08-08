@@ -47,7 +47,7 @@ void DuckScreen::onStart(){
 	};
 
 	menuItems = {
-			{ "Oily", GameImage(base, "/MenuIcons/Icon1.raw"), [pushGame](){pushGame(new TestGame());}},
+			{ "Oily", GameImage(base, "/MenuIcons/Icon1.raw"), [pushGame](){pushGame(new Game1());}},
 			{ "Flappy", GameImage(base, "/MenuIcons/Icon2.raw"), [pushGame](){pushGame(new Game2());} },
 			{ "Eaty", GameImage(base, "/MenuIcons/Icon3.raw"), {} },
 			{ "Jump & Duck", GameImage(base, "/MenuIcons/Icon4.raw"), {} },

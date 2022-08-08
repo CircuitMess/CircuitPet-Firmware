@@ -3,15 +3,25 @@
 #include <Input/Input.h>
 #include "../../GameEngine/Rendering/StaticRC.h"
 #include "../../GameEngine/Rendering/SpriteRC.h"
+#include "../../Stats/StatsManager.h"
 
-Game1::Game1() : Game("/Games/Game1", {
-		{ "/Arrow.raw",      {}, true },
-		{ "/Background.raw", {}, true },
-		{ "/EmptyCan.raw",   {}, true },
-		{ "/FullCan.raw",    {}, true },
-		{ "/OilyDone.gif",   {}, false },
-		{ "/OilyIdle.gif",   {}, true },
-		{ "/OilyJump.gif",   {}, true }
+std::string bgPath[6] = { "/Bg/Level1.raw",
+						  "/Bg/Level2.raw",
+						  "/Bg/Level3.raw",
+						  "/Bg/Level4.raw",
+						  "/Bg/Level5.raw",
+						  "/Bg/Level6.raw"
+};
+
+Game1::Game1() : Game("", {
+		{ "/Games/Game1/Arrow.raw",       {}, true },
+		{ "/Games/Game1/EmptyCan.raw",    {}, true },
+		{ bgPath[StatMan.getLevel() - 1], {}, true },
+		{ "/Games/Game1/FullCan.raw",     {}, true },
+		{ "/Games/Game1/OilyDone.gif",    {}, false },
+		{ "/Games/Game1/OilyIdle.gif",    {}, true },
+		{ "/Games/Game1/OilyJump.gif",    {}, true },
+
 }){}
 
 void Game1::onLoad(){
@@ -27,7 +37,7 @@ void Game1::onLoad(){
 	barGO->setPos({ 150, 4 });
 
 	indicatorGO = std::make_shared<GameObject>(
-			std::make_unique<StaticRC>(getFile("/Arrow.raw"), PixelDim{ 7, 11 }),
+			std::make_unique<StaticRC>(getFile("/Games/Game1/Arrow.raw"), PixelDim{ 7, 11 }),
 			nullptr
 	);
 	addObject(indicatorGO);
@@ -36,18 +46,18 @@ void Game1::onLoad(){
 	indicator->setGoal(bar->getY());
 
 	auto spriteCan = std::make_unique<SpriteRC>(PixelDim{ 24, 21 });
-	oilCan = std::make_unique<OilCan>(spriteCan->getSprite(), getFile("/FullCan.raw"), getFile("/EmptyCan.raw"));
+	oilCan = std::make_unique<OilCan>(spriteCan->getSprite(), getFile("/Games/Game1/FullCan.raw"), getFile("/Games/Game1/EmptyCan.raw"));
 	oilCanGO = std::make_shared<GameObject>(
 			std::move(spriteCan),
 			nullptr
 	);
 	addObject(oilCanGO);
-	oilCanGO->setPos({ 99, 50 });
+	oilCanGO->setPos({ 105, 50 });
 	oilCanGO->getRenderComponent()->setLayer(1);
 	oilCan->setGameObject(oilCanGO);
 
 	duckGo = std::make_shared<GameObject>(
-			std::make_unique<AnimRC>(getFile("/OilyIdle.gif")),
+			std::make_unique<AnimRC>(getFile("/Games/Game1/OilyIdle.gif")),
 			nullptr
 	);
 	addObject(duckGo);
@@ -56,7 +66,7 @@ void Game1::onLoad(){
 	duckAnim = std::static_pointer_cast<AnimRC>(duckGo->getRenderComponent());
 
 	bg = std::make_shared<GameObject>(
-			std::make_unique<StaticRC>(getFile("/Background.raw"), PixelDim({ 160, 128 })),
+			std::make_unique<StaticRC>(getFile(bgPath[StatMan.getLevel() - 1]), PixelDim({ 160, 128 })),
 			nullptr
 	);
 	addObject(bg);
@@ -77,7 +87,7 @@ void Game1::onLoop(float deltaTime){
 	indicator->move(deltaTime);
 	if(oilCan->move(deltaTime)){
 		duckGo->setPos({ 23, 16 }); //manually set for the gif to fit
-		duckAnim->setAnim(getFile("/OilyDone.gif"));
+		duckAnim->setAnim(getFile("/Games/Game1/OilyDone.gif"));
 		duckAnim->setLoopDoneCallback([this](uint32_t i){
 			delay(700);
 			pop();
@@ -116,7 +126,7 @@ void Game1::buttonPressed(uint i){
 }
 
 void Game1::resetAnim(){
-	duckAnim->setAnim(getFile("/OilyIdle.gif"));
+	duckAnim->setAnim(getFile("/Games/Game1/OilyIdle.gif"));
 	duckAnim->setLoopDoneCallback({});
 }
 
@@ -134,7 +144,7 @@ void Game1::addPoints(int difference){
 		removeObject(indicatorGO);
 		oilCan->startMoving();
 	}else{
-		duckAnim->setAnim(getFile("/OilyJump.gif"));
+		duckAnim->setAnim(getFile("/Games/Game1/OilyJump.gif"));
 		duckAnim->setLoopDoneCallback([this](uint32_t){
 			resetAnim();
 		});
