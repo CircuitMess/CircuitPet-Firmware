@@ -10,6 +10,10 @@ class StatsManager : public WithListeners<StatsChangedListener> {
 public:
 	StatsManager();
 	void begin();
+	/**
+	 * Resets the stats to starting numbers, used when pet dies or when factory reset occurs.
+	 */
+	void reset();
 
 	void update(Stats delta);
 
@@ -36,7 +40,6 @@ private:
 
 	uint8_t gameOverCount = 0;
 	bool hatched = false;
-	bool paused = false;
 
 	ClockListener timedUpdateListener;
 
