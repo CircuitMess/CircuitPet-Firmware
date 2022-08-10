@@ -8,7 +8,7 @@ static const char* tag = "StatsManager";
 const uint16_t StatsManager::levelupThresholds[] = { 100, 200, 300, 400, 500 }; //TODO - settati levelUp threshove
 const Stats StatsManager::hourlyDecrement = { 2, 5, 0 };
 
-StatsManager::StatsManager() : timedUpdateListener(3600000, false, true, "StatsMan", [this](){ timedUpdate(); }){
+StatsManager::StatsManager() : timedUpdateListener(3600, false, true, "StatsMan", [this](){ timedUpdate(); }){
 }
 
 void StatsManager::begin(){
@@ -102,9 +102,9 @@ void StatsManager::load(){
 void StatsManager::timedUpdate(){
 	stats -= hourlyDecrement;
 
-	if(stats.happiness == 0){
+	if(stats.happiness == 0 && gameOverCount <= 24){
 		gameOverCount++;
-	}else{
+	}else if(stats.happiness > 0){
 		gameOverCount = 0;
 	}
 
