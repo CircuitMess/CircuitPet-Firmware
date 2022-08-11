@@ -2,6 +2,7 @@
 #include <Loop/LoopManager.h>
 #include "../Stats/StatsManager.h"
 #include "../Games/Game1/Game1.h"
+#include "../Games/Game3/Game3.h"
 #include "../Games/Game6/Game6.h"
 #include "../Games/Game5.h"
 #include "../Games/2/Game2.h"
@@ -15,11 +16,8 @@ DuckScreen::DuckScreen(Sprite* base) : State(), base(base), characterSprite(base
 	characterSprite.setPos(characterX, characterY);
 }
 
-
 void DuckScreen::onStart(){
 	Input::getInstance()->addListener(this);
-	LoopManager::addListener(this); //Note - possible crash if start() is called before constructor finishes
-	hider.activity();
 
 	//load resources
 	bgSprite = std::make_unique<BgSprite>(base, StatMan.getLevel());
@@ -50,7 +48,7 @@ void DuckScreen::onStart(){
 	menuItems = {
 			{ "Oily",1, GameImage(base, "/MenuIcons/Icon1.raw"), GameImage(base, "/MenuIcons/Icon1.raw"), [pushGame](){pushGame(new Game1());}},
 			{ "Flappy",2, GameImage(base, "/MenuIcons/Icon2.raw"),GameImage(base, "/MenuIcons/Locked2.raw"),  [pushGame](){pushGame(new Game2());} },
-			{ "Eaty", 3,GameImage(base, "/MenuIcons/Icon3.raw"),GameImage(base, "/MenuIcons/Locked3.raw"),  {} },
+			{ "Eaty", 3,GameImage(base, "/MenuIcons/Icon3.raw"),GameImage(base, "/MenuIcons/Locked3.raw"),  [pushGame](){ pushGame(new Game3()); } },
 			{ "Jump & Duck",4, GameImage(base, "/MenuIcons/Icon4.raw"), GameImage(base, "/MenuIcons/Locked4.raw"), {} },
 			{ "Disco danceoff", 5,GameImage(base, "/MenuIcons/Icon5.raw"), GameImage(base, "/MenuIcons/Locked5.raw"), [pushGame](){pushGame(new Game5());} },
 			{ "Space duck", 6,GameImage(base, "/MenuIcons/Icon6.raw"), GameImage(base, "/MenuIcons/Locked6.raw"), [pushGame](){pushGame(new Game6());}},
@@ -121,14 +119,14 @@ void DuckScreen::loop(uint micros){
 	}
 
 	//playing random duck animations while idling
-	randCounter+=micros;
+	randCounter += micros;
 	if(randCounter >= randInterval){
 		randCounter = 0;
 		Anim anim;
 		if(!specialAnimPlaying){
 			specialAnimPlaying = true;
 			randInterval = 1000000;
-			int num = 1 + rand() % ((uint8_t)Anim::Count-1);
+			int num = 1 + rand() % ((uint8_t)Anim::Count - 1);
 			anim = (Anim)(num);
 		}else{
 			specialAnimPlaying = false;
@@ -163,7 +161,7 @@ void DuckScreen::buttonPressed(uint i){
 			if(menu.isShaking()) return;
 			selection = menu.next();
 			break;
-		case BTN_A: {
+		case BTN_A:{
 			if(hider.getState() != MenuHider::Shown) return;
 			if(menuItems[selection].levelRequired > StatMan.getLevel()){
 				menu.shake();
