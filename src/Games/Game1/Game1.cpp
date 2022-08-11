@@ -52,7 +52,7 @@ void Game1::onLoad(){
 			nullptr
 	);
 	addObject(oilCanGO);
-	oilCanGO->setPos({ 105, 50 });
+	oilCanGO->setPos({ 105, 40 });
 	oilCanGO->getRenderComponent()->setLayer(1);
 	oilCan->setGameObject(oilCanGO);
 
