@@ -11,7 +11,6 @@
 DuckScreen::DuckScreen(Sprite* base) : State(), base(base), characterSprite(base, StatMan.getLevel(), StatMan.get().oilLevel < rustThreshold, Anim::General),
 									   menu(base), hider(&menu){
 
-
 	characterSprite.setPos(characterX, characterY);
 }
 
@@ -63,6 +62,7 @@ void DuckScreen::onStart(){
 	Input::getInstance()->addListener(this);
 
 	currentStats = targetStats = prevStats = StatMan.get();
+	StatMan.addListener(this);
 	StatMan.setPaused(false);
 
 	characterSprite.setRusty(StatMan.get().oilLevel < rustThreshold);

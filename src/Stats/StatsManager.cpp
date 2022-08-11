@@ -13,7 +13,6 @@ StatsManager::StatsManager() : timedUpdateListener(3600, false, true, "StatsMan"
 
 void StatsManager::begin(){
 	load();
-	Clock.addListener(&timedUpdateListener);
 }
 
 void StatsManager::reset(){
@@ -63,7 +62,15 @@ void StatsManager::setPaused(bool pause){
 }
 
 void StatsManager::store(){
-	File f = SPIFFS.open("/stats.bin", "w");
+	SPIFFS.remove("/stats_backup.bin");
+	File f = SPIFFS.open("/stats_backup.bin", "w");
+	f.write((uint8_t*)&stats, sizeof(Stats));
+	f.write(gameOverCount);
+	f.write(hatched);
+	f.close();
+
+	SPIFFS.remove("/stats.bin");
+	f = SPIFFS.open("/stats.bin", "w");
 	f.write((uint8_t*)&stats, sizeof(Stats));
 	f.write(gameOverCount);
 	f.write(hatched);
@@ -74,6 +81,12 @@ void StatsManager::load(){
 	File f = SPIFFS.open("/stats.bin", "r");
 
 	if(!f || f.available() != sizeof(Stats) + sizeof(gameOverCount) + sizeof(hatched)){
+		f.close();
+		if(loadBackup()){
+			ESP_LOGI(tag, "Stats file restored with backup");
+			return;
+		}
+
 		ESP_LOGW(tag, "Stats file not found or corrupt! Setting defaults.");
 		stats.happiness = 100;
 		stats.oilLevel = 100;
@@ -86,10 +99,17 @@ void StatsManager::load(){
 	f.read((uint8_t*)&stats, sizeof(Stats));
 
 	if(stats.happiness > 100 || stats.oilLevel > 100){
+		f.close();
+		if(loadBackup()){
+			ESP_LOGI(tag, "Stats file restored with backup");
+			return;
+		}
+
 		ESP_LOGW(tag, "Stats file not found or corrupt! Setting defaults.");
 		stats.happiness = 100;
 		stats.oilLevel = 100;
 		stats.experience = 0;
+		gameOverCount = 0;
 		hatched = false;
 		return;
 	}
@@ -122,4 +142,26 @@ bool StatsManager::isHatched() const{
 void StatsManager::setHatched(bool hatched){
 	StatsManager::hatched = hatched;
 	store();
+}
+
+bool StatsManager::loadBackup(){
+	File f = SPIFFS.open("/stats_backup.bin", "r");
+
+	if(!f || f.available() != sizeof(Stats) + sizeof(gameOverCount) + sizeof(hatched)){
+		return false;
+	}
+
+	Stats s{};
+	f.read((uint8_t*)&s, sizeof(Stats));
+
+	if(s.happiness > 100 || s.oilLevel > 100){
+		return false;
+	}
+
+	stats = s;
+	gameOverCount = f.read();
+	hatched = f.read();
+
+	f.close();
+	return true;
 }

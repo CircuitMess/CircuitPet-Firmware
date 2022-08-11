@@ -29,6 +29,7 @@ private:
 	std::map <std::string, PersistentListener> persistentListeners;
 
 	File storage;
+	File backup;
 	void write();
 	void read();
 

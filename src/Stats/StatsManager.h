@@ -25,12 +25,18 @@ public:
 	const Stats& get() const;
 	uint8_t getLevel() const;
 
+	/**
+	 * Removes clock registration, periodic stats decrement.
+	 * Is paused by default!
+	 * @param pause
+	 */
 	void setPaused(bool pause);
 
 
 private:
 	void store();
 	void load();
+	bool loadBackup();
 
 	void timedUpdate();
 

@@ -53,7 +53,7 @@ void ClockMaster::loop(uint micros){
 			}
 
 			if(l->persistent){
-				if(l->lastTickMillis != 0 && millisTime - l->lastTickMillis <= 0.5 * l->tickInterval){
+				if(l->lastTickMillis != 0 && l->lastTickMillis >= millisTime && millisTime - l->lastTickMillis <= 0.5 * l->tickInterval){
 					//ignore tick because of discrepancy between RTC and internal clock, probably because of short tick interval and RTC syncing edge cases
 					ESP_LOGW(tag, "RTC - millis difference too great, %s tick ignored\n", l->ID);
 					continue;
@@ -107,6 +107,16 @@ void ClockMaster::removeListener(ClockListener* listener){
 }
 
 void ClockMaster::write(){
+	SPIFFS.remove("/clock_backup.bin");
+	storage = SPIFFS.open("/clock_backup.bin", "w");
+	storage.seek(0);
+	for(auto key : persistentListeners){
+		storage.write((uint8_t*)&key.second.ID, 10);
+		storage.write((uint8_t*)&key.second.lastTick, sizeof(time_t));
+	}
+	storage.close();
+
+	SPIFFS.remove("/clock.bin");
 	storage = SPIFFS.open("/clock.bin", "w");
 	storage.seek(0);
 	for(auto key : persistentListeners){
@@ -118,6 +128,14 @@ void ClockMaster::write(){
 
 void ClockMaster::read(){
 	storage = SPIFFS.open("/clock.bin", "r");
+
+	if(!storage || !storage.available() || (storage.available() % (sizeof(time_t) + 10)) != 0){
+		storage.close();
+		storage = SPIFFS.open("/clock_backup.bin", "r");
+		ESP_LOGI(tag, "Clock data restored using backup");
+	}
+
+	persistentListeners.clear();
 
 	while(storage.available()){
 		PersistentListener listener;
@@ -134,4 +152,3 @@ void ClockMaster::read(){
 time_t ClockMaster::syncTime(){
 	return CircuitPet.getUnixTime();
 }
-
