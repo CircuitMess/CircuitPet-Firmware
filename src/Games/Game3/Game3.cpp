@@ -39,7 +39,7 @@ void Game3::onLoad(){
 
 	duck = std::make_unique<Duck>(getFile("/DuckWalk.gif"), getFile("/DuckEat.gif"), getFile("/DuckEatBad.gif"), getFile("/DuckWin.gif"));
 	addObject(duck->getGameObject());
-	duck->getGameObject()->getRenderComponent()->setLayer(-1);
+	duck->getGameObject()->getRenderComponent()->setLayer(1);
 
 	addTemplate("/Nut.raw", PixelDim{ 13, 13 }, 10);
 	addTemplate("/Screw.raw", PixelDim{ 5, 15 }, 5);
