@@ -7,6 +7,7 @@
 #include <Util/Vector.h>
 #include <functional>
 #include "GameImage.h"
+#include <math.h>
 
 class Sprite;
 class Launcher;
@@ -16,11 +17,15 @@ class Launcher;
 struct MenuItem {
 	String text;
 	GameImage image;
+	GameImage imageLocked;
+	uint8_t levelRequired;
 	std::function<void()> primary;
 	std::function<void()> secondary;
 	bool loaded = false;
 
-	MenuItem(String text, const GameImage& image = GameImage(), std::function<void()> primary = {}, std::function<void()> secondary = {});
+	MenuItem(String text, uint8_t levelRequired, const GameImage& image = GameImage(), const GameImage& imageLocked = GameImage(), std::function<void()> primary = {},
+			 std::function<void()> secondary = {});
+
 };
 
 class Menu : public LoopListener {
@@ -49,6 +54,9 @@ public:
 
 	void setOffsetY(uint8_t y);
 
+	void shake();
+	bool isShaking();
+
 private:
 	const uint8_t gutter = 25;
 	const uint8_t width = 32;
@@ -67,6 +75,16 @@ private:
 	float delta = 0;
 	bool queued = false;
 	uint8_t multiplier = 1;
+
+	//////////States
+	enum State{neutral, moving, shaking};
+	State state = neutral;
+
+	//////////Shaking
+	float peakAmplitude = 4.0f;
+	float velocity = 30.0f;
+	const float duration = 4*M_PI/velocity;
+	float time = 0.0f;
 
 	void selectNext();
 	void selectPrev();

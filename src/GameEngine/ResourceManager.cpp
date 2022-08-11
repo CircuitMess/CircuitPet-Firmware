@@ -8,9 +8,16 @@ ResourceManager::ResourceManager(const char* root) : root(root){}
 void ResourceManager::load(const std::vector<ResDescriptor>& descriptors){
 	uint8_t copyBuffer[1024];
 
-	for(const auto& descriptor : descriptors){
+	for(auto descriptor : descriptors){
+		std::string path;
 
-		std::string path = root + descriptor.path;
+		if(descriptor.path[0] == 'c'){
+			descriptor.path = descriptor.path.substr(1);
+			path = "/Games/Common" + descriptor.path;
+		}else{
+			path = root + descriptor.path;
+		}
+
 		auto cPath = path.c_str();
 
 		File original = SPIFFS.open(cPath);

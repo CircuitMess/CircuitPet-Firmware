@@ -41,7 +41,7 @@ Game5::Game5() : Game("/Games/5", {
 		{ "/win.gif",            {}, false },
 		{ "/starFull.raw",            {}, true },
 		{ "/starEmpty.raw",            {}, true },
-		{ "/heart.raw",            {}, true }}),
+		RES_HEART}),
 				 bottomWall(nullptr, std::make_unique<RectCC>(glm::vec2 { 160, 20 })),
 				 scoreBar(std::make_shared<GameObject>(std::make_unique<SpriteRC>(PixelDim { 7, 110 }), nullptr)){
 
@@ -77,14 +77,9 @@ void Game5::onLoad(){
 	scoreStar->getRenderComponent()->setLayer(1);
 	addObject(scoreStar);
 
-	for(uint8_t i = 0; i < 3; i++){
-		hearts[i] = std::make_shared<GameObject>(std::make_unique<StaticRC>(getFile("/heart.raw"), PixelDim{7, 6}), nullptr);
-		hearts[i]->setPos({104 + i*9, 5});
-		hearts[i]->getRenderComponent()->setLayer(1);
-		addObject(hearts[i]);
-		hearts[i]->getRenderComponent()->setVisible(true);
-	}
-
+	hearts = std::make_unique<Hearts>(getFile(FILE_HEART));
+	hearts->getGO()->setPos({ 113, 4 });
+	addObject(hearts->getGO());
 
 	for(uint8_t i = 0; i < 3; ++i){
 		bars[i] = std::make_shared<GameObject>(std::make_unique<StaticRC>(getFile(barsIcons[i]), PixelDim { 14, 115 }), nullptr);
@@ -120,27 +115,23 @@ void Game5::onLoop(float deltaTime){
 
 			updateNotes(deltaTime);
 
-			for(uint8_t i = 0; i < 3; i++){
-				if(fail[i]){
-					failTime[i] += deltaTime;
+			updateTracks(deltaTime);
+			break;
 
-					auto rc = std::static_pointer_cast<StaticRC>(bars[i]->getRenderComponent());
-					if((int)(failTime[i] / failBlinkDuration) % 2 == 0){
-						rc->setFile(getFile(barsIcons[3]));
-					}else{
-						rc->setFile(getFile(barsIcons[i]));
-					}
-
-					if(failTime[i] >= failDuration){
-						failTime[i] = 0;
-						fail[i] = false;
-						rc->setFile(getFile(barsIcons[i]));
-					}
-				}
+		case DoneAnim:
+			if(fail[0] || fail[1] || fail[2]){
+				updateTracks(deltaTime);
+			}else{
+				hideBars(deltaTime);
+				updateNotes(deltaTime);
 			}
+
 			break;
 
 		case DonePause:
+			hideBars(deltaTime);
+			updateNotes(deltaTime);
+
 			gameDoneTimer += deltaTime;
 			if(gameDoneTimer >= gameDonePause){
 				pop();
@@ -161,6 +152,8 @@ void Game5::buttonPressed(uint i){
 		pop();
 		return;
 	}
+
+	if(state != Running) return;
 
 	if(!btnBarMap.count(i)) return;
 
@@ -211,9 +204,13 @@ void Game5::createNote(uint8_t track){
 }
 
 void Game5::noteHit(uint8_t track){
-	if(notes[track].empty()) return;
+	float diff;
+	if(notes[track].empty()){
+		diff = noteTolerance + 1; //incorrect note hit even when no notes are present on track
+	}else{
+		diff = abs(notePerfectY - notes[track].front()->getPos().y);
+	}
 
-	float diff = abs(notePerfectY - notes[track].front()->getPos().y);
 
 	if(diff <= noteTolerance){
 		score += notePoints + (int)(diff * perfectBonus / noteTolerance);
@@ -238,14 +235,15 @@ void Game5::noteHit(uint8_t track){
 
 	}else{
 		life--;
-		hearts[life]->getRenderComponent()->setVisible(false);
+		hearts->setLives(life);
+
+		fail[track] = true;
+		failTime[track] = 0;
+
 		if(life <= 0){
 			gameDone(false);
 			return;
 		}
-
-		fail[track] = true;
-		failTime[track] = 0;
 	}
 }
 
@@ -256,10 +254,6 @@ void Game5::adjustTempo(){
 }
 
 void Game5::gameDone(bool success){
-	for(auto& track : notes){
-		track.clear();
-	}
-
 	if(success){
 		duckRC->setAnim(getFile("/win.gif"));
 		std::static_pointer_cast<StaticRC>(scoreStar->getRenderComponent())->setFile(getFile("/starFull.raw"));
@@ -281,4 +275,37 @@ void Game5::adjustScoreBar(){
 	int infill = (int)((float)(scoreBarSprite->height() - 2) * ((float)(min(score, goal)) / (float)goal));
 
 	scoreBarSprite->fillRect(1, scoreBarSprite->height() - 1 - infill, scoreBarSprite->width() - 2, infill, C_RGB(246, 242, 65));
+}
+
+void Game5::hideBars(float deltaTime){
+	for(int i = 0; i < 3; i++){
+		auto pos = bars[i]->getPos();
+		pos.y -= 80.0f * deltaTime;
+		bars[i]->setPos(pos);
+
+		pos = circles[i]->getPos();
+		pos.y -= 80.0f * deltaTime;
+		circles[i]->setPos(pos);
+	}
+}
+
+void Game5::updateTracks(float delta){
+	for(uint8_t i = 0; i < 3; i++){
+		if(fail[i]){
+			failTime[i] += delta;
+
+			auto rc = std::static_pointer_cast<StaticRC>(bars[i]->getRenderComponent());
+			if((int)(failTime[i] / failBlinkDuration) % 2 == 0){
+				rc->setFile(getFile(barsIcons[3]));
+			}else{
+				rc->setFile(getFile(barsIcons[i]));
+			}
+
+			if(failTime[i] >= failDuration){
+				failTime[i] = 0;
+				fail[i] = false;
+				rc->setFile(getFile(barsIcons[i]));
+			}
+		}
+	}
 }

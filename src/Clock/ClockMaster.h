@@ -16,7 +16,7 @@ struct PersistentListener{
 
 extern ClockMaster Clock;
 
-class ClockMaster : public LoopListener{
+class ClockMaster : private LoopListener{
 public:
 	void begin();
 	void loop(uint micros) override;
