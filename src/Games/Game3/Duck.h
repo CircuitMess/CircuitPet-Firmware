@@ -18,6 +18,9 @@ public:
 	void startEating(int value);
 	void filled(Game3* game);
 
+	bool isEating() const;
+	bool isEatingBad() const;
+
 private:
 	void buttonPressed(uint i) override;
 	void buttonReleased(uint i) override;
@@ -28,6 +31,7 @@ private:
 	const float speed = 50.0f;
 	const float beakRadius = (float)width/5;
 	bool eating = false;
+	bool eatingBad = false;
 
 	File walk;
 	File eat;

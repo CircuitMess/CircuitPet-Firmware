@@ -132,6 +132,11 @@ void Game3::spawnItem(Game3::Template temp){
 	go->setPos({ randPos, -temp.dim.y });
 	Item item{ go, temp.value };
 	collision.addPair(*duck->getGameObject(), *item.go, [this, item, speed](){
+		if(duck->isEatingBad()){
+			collision.removePair(*duck->getGameObject(), *item.go);
+			return;
+		}
+
 		collisionHandler(item);
 		movingObjects.erase(std::make_pair(item.go, speed));
 	});

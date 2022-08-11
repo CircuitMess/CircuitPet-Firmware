@@ -34,6 +34,7 @@ void Duck::startEating(int value){
 		anim->setAnim(eat);
 	}else{
 		anim->setAnim(eatBad);
+		eatingBad = true;
 	}
 
 	anim->setLoopDoneCallback([this](uint32_t t){
@@ -45,6 +46,7 @@ void Duck::finishEating(){
 	anim->setAnim(walk);
 	anim->setLoopDoneCallback({});
 	eating = false;
+	eatingBad = false;
 }
 
 std::shared_ptr<GameObject> Duck::getGameObject(){
@@ -72,4 +74,12 @@ void Duck::filled(Game3* game){
 		delay(500);
 		game->pop();
 	});
+}
+
+bool Duck::isEating() const{
+	return eating;
+}
+
+bool Duck::isEatingBad() const{
+	return eatingBad;
 }
