@@ -1,5 +1,6 @@
 #include "ClockMaster.h"
 #include <SPIFFS.h>
+#include <Loop/LoopManager.h>
 
 ClockMaster Clock;
 
@@ -7,9 +8,9 @@ static const char* tag = "ClockMaster";
 
 void ClockMaster::begin(){
 	lastRTCTime = syncTime();
-	storage = SPIFFS.open("/clock.bin", "r");
-
 	read();
+
+	LoopManager::addListener(this);
 }
 
 void ClockMaster::loop(uint micros){
@@ -30,7 +31,13 @@ void ClockMaster::loop(uint micros){
 	bool writeNeeded = false;
 
 	for(auto l : listeners){
-		uint64_t delta = (l->persistent ? rtcTime : millisTime) - l->lastTick;
+		uint64_t delta;
+		if(l->persistent){
+			if(rtcTime < l->lastTick) continue;
+			delta = rtcTime - l->lastTick;
+		}else{
+			delta = millisTime - l->lastTick;
+		}
 
 		if(delta >= l->tickInterval){
 			if(l->persistent){
@@ -39,6 +46,7 @@ void ClockMaster::loop(uint micros){
 					ESP_LOGW(tag, "RTC - millis difference too great, %s tick ignored\n", l->ID);
 					continue;
 				}
+				persistentListeners[l->ID].lastTick = l->lastTick = rtcTime;
 				writeNeeded = true;
 			}
 
@@ -87,29 +95,32 @@ void ClockMaster::removeListener(ClockListener* listener){
 }
 
 void ClockMaster::write(){
-	storage = SPIFFS.open("/clock.bin", "w");
+
+	storage.seek(0);
 	for(auto key : persistentListeners){
-		storage.write((uint8_t*)&key.second, sizeof(PersistentListener));
+		storage.write((uint8_t*)&key.second.ID, 10);
+		storage.write((uint8_t*)&key.second.lastTick, 8);
 	}
-	storage.close();
-
-	storage = SPIFFS.open("/clock.bin", "r");
-
 }
 
 void ClockMaster::read(){
+	storage.close();
+	storage = SPIFFS.open("/clock.bin", "r");
+
 	while(storage.available()){
 		PersistentListener listener;
-		size_t read = storage.read((uint8_t*)&listener, sizeof(PersistentListener));
+		size_t read = storage.read((uint8_t*)&listener.ID, 10);
+		read += storage.read((uint8_t*)&listener.lastTick, 8);
 
-		if(read < sizeof(PersistentListener)) return;
+		if(read < 18) return;
 
 		persistentListeners[listener.ID] = listener;
 	}
+	storage = SPIFFS.open("/clock.bin", "w");
 }
 
 uint64_t ClockMaster::syncTime(){
 	//TODO - add time fetching from RTC
-	return 0;
+	return millis();
 }
 
