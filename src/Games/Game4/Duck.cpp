@@ -3,18 +3,18 @@
 #include "Game4.h"
 #include <Input/Input.h>
 
-Duck::Duck(std::shared_ptr<GameObject> duckGoRc, std::shared_ptr<GameObject> duckGoCc, Game4* game4) : gameObjectRc(duckGoRc), gameObjectCc(duckGoCc),
+Game4::Duck::Duck(std::shared_ptr<GameObject> duckGoRc, std::shared_ptr<GameObject> duckGoCc, Game4* game4) : gameObjectRc(duckGoRc), gameObjectCc(duckGoCc),
 																									   game4(game4){
 	animRc = std::static_pointer_cast<AnimRC>(gameObjectRc->getRenderComponent());
 	animRc->start();
 	Input::getInstance()->addListener(this);
 }
 
-Duck::~Duck(){
+Game4::Duck::~Duck(){
 	Input::getInstance()->removeListener(this);
 }
 
-void Duck::update(float deltaTime){
+void Game4::Duck::update(float deltaTime){
 	if(isDone){
 		int x = gameObjectRc->getPos().x;
 		x += 30 * deltaTime;
@@ -53,7 +53,7 @@ void Duck::update(float deltaTime){
 	}
 }
 
-void Duck::buttonPressed(uint i){
+void Game4::Duck::buttonPressed(uint i){
 	if(i == BTN_DOWN){
 		if(isJumping){
 			multiplier = 10.0f;
@@ -77,14 +77,14 @@ void Duck::buttonPressed(uint i){
 	}
 }
 
-void Duck::buttonReleased(uint i){
+void Game4::Duck::buttonReleased(uint i){
 	if(i == BTN_DOWN){
 		if(isJumping) return;
 		walk();
 	}
 }
 
-void Duck::walk(){
+void Game4::Duck::walk(){
 	animRc->setLoopMode(GIF::Infinite);
 	animRc->setAnim(unDucking);
 	animRc->setLoopDoneCallback([this](uint32_t){
@@ -93,7 +93,7 @@ void Duck::walk(){
 	gameObjectCc->setRot(0.0f);
 }
 
-void Duck::death(){
+void Game4::Duck::death(){
 	isJumping = false;
 	Input::getInstance()->removeListener(this);
 	animRc->setAnim(down);
@@ -104,11 +104,11 @@ void Duck::death(){
 	});
 }
 
-std::shared_ptr<GameObject> Duck::getGameObjectCc(){
+std::shared_ptr<GameObject> Game4::Duck::getGameObjectCc(){
 	return gameObjectCc;
 }
 
-void Duck::setFiles(File walk, File down, File jump, File ducking, File ducked, File unDucking, File up){
+void Game4::Duck::setFiles(File walk, File down, File jump, File ducking, File ducked, File unDucking, File up){
 	this->walking = walk;
 	this->down = down;
 	this->jump = jump;
@@ -118,7 +118,7 @@ void Duck::setFiles(File walk, File down, File jump, File ducking, File ducked, 
 	this->up = up;
 }
 
-void Duck::win(){
+void Game4::Duck::win(){
 	Input::getInstance()->removeListener(this);
 	isDone = true;
 }

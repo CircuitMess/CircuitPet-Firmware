@@ -10,6 +10,7 @@
 #include "Duck.h"
 #include "../../GameEngine/Rendering/SpriteRC.h"
 
+namespace Game4 {
 class Game4 : public Game, private InputListener{
 public:
 	Game4();
@@ -59,6 +60,6 @@ private:
 	std::vector<std::shared_ptr<GameObject>> movingObjects;
 	std::vector<std::shared_ptr<GameObject>> movingTiles;
 };
-
+}
 
 #endif //CIRCUITPET_FIRMWARE_GAME4_H

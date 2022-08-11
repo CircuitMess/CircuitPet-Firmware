@@ -10,7 +10,8 @@
 #include <Input/InputListener.h>
 
 
-class Game4;
+namespace Game4 {
+	class Game4;
 
 class Duck : private InputListener {
 public:
@@ -52,6 +53,6 @@ private:
 	File unDucking;
 	File up;
 };
-
+}
 
 #endif //CIRCUITPET_FIRMWARE_DUCK_H

@@ -5,7 +5,7 @@
 #include "../../GameEngine/Collision/PolygonCC.h"
 #include <Input/Input.h>
 
-Game4::Game4() : Game("/Games/Game4", {
+Game4::Game4::Game4() : Game("/Games/Game4", {
 		{ "/Background.raw",     {}, true },
 		{ "/Goal.raw",           {}, false },
 		{ "/TileTop1.raw",       {}, true },
@@ -29,7 +29,7 @@ Game4::Game4() : Game("/Games/Game4", {
 }){}
 
 
-void Game4::onLoad(){
+void Game4::Game4::onLoad(){
 	setupObstacles();
 	leftWallObject = std::make_shared<GameObject>(
 			nullptr,
@@ -104,7 +104,7 @@ void Game4::onLoad(){
 	addObject(scoreObj);
 }
 
-void Game4::onLoop(float deltaTime){
+void Game4::Game4::onLoop(float deltaTime){
 	duck->update(deltaTime);
 	for(auto obj: movingObjects){
 		float x = obj->getPos().x - deltaTime * speed;
@@ -131,26 +131,26 @@ void Game4::onLoop(float deltaTime){
 	}
 }
 
-void Game4::onStart(){
+void Game4::Game4::onStart(){
 	Input::getInstance()->addListener(this);
 }
 
-void Game4::onStop(){
+void Game4::Game4::onStop(){
 	Input::getInstance()->removeListener(this);
 }
 
-void Game4::onRender(Sprite* canvas){
+void Game4::Game4::onRender(Sprite* canvas){
 	Game::onRender(canvas);
 }
 
-void Game4::buttonPressed(uint i){
+void Game4::Game4::buttonPressed(uint i){
 	if(i == BTN_BACK){
 		pop();
 	}
 }
 
 
-void Game4::setupObstacles(){
+void Game4::Game4::setupObstacles(){
 	obstacleOver.push_back({ getFile("/ObstacleOver1.raw"), { 40, 31 }, {{ 0, 30 }, { 25, 0 }, { 39, 0 }}});
 	obstacleOver.push_back({ getFile("/ObstacleOver2.raw"), { 24, 19 }, {{ 3, 18 }, { 20, 0 }, { 21, 18 }}});
 	obstacleOver.push_back({ getFile("/ObstacleOver3.raw"), { 22, 19 }, {}});
@@ -161,7 +161,7 @@ void Game4::setupObstacles(){
 	obstacleUnder.push_back({ getFile("/ObstacleUnder3.raw"), { 19, 19 }, {}});
 }
 
-void Game4::spawn(){
+void Game4::Game4::spawn(){
 	if(speed < speedMax){
 		speed += speedIncrement;
 		spawnRate -= speedIncrement / 10;
@@ -223,11 +223,11 @@ void Game4::spawn(){
 	});
 }
 
-float Game4::getSpeed(){
+float Game4::Game4::getSpeed(){
 	return speed;
 }
 
-void Game4::scoreUp(){
+void Game4::Game4::scoreUp(){
 	score++;
 	scoreSprite->clear(TFT_TRANSPARENT);
 	scoreSprite->setTextColor(TFT_BLACK);
