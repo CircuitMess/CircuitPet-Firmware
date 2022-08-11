@@ -6,6 +6,7 @@
 #include "../GameEngine/Game.h"
 #include "CircuitPet.h"
 #include "../GameEngine/Rendering/AnimRC.h"
+#include "Common/Hearts.h"
 #include <deque>
 
 class Game5 : public Game, private InputListener {
@@ -30,7 +31,7 @@ private:
 	GameObject bottomWall;
 	ObjPtr scoreBar;
 	std::shared_ptr<Sprite> scoreBarSprite;
-	ObjPtr hearts[3];
+	std::unique_ptr<Hearts> hearts;
 
 	ObjPtr scoreStar;
 	ObjPtr bars[3];
@@ -77,12 +78,15 @@ private:
 	void createNote(uint8_t track);
 	constexpr static float defaultNotesSpeed = 50.0f;
 	float notesSpeed = defaultNotesSpeed;
+	void updateTracks(float delta);
 
 	void noteHit(uint8_t track);
 	void adjustTempo();
 	void adjustScoreBar();
 	void buttonPressed(uint i) override;
 	void buttonReleased(uint i) override;
+
+	void hideBars(float deltaTime);
 };
 
 

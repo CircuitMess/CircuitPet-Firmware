@@ -4,9 +4,11 @@
 #include <SPIFFS.h>
 #include <SD.h>
 #include <FS/RamFile.h>
+#include "../../Stats/StatsManager.h"
 
-MenuItem::MenuItem(String text, const GameImage& image, std::function<void()> primary, std::function<void()> secondary) :
-					text(std::move(text)), image(image), primary(primary), secondary(secondary){}
+MenuItem::MenuItem(String text, uint8_t levelRequired, const GameImage& image, const GameImage& imageLocked, std::function<void()> primary,
+				   std::function<void()> secondary) :
+					text(std::move(text)), levelRequired(levelRequired),image(image), imageLocked(imageLocked), primary(primary), secondary(secondary){}
 
 
 Menu::Menu(Sprite* canvas) : canvas(canvas), origin((canvas->width() - width) / 2){
@@ -27,6 +29,8 @@ void Menu::setItems(std::vector<MenuItem>& items){
 	for(auto& item : this->items){
 		item.image.setX(-width);
 		item.image.setY(originY);
+		item.imageLocked.setX(-width);
+		item.imageLocked.setY(originY);
 	}
 
 	repos();
@@ -39,6 +43,7 @@ void Menu::setOffsetY(uint8_t y){
 	offsetY = y;
 	for(auto& item : items){
 		item.image.setY(originY + offsetY);
+		item.imageLocked.setY(originY + offsetY);
 	}
 }
 
@@ -80,6 +85,8 @@ void Menu::repos(){
 	for(auto& item : items){
 		item.image.setX(-width);
 		item.image.setY(originY);
+		item.imageLocked.setX(-width);
+		item.imageLocked.setY(originY);
 	}
 
 	if(items.size() < 4) return;
@@ -105,6 +112,7 @@ uint8_t Menu::prev(){
 		delta = (float) width + (float) gutter - delta;
 		queued = false;
 	}else{
+		state = moving;
 		delta = 1;
 		multiplier = 1;
 		getLLGame()->setX(origin - 2 * width - 2 * gutter);
@@ -130,6 +138,7 @@ uint8_t Menu::next(){
 		delta = (float) width + (float) gutter - delta;
 		queued = false;
 	}else{
+		state = moving;
 		delta = 1;
 		multiplier = 1;
 		getRRGame()->setX(origin + 2 * width + 2 * gutter);
@@ -154,7 +163,6 @@ void Menu::push(){
 		}
 	}
 
-
 	canvas->drawIcon(borderFile, origin-2, originY+offsetY-2, width+4, width+4);
 }
 
@@ -164,37 +172,56 @@ void Menu::loop(uint micros){
 		LoopManager::removeListener(this);
 		return;
 	}
+	switch (state){
+		case neutral:
+			LoopManager::removeListener(this);
+			repos();
+			break;
 
-	delta += speed * (micros / 1000000.0f) * (float) multiplier;
+		case shaking:
+			if(time >= duration){
+				time = 0;
+				state = neutral;
+				LoopManager::removeListener(this);
+				delta = 0;
+				repos();
+			}else{
+				time += micros / 1000000.0f;
+				float x = peakAmplitude* sin(velocity*time) + 64;
+				getCGame()->setX(x);
+			}
+			break;
 
-	if(direction == PREV){
-		getLLGame()->setX(origin - 2 * width - 2 * gutter + delta);
-		getLGame()->setX(origin - width - gutter + delta);
-		getCGame()->setX(origin + delta);
-		getRGame()->setX(origin + width + gutter + delta);
-	}else{
-		getRRGame()->setX(origin + 2 * width + 2 * gutter - delta);
-		getRGame()->setX(origin + width + gutter - delta);
-		getCGame()->setX(origin - delta);
-		getLGame()->setX(origin - width - gutter - delta);
-	}
+		case moving:
+			delta += speed * (micros / 1000000.0f) * (float) multiplier;
+			if(direction == PREV){
+				getLLGame()->setX(origin - 2 * width - 2 * gutter + delta);
+				getLGame()->setX(origin - width - gutter + delta);
+				getCGame()->setX(origin + delta);
+				getRGame()->setX(origin + width + gutter + delta);
+			}else{
+				getRRGame()->setX(origin + 2 * width + 2 * gutter - delta);
+				getRGame()->setX(origin + width + gutter - delta);
+				getCGame()->setX(origin - delta);
+				getLGame()->setX(origin - width - gutter - delta);
+			}
 
-	if(delta >= (width + gutter)){
-		if(direction == NEXT){
-			selectNext();
-		}else{
-			selectPrev();
-		}
+			if(delta >= (width + gutter)){
+				if(direction == NEXT){
+					selectNext();
+				}else{
+					selectPrev();
+				}
 
-		if(queued){
-			queued = false;
-			delta = 1;
-			return;
-		}
-
-		LoopManager::removeListener(this);
-		delta = 0;
-		repos();
+				if(queued){
+					queued = false;
+					delta = 1;
+					return;
+				}
+				delta = 0;
+				state = neutral;
+			}
+			break;
 	}
 }
 
@@ -215,25 +242,55 @@ void Menu::selectPrev(){
 }
 
 GameImage* Menu::getCGame(){
-	return &items[selectedGame].image;
+	if(items[selectedGame].levelRequired <= StatMan.getLevel()){
+		return &items[selectedGame].image;
+	}else{
+		return &items[selectedGame].imageLocked;
+	}
 }
 
 GameImage* Menu::getLGame(){
-	if(selectedGame == 0) return &items.back().image;
-	return &items[selectedGame - 1].image;
+	if(selectedGame == 0){
+		if(items.back().levelRequired <= StatMan.getLevel()){
+			return &items.back().image;
+		}
+		return &items.back().imageLocked;
+	}else{
+		if(items[selectedGame-1].levelRequired <= StatMan.getLevel()){
+			return &items[selectedGame - 1].image;
+		}
+		return &items[selectedGame - 1].imageLocked;
+	}
 }
 
 GameImage* Menu::getRGame(){
-	return &items[(selectedGame + 1) % items.size()].image;
+	if(items[(selectedGame + 1) % items.size()].levelRequired <= StatMan.getLevel()){
+		return &items[(selectedGame + 1) % items.size()].image;
+	}else{
+		return &items[(selectedGame + 1) % items.size()].imageLocked;
+	}
 }
 
 GameImage* Menu::getLLGame(){
-	if(selectedGame <= 1) return &items[items.size() - 2 + selectedGame].image;
-	return &items[selectedGame - 2].image;
+	if(selectedGame <= 1){
+		if(items[items.size() - 2 + selectedGame].levelRequired <= StatMan.getLevel()){
+			return &items[items.size() - 2 + selectedGame].image;
+		}
+		return &items[items.size() - 2 + selectedGame].imageLocked;
+	}else{
+		if(items[selectedGame - 2].levelRequired <= StatMan.getLevel()){
+			return &items[selectedGame - 2].image;
+		}
+		return &items[selectedGame - 2].imageLocked;
+	}
 }
 
 GameImage* Menu::getRRGame(){
-	return &items[(selectedGame + 2) % items.size()].image;
+	if(items[(selectedGame + 2) % items.size()].levelRequired <= StatMan.getLevel()){
+		return &items[(selectedGame + 2) % items.size()].image;
+	}else{
+		return &items[(selectedGame + 2) % items.size()].imageLocked;
+	}
 }
 
 void Menu::setCanvas(Sprite* canvas){
@@ -242,6 +299,8 @@ void Menu::setCanvas(Sprite* canvas){
 	for(auto& item : items){
 		if(!item.image) continue;
 		item.image.setCanvas(canvas);
+		if(!item.imageLocked) continue;
+		item.imageLocked.setCanvas(canvas);
 	}
 }
 
@@ -249,3 +308,13 @@ uint Menu::getSelectedIndex() const{
 	return selectedGame;
 }
 
+void Menu::shake(){
+	if(state != neutral) return;
+	LoopManager::addListener(this);
+	state = shaking;
+}
+
+bool Menu::isShaking(){
+	if(state == shaking) return  true;
+	return false;
+}

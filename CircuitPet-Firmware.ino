@@ -46,6 +46,9 @@ void setup(){
 	baseSprite->setTextFont(0);
 	baseSprite->setTextSize(0);
 
+	StatMan.begin();
+	StatMan.setPaused(true); //stats timekeeping will be unpaused when home menu starts
+
 	auto intro = new Intro(baseSprite);
 	LoopManager::loop();
 	intro->start();
@@ -59,6 +62,9 @@ void loop(){
 
 	uint32_t t2 = micros();
 	float frameTime = (float) (t2 - t) / 1000000.0f;
+	baseSprite->setTextFont(0);
+	baseSprite->setTextSize(0);
+	baseSprite->setTextColor(TFT_WHITE);
 	baseSprite->setCursor(1, 119);
 	baseSprite->printf("%.1fms - %.1ffps\n", frameTime * 1000.0f, 1.0f / frameTime);
 	t = t2;
