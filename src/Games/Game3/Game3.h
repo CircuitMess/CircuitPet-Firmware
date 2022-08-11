@@ -42,9 +42,9 @@ private:
 	const int hugerMeterMax = 200;
 	int hugerMeter = 0;
 	int lives = 3;
-	const int speedMin = 30;
-	const int speedMax = 50;
-	const float spawnRate = 1.3f;
+	const int speedMin = 60;
+	const int speedMax = 80;
+	const float spawnRate = 0.5f;
 	float timeToSpawn = 0.0f;
 	std::unique_ptr<Duck> duck;
 
