@@ -147,10 +147,11 @@ void Game1::addPoints(int difference){
 		oilCan->startMoving();
 		done = true;
 	}else{
-		duckAnim->setAnim(getFile("/Games/Game1/OilyJump.gif"));
+		// TODO: game freezes after jump anim is done. uncomment after this is fixed
+		/*duckAnim->setAnim(getFile("/Games/Game1/OilyJump.gif"));
 		duckAnim->setLoopDoneCallback([this](uint32_t){
 			resetAnim();
-		});
+		});*/
 	}
 }
 
