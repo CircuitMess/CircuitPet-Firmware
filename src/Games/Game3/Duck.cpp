@@ -9,7 +9,7 @@ Duck::Duck(File walk, File eat, File eatBad, File win) : walk(walk), eat(eat), e
 	Input::getInstance()->addListener(this);
 	go = std::make_shared<GameObject>(
 			std::make_unique<AnimRC>(this->walk),
-			std::make_unique<CircleCC>(beakRadius, glm::vec2{width/2, beakRadius +12 })
+			std::make_unique<CircleCC>(beakRadius, beakOffset)
 	);
 	go->setPos({(160-width)/2, 128-height});
 	anim =  std::static_pointer_cast<AnimRC>(go->getRenderComponent());

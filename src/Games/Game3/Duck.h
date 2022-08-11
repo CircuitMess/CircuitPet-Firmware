@@ -29,7 +29,8 @@ private:
 	const uint16_t height = 77;
 	float velocity = 0.0f;
 	const float speed = 50.0f;
-	const float beakRadius = (float)width/5;
+	const float beakRadius = 8;
+	const glm::vec2 beakOffset = glm::vec2{width/2, 22 };
 	bool eating = false;
 	bool eatingBad = false;
 
