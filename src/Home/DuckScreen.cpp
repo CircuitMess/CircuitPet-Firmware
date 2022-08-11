@@ -1,7 +1,7 @@
 #include "DuckScreen.h"
 #include <Loop/LoopManager.h>
 #include "../Stats/StatsManager.h"
-#include "../Games/TestGame.h"
+#include "../Games/Game1/Game1.h"
 #include "../Games/Game6/Game6.h"
 #include "../Games/Game5.h"
 #include "../Games/2/Game2.h"
@@ -48,7 +48,7 @@ void DuckScreen::onStart(){
 	};
 
 	menuItems = {
-			{ "Oily",1, GameImage(base, "/MenuIcons/Icon1.raw"), GameImage(base, "/MenuIcons/Icon1.raw"), [pushGame](){pushGame(new TestGame());}},
+			{ "Oily",1, GameImage(base, "/MenuIcons/Icon1.raw"), GameImage(base, "/MenuIcons/Icon1.raw"), [pushGame](){pushGame(new Game1());}},
 			{ "Flappy",2, GameImage(base, "/MenuIcons/Icon2.raw"),GameImage(base, "/MenuIcons/Locked2.raw"),  [pushGame](){pushGame(new Game2());} },
 			{ "Eaty", 3,GameImage(base, "/MenuIcons/Icon3.raw"),GameImage(base, "/MenuIcons/Locked3.raw"),  {} },
 			{ "Jump & Duck",4, GameImage(base, "/MenuIcons/Icon4.raw"), GameImage(base, "/MenuIcons/Locked4.raw"), {} },
