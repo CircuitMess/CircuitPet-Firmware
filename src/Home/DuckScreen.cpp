@@ -5,9 +5,10 @@
 #include "../Games/Game6/Game6.h"
 #include "../Games/Game5.h"
 #include "../Games/2/Game2.h"
+#include "../DeathState.h"
 #include <CircuitPet.h>
 
-DuckScreen::DuckScreen(Sprite* base) : State(), base(base), characterSprite(base, StatMan.getLevel(), StatMan.get().oilLevel < 25, Anim::General),
+DuckScreen::DuckScreen(Sprite* base) : State(), base(base), characterSprite(base, StatMan.getLevel(), StatMan.get().oilLevel < rustThreshold, Anim::General),
 									   menu(base), hider(&menu){
 
 
@@ -47,12 +48,12 @@ void DuckScreen::onStart(){
 	};
 
 	menuItems = {
-			{ "Oily", GameImage(base, "/MenuIcons/Icon1.raw"), [pushGame](){pushGame(new Game1());}},
-			{ "Flappy", GameImage(base, "/MenuIcons/Icon2.raw"), [pushGame](){pushGame(new Game2());} },
-			{ "Eaty", GameImage(base, "/MenuIcons/Icon3.raw"), {} },
-			{ "Jump & Duck", GameImage(base, "/MenuIcons/Icon4.raw"), {} },
-			{ "Disco danceoff", GameImage(base, "/MenuIcons/Icon5.raw"), [pushGame](){pushGame(new Game5());} },
-			{ "Space duck", GameImage(base, "/MenuIcons/Icon6.raw"), [pushGame](){pushGame(new Game6());}},
+			{ "Oily",1, GameImage(base, "/MenuIcons/Icon1.raw"), GameImage(base, "/MenuIcons/Icon1.raw"), [pushGame](){pushGame(new Game1());}},
+			{ "Flappy",2, GameImage(base, "/MenuIcons/Icon2.raw"),GameImage(base, "/MenuIcons/Locked2.raw"),  [pushGame](){pushGame(new Game2());} },
+			{ "Eaty", 3,GameImage(base, "/MenuIcons/Icon3.raw"),GameImage(base, "/MenuIcons/Locked3.raw"),  {} },
+			{ "Jump & Duck",4, GameImage(base, "/MenuIcons/Icon4.raw"), GameImage(base, "/MenuIcons/Locked4.raw"), {} },
+			{ "Disco danceoff", 5,GameImage(base, "/MenuIcons/Icon5.raw"), GameImage(base, "/MenuIcons/Locked5.raw"), [pushGame](){pushGame(new Game5());} },
+			{ "Space duck", 6,GameImage(base, "/MenuIcons/Icon6.raw"), GameImage(base, "/MenuIcons/Locked6.raw"), [pushGame](){pushGame(new Game6());}},
 	};
 
 	menu.setOffsetY(menuY);
@@ -65,8 +66,9 @@ void DuckScreen::onStart(){
 
 	currentStats = targetStats = prevStats = StatMan.get();
 	StatMan.addListener(this);
+	StatMan.setPaused(false);
 
-	characterSprite.setRusty(StatMan.get().oilLevel < 25);
+	characterSprite.setRusty(StatMan.get().oilLevel < rustThreshold);
 	characterSprite.setCharLevel(StatMan.getLevel());
 	characterSprite.setAnim(Anim::General);
 
@@ -86,6 +88,17 @@ void DuckScreen::onStop(){
 }
 
 void DuckScreen::loop(uint micros){
+
+	if(dead){
+		volatile auto temp = base;
+		stop();
+		delete this;
+
+		auto duck = new DeathState(temp);
+		duck->start();
+		return;
+	}
+
 	//stats display easing when a change occurs
 	if(currentStats != targetStats){
 
@@ -143,14 +156,19 @@ void DuckScreen::buttonPressed(uint i){
 
 	switch(i){
 		case BTN_LEFT:
+			if(menu.isShaking()) return;
 			selection = menu.prev();
 			break;
 		case BTN_RIGHT:
+			if(menu.isShaking()) return;
 			selection = menu.next();
 			break;
 		case BTN_A: {
 			if(hider.getState() != MenuHider::Shown) return;
-
+			if(menuItems[selection].levelRequired > StatMan.getLevel()){
+				menu.shake();
+				return;
+			}
 			auto func = menuItems[selection].primary;
 			if(func) func();
 			return;
@@ -159,9 +177,21 @@ void DuckScreen::buttonPressed(uint i){
 }
 
 void DuckScreen::statsChanged(const Stats& stats, bool leveledUp){
+
+	if(StatMan.hasDied()){
+		dead = true;
+		StatMan.setPaused(true);
+		return;
+	}
+
 	if(leveledUp){
 		//TODO - levelup anims
+		bgSprite->setLevel(StatMan.getLevel());
+		characterSprite.setCharLevel(StatMan.getLevel());
+		osSprite->setLevel(StatMan.getLevel());
 	}
+
+	characterSprite.setRusty(stats.oilLevel < rustThreshold);
 
 	targetStats = stats;
 	prevStats = currentStats;
