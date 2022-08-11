@@ -71,16 +71,6 @@ void Game1::onLoad(){
 	);
 	addObject(bg);
 	bg->getRenderComponent()->setLayer(0);
-
-	auto scoreRc = std::make_unique<SpriteRC>(PixelDim{ 50, 7 });
-	scoreSprite = scoreRc->getSprite();
-	auto scoreGo = std::make_shared<GameObject>(
-			move(scoreRc),
-			nullptr
-	);
-	addObject(scoreGo);
-	scoreGo->setPos({ 5, 5 });
-	scoreSprite->clear(TFT_TRANSPARENT);
 }
 
 void Game1::onLoop(float deltaTime){
@@ -120,10 +110,6 @@ void Game1::buttonPressed(uint i){
 	if(i == BTN_ENTER){
 		tries++;
 		addPoints(indicator->getDifference());
-		scoreSprite->clear(TFT_TRANSPARENT);
-		scoreSprite->setTextColor(TFT_WHITE);
-		scoreSprite->setCursor(0, 0);
-		scoreSprite->printf("Tries: %d", tries);
 	}
 }
 
