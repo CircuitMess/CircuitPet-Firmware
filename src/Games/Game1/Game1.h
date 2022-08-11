@@ -34,6 +34,7 @@ private:
 	const float length = 120.0f;
 	const float maxPoints = 0.35f;
 	float multiplier;
+	bool done = false;
 
 	std::shared_ptr<AnimRC> duckAnim;
 	std::shared_ptr<Sprite> scoreSprite;

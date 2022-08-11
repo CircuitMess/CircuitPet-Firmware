@@ -111,6 +111,8 @@ void Game1::onStop(){
 }
 
 void Game1::buttonPressed(uint i){
+	if(done) return;
+
 	if(i == BTN_BACK){
 		pop();
 		return;
@@ -143,6 +145,7 @@ void Game1::addPoints(int difference){
 		removeObject(barGO);
 		removeObject(indicatorGO);
 		oilCan->startMoving();
+		done = true;
 	}else{
 		duckAnim->setAnim(getFile("/Games/Game1/OilyJump.gif"));
 		duckAnim->setLoopDoneCallback([this](uint32_t){
