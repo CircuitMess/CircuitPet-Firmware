@@ -35,7 +35,14 @@ void ClockMaster::loop(uint micros){
 	for(auto l : listeners){
 		uint32_t delta;
 		if(l->persistent){
-			if(rtcTime < l->lastTick) continue;
+
+			//if battery power was cut, the recorded lastTick will be greater than current rtcTime, so we reset it
+			if(rtcTime < l->lastTick){
+				l->lastTick = rtcTime;
+				l->lastTickMillis = millisTime;
+				write();
+				continue;
+			}
 			delta = rtcTime - l->lastTick;
 		}else{
 			delta = millisTime - l->lastTick;
