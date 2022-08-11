@@ -160,7 +160,6 @@ void Game3::collisionHandler(Item item){
 		drawHearts();
 	}
 	if(lives <= 0){
-		delay(1500);
 		pop();
 	}
 }
