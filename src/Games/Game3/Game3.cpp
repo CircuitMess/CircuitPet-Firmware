@@ -110,7 +110,7 @@ void Game3::addTemplate(std::string file, PixelDim dim, int value){
 
 void Game3::spawnRandom(){
 	int randNum = rand() % (101);
-	if(randNum <= 70){
+	if(randNum <= 50){
 		int pick = rand() % foods.size();
 		spawnItem(foods[pick]);
 	}else{
