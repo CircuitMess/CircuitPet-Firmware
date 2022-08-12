@@ -12,3 +12,7 @@ float CircleCC::getRadius() const{
 glm::vec2 CircleCC::getOffset() const{
 	return offset;
 }
+
+void CircleCC::setOffset(const glm::vec2& offset){
+	CircleCC::offset = offset;
+}

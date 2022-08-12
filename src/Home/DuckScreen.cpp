@@ -6,6 +6,7 @@
 #include "../Games/Game6/Game6.h"
 #include "../Games/Game5.h"
 #include "../Games/2/Game2.h"
+#include "../Games/Game4/Game4.h"
 #include "../DeathState.h"
 #include <CircuitPet.h>
 
@@ -49,7 +50,7 @@ void DuckScreen::onStart(){
 			{ "Oily",1, GameImage(base, "/MenuIcons/Icon1.raw"), GameImage(base, "/MenuIcons/Icon1.raw"), [pushGame](){pushGame(new Game1());}},
 			{ "Flappy",2, GameImage(base, "/MenuIcons/Icon2.raw"),GameImage(base, "/MenuIcons/Locked2.raw"),  [pushGame](){pushGame(new Game2());} },
 			{ "Eaty", 3,GameImage(base, "/MenuIcons/Icon3.raw"),GameImage(base, "/MenuIcons/Locked3.raw"),  [pushGame](){ pushGame(new Game3()); } },
-			{ "Jump & Duck",4, GameImage(base, "/MenuIcons/Icon4.raw"), GameImage(base, "/MenuIcons/Locked4.raw"), {} },
+			{ "Jump & Duck",4, GameImage(base, "/MenuIcons/Icon4.raw"), GameImage(base, "/MenuIcons/Locked4.raw"), [pushGame](){pushGame(new Game4::Game4());} },
 			{ "Disco danceoff", 5,GameImage(base, "/MenuIcons/Icon5.raw"), GameImage(base, "/MenuIcons/Locked5.raw"), [pushGame](){pushGame(new Game5());} },
 			{ "Space duck", 6,GameImage(base, "/MenuIcons/Icon6.raw"), GameImage(base, "/MenuIcons/Locked6.raw"), [pushGame](){pushGame(new Game6());}},
 	};
