@@ -54,6 +54,8 @@ void Game4::Duck::update(float deltaTime){
 }
 
 void Game4::Duck::buttonPressed(uint i){
+	if(isDone) return;
+
 	if(i == BTN_DOWN){
 		if(isJumping){
 			multiplier = 10.0f;
@@ -78,6 +80,8 @@ void Game4::Duck::buttonPressed(uint i){
 }
 
 void Game4::Duck::buttonReleased(uint i){
+	if(isDone) return;
+
 	if(i == BTN_DOWN){
 		if(isJumping) return;
 		walk();

@@ -144,6 +144,8 @@ void Game4::Game4::onRender(Sprite* canvas){
 }
 
 void Game4::Game4::buttonPressed(uint i){
+	if(isDone) return;
+
 	if(i == BTN_BACK){
 		pop();
 	}
