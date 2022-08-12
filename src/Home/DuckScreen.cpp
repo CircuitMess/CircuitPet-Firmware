@@ -1,10 +1,12 @@
 #include "DuckScreen.h"
 #include <Loop/LoopManager.h>
 #include "../Stats/StatsManager.h"
-#include "../Games/TestGame.h"
+#include "../Games/Game1/Game1.h"
+#include "../Games/Game3/Game3.h"
 #include "../Games/Game6/Game6.h"
 #include "../Games/Game5.h"
 #include "../Games/2/Game2.h"
+#include "../Games/Game4/Game4.h"
 #include "../DeathState.h"
 #include <CircuitPet.h>
 
@@ -15,11 +17,8 @@ DuckScreen::DuckScreen(Sprite* base) : State(), base(base), characterSprite(base
 	characterSprite.setPos(characterX, characterY);
 }
 
-
 void DuckScreen::onStart(){
 	Input::getInstance()->addListener(this);
-	LoopManager::addListener(this); //Note - possible crash if start() is called before constructor finishes
-	hider.activity();
 
 	//load resources
 	bgSprite = std::make_unique<BgSprite>(base, StatMan.getLevel());
@@ -48,12 +47,12 @@ void DuckScreen::onStart(){
 	};
 
 	menuItems = {
-			{ "Oily",1, GameImage(base, "/MenuIcons/Icon1.raw"), GameImage(base, "/MenuIcons/Icon1.raw"),"/GameScreens/Splash1","/GameScreens/Inst1", [pushGame](){pushGame(new TestGame());}},
-			{ "Flappy",2, GameImage(base, "/MenuIcons/Icon2.raw"),GameImage(base, "/MenuIcons/Locked2.raw"), "/GameScreens/Splash2","/GameScreens/Inst2", [pushGame](){pushGame(new Game2());} },
-			{ "Eaty", 3,GameImage(base, "/MenuIcons/Icon3.raw"),GameImage(base, "/MenuIcons/Locked3.raw"), "/GameScreens/Splash3","/GameScreens/Inst3", {} },
-			{ "Jump & Duck",4, GameImage(base, "/MenuIcons/Icon4.raw"), GameImage(base, "/MenuIcons/Locked4.raw"),"/GameScreens/Splash4","/GameScreens/Inst4", {} },
-			{ "Disco danceoff", 5,GameImage(base, "/MenuIcons/Icon5.raw"), GameImage(base, "/MenuIcons/Locked5.raw"), "/GameScreens/Splash5","/GameScreens/Inst5", [pushGame](){pushGame(new Game5());} },
-			{ "Space duck", 6,GameImage(base, "/MenuIcons/Icon6.raw"), GameImage(base, "/MenuIcons/Locked6.raw"),"/GameScreens/Splash6","/GameScreens/Inst6", [pushGame](){pushGame(new Game6());}},
+			{ "Oily",1, GameImage(base, "/MenuIcons/Icon1.raw"), GameImage(base, "/MenuIcons/Icon1.raw"),"/GameScreens/Splash1","/GameScreens/Inst1", [](){return new Game1();}},
+			{ "Flappy",2, GameImage(base, "/MenuIcons/Icon2.raw"),GameImage(base, "/MenuIcons/Locked2.raw"), "/GameScreens/Splash2","/GameScreens/Inst2", [](){return new Game2();} },
+			{ "Eaty", 3,GameImage(base, "/MenuIcons/Icon3.raw"),GameImage(base, "/MenuIcons/Locked3.raw"), "/GameScreens/Splash3","/GameScreens/Inst3", []() {return new Game3();}},
+			{ "Jump & Duck",4, GameImage(base, "/MenuIcons/Icon4.raw"), GameImage(base, "/MenuIcons/Locked4.raw"),"/GameScreens/Splash4","/GameScreens/Inst4", [](){return new Game4::Game4();} },
+			{ "Disco danceoff", 5,GameImage(base, "/MenuIcons/Icon5.raw"), GameImage(base, "/MenuIcons/Locked5.raw"), "/GameScreens/Splash5","/GameScreens/Inst5", [](){return new Game5();} },
+			{ "Space duck", 6,GameImage(base, "/MenuIcons/Icon6.raw"), GameImage(base, "/MenuIcons/Locked6.raw"),"/GameScreens/Splash6","/GameScreens/Inst6", [](){return new Game6();}},
 	};
 
 	menu.setOffsetY(menuY);
@@ -121,14 +120,14 @@ void DuckScreen::loop(uint micros){
 	}
 
 	//playing random duck animations while idling
-	randCounter+=micros;
+	randCounter += micros;
 	if(randCounter >= randInterval){
 		randCounter = 0;
 		Anim anim;
 		if(!specialAnimPlaying){
 			specialAnimPlaying = true;
 			randInterval = 1000000;
-			int num = 1 + rand() % ((uint8_t)Anim::Count-1);
+			int num = 1 + rand() % ((uint8_t)Anim::Count - 1);
 			anim = (Anim)(num);
 		}else{
 			specialAnimPlaying = false;
@@ -163,7 +162,7 @@ void DuckScreen::buttonPressed(uint i){
 			if(menu.isShaking()) return;
 			selection = menu.next();
 			break;
-		case BTN_A: {
+		case BTN_A:{
 			if(hider.getState() != MenuHider::Shown) return;
 			if(menuItems[selection].levelRequired > StatMan.getLevel()){
 				menu.shake();
