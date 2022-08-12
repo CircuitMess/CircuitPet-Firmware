@@ -26,26 +26,7 @@ void DuckScreen::onStart(){
 	statsSprite = std::make_unique<StatsSprite>(base, StatMan.get().oilLevel,  StatMan.get().happiness, 100);
 	osSprite->setPos(osX, osY);
 	statsSprite->setPos(statsX, statsY);
-/*
-	auto pushGame = [this](Game* game){
-//		stop();
 
-		game->load();
-
-		printf("Loading.");
-		while(!game->isLoaded()){
-			delay(500);
-			printf(".");
-		}
-		printf("\n");
-		printf("Free heap: %d B\n", ESP.getFreeHeap());
-
-		printf("\nStarting...\n");
-
-		LoopManager::loop();
-//		game->push(this);
-	};
-*/
 	menuItems = {
 			{ "Oily",1, GameImage(base, "/MenuIcons/Icon1.raw"), GameImage(base, "/MenuIcons/Icon1.raw"),"/GameScreens/Splash1.raw","/GameScreens/Inst1.raw", [](){return new Game1();}},
 			{ "Flappy",2, GameImage(base, "/MenuIcons/Icon2.raw"),GameImage(base, "/MenuIcons/Locked2.raw"), "/GameScreens/Splash2.raw","/GameScreens/Inst2.raw", [](){return new Game2();} },

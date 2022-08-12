@@ -35,6 +35,6 @@ bool State::isStarted() const{
 	return started;
 }
 
-State* State::getParent(){
+const State* State::getParent(){
 	return parent;
 }
