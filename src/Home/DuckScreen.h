@@ -11,6 +11,7 @@
 #include "Menu/Menu.h"
 #include "Menu/MenuHider.h"
 #include "../Stats/StatsChangedListener.h"
+#include "../SplashState.h"
 
 class DuckScreen : public LoopListener, public State, private InputListener, private StatsChangedListener {
 public:
@@ -27,6 +28,7 @@ private:
 	std::unique_ptr<BgSprite> bgSprite;
 	std::unique_ptr<OSSprite> osSprite;
 	CharacterSprite characterSprite;
+	SplashState* splashState;
 
 	std::unique_ptr<StatsSprite> statsSprite;
 	void statsChanged(const Stats& stats, bool leveledUp) override;

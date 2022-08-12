@@ -26,9 +26,9 @@ void DuckScreen::onStart(){
 	statsSprite = std::make_unique<StatsSprite>(base, StatMan.get().oilLevel,  StatMan.get().happiness, 100);
 	osSprite->setPos(osX, osY);
 	statsSprite->setPos(statsX, statsY);
-
+/*
 	auto pushGame = [this](Game* game){
-		stop();
+//		stop();
 
 		game->load();
 
@@ -43,9 +43,9 @@ void DuckScreen::onStart(){
 		printf("\nStarting...\n");
 
 		LoopManager::loop();
-		game->push(this);
+//		game->push(this);
 	};
-
+*/
 	menuItems = {
 			{ "Oily",1, GameImage(base, "/MenuIcons/Icon1.raw"), GameImage(base, "/MenuIcons/Icon1.raw"),"/GameScreens/Splash1.raw","/GameScreens/Inst1.raw", [](){return new Game1();}},
 			{ "Flappy",2, GameImage(base, "/MenuIcons/Icon2.raw"),GameImage(base, "/MenuIcons/Locked2.raw"), "/GameScreens/Splash2.raw","/GameScreens/Inst2.raw", [](){return new Game2();} },
@@ -120,14 +120,14 @@ void DuckScreen::loop(uint micros){
 	}
 
 	//playing random duck animations while idling
-	randCounter += micros;
+	randCounter+=micros;
 	if(randCounter >= randInterval){
 		randCounter = 0;
 		Anim anim;
 		if(!specialAnimPlaying){
 			specialAnimPlaying = true;
 			randInterval = 1000000;
-			int num = 1 + rand() % ((uint8_t)Anim::Count - 1);
+			int num = 1 + rand() % ((uint8_t)Anim::Count-1);
 			anim = (Anim)(num);
 		}else{
 			specialAnimPlaying = false;
@@ -139,9 +139,7 @@ void DuckScreen::loop(uint micros){
 	}
 
 	bgSprite->push();
-
 	statsSprite->push();
-
 	osSprite->push();
 
 	characterSprite.loop(micros);
@@ -168,8 +166,8 @@ void DuckScreen::buttonPressed(uint i){
 				menu.shake();
 				return;
 			}
-			auto func = menuItems[selection].primary;
-			if(func) func();
+			splashState = new SplashState(base, menuItems[selection]);
+			splashState->push(this);
 			return;
 		}
 	}
