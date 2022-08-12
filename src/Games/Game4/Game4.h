@@ -43,6 +43,7 @@ private:
 	const int tilesPerArray = 5;
 	float spawnValue = 0.0f;
 	float spawnRate = 2.0f;
+	const float spawnIncrement = 0.03f;
 	float speed = 100.0f;
 	const float speedMax = 180.0f;
 	const float speedIncrement = 0.5f;

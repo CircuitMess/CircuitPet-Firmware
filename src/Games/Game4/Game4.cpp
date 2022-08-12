@@ -164,7 +164,7 @@ void Game4::Game4::setupObstacles(){
 void Game4::Game4::spawn(){
 	if(speed < speedMax){
 		speed += speedIncrement;
-		spawnRate -= speedIncrement / 10;
+		spawnRate -= spawnIncrement;
 	}
 
 	if(score >= scoreMax - 1){
