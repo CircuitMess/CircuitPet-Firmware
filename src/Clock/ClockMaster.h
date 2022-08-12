@@ -8,6 +8,7 @@
 #include <FS.h>
 #include "ClockListener.h"
 #include <string>
+#include <nvs.h>
 
 struct PersistentListener{
 	char ID[10];
@@ -28,8 +29,6 @@ private:
 	std::vector<ClockListener*> listeners;
 	std::map <std::string, PersistentListener> persistentListeners;
 
-	File storage;
-	File backup;
 	void write();
 	void read();
 
@@ -40,6 +39,7 @@ private:
 	uint32_t syncTimeMicros = 0;
 	const uint32_t syncTimeInterval = 60000000; //[us]
 
+	static nvs_handle handle;
 };
 
 

@@ -3,11 +3,17 @@
 #include <Loop/LoopManager.h>
 #include <CircuitPet.h>
 
+nvs_handle ClockMaster::handle;
 ClockMaster Clock;
 
 static const char* tag = "ClockMaster";
 
 void ClockMaster::begin(){
+	auto err = nvs_open("ClockMaster", NVS_READWRITE, &handle);
+	if(err != ESP_OK){
+		ESP_LOGW(tag, "Clock storage initialization error: %s\n", esp_err_to_name(err));
+	}
+
 	lastRTCTime = syncTime();
 	read();
 
@@ -114,46 +120,53 @@ void ClockMaster::removeListener(ClockListener* listener){
 }
 
 void ClockMaster::write(){
-	SPIFFS.remove("/clock_backup.bin");
-	storage = SPIFFS.open("/clock_backup.bin", "w");
-	storage.seek(0);
-	for(auto key : persistentListeners){
-		storage.write((uint8_t*)&key.second.ID, 10);
-		storage.write((uint8_t*)&key.second.lastTick, sizeof(time_t));
+	auto size = (sizeof(time_t) + 10) * persistentListeners.size();
+	auto data = (uint8_t*)malloc(size);
+	auto it = persistentListeners.begin();
+	for(int i = 0; i < persistentListeners.size(); i++){
+		memcpy(data + (sizeof(time_t) + 10) * i, (uint8_t*)&it->second.ID, 10);
+		memcpy(data + (10) * i, (uint8_t*)&it->second.lastTick, sizeof(time_t));
 	}
-	storage.close();
-
-	SPIFFS.remove("/clock.bin");
-	storage = SPIFFS.open("/clock.bin", "w");
-	storage.seek(0);
-	for(auto key : persistentListeners){
-		storage.write((uint8_t*)&key.second.ID, 10);
-		storage.write((uint8_t*)&key.second.lastTick, sizeof(time_t));
+	auto err = nvs_set_blob(handle, "ClockMaster", data, size);
+	if(err != ESP_OK){
+		ESP_LOGW(tag, "Clock data write failed");
+		return;
 	}
-	storage.close();
 }
 
 void ClockMaster::read(){
-	storage = SPIFFS.open("/clock.bin", "r");
 
-	if(!storage || !storage.available() || (storage.available() % (sizeof(time_t) + 10)) != 0){
-		storage.close();
-		storage = SPIFFS.open("/clock_backup.bin", "r");
-		ESP_LOGI(tag, "Clock data restored using backup");
+	size_t size;
+
+	auto err = nvs_get_blob(handle, "ClockMaster", nullptr, &size);
+	if(err != ESP_OK){
+		ESP_LOGW(tag, "Clock data size read failed: %s", esp_err_to_name(err));
+		return;
+	}
+
+
+	auto data = (uint8_t*)malloc(size);
+
+	err = nvs_get_blob(handle, "ClockMaster", data, &size);
+	if(err != ESP_OK){
+		ESP_LOGW(tag, "Clock data read failed: %s", esp_err_to_name(err));
+		return;
+	}
+
+	if(!data || !size || (size % (sizeof(time_t) + 10)) != 0){
+		ESP_LOGW(tag, "Clock data read failed - data invalid");
+		return;
 	}
 
 	persistentListeners.clear();
 
-	while(storage.available()){
+	for(int i = 0; i < size / (sizeof(time_t) + 10); ++i){
 		PersistentListener listener;
-		size_t read = storage.read((uint8_t*)&listener.ID, 10);
-		read += storage.read((uint8_t*)&listener.lastTick, sizeof(time_t));
-
-		if(read < 10 + sizeof(time_t)) return;
+		memcpy((uint8_t*)&listener.ID, data + (sizeof(time_t) + 10) * i, 10);
+		memcpy((uint8_t*)&listener.lastTick, data + (10) * i, sizeof(time_t));
 
 		persistentListeners[listener.ID] = listener;
 	}
-	storage.close();
 }
 
 time_t ClockMaster::syncTime(){
