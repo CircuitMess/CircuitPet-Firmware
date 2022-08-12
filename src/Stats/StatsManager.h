@@ -5,6 +5,7 @@
 #include <Util/WithListeners.h>
 #include "Stats.hpp"
 #include "../Clock/ClockListener.h"
+#include <nvs.h>
 
 class StatsManager : public WithListeners<StatsChangedListener> {
 public:
@@ -36,7 +37,6 @@ public:
 private:
 	void store();
 	void load();
-	bool loadBackup();
 
 	void timedUpdate();
 
@@ -50,6 +50,8 @@ private:
 	ClockListener timedUpdateListener;
 
 	static const Stats hourlyDecrement;
+
+	static nvs_handle handle;
 };
 
 extern StatsManager StatMan;

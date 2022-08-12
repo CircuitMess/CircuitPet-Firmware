@@ -32,6 +32,7 @@ void ClockMaster::loop(uint micros){
 		if(abs(delta) > 0){
 			ESP_LOGI(tag, "RTC - millis difference over last 60 seconds: %d\n", delta);
 		}
+		lastRTCTime = newTime;
 	}
 
 	time_t rtcTime = syncTime();
@@ -126,6 +127,7 @@ void ClockMaster::write(){
 	for(int i = 0; i < persistentListeners.size(); i++){
 		memcpy(data + (sizeof(time_t) + 10) * i, (uint8_t*)&it->second.ID, 10);
 		memcpy(data + (10) * i, (uint8_t*)&it->second.lastTick, sizeof(time_t));
+		it++;
 	}
 	auto err = nvs_set_blob(handle, "ClockMaster", data, size);
 	if(err != ESP_OK){

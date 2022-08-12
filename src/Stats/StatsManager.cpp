@@ -4,6 +4,7 @@
 
 StatsManager StatMan;
 static const char* tag = "StatsManager";
+nvs_handle StatsManager::handle;
 
 const uint16_t StatsManager::levelupThresholds[] = { 100, 200, 300, 400, 500 }; //TODO - settati levelUp threshove
 const Stats StatsManager::hourlyDecrement = { 2, 5, 0 };
@@ -12,6 +13,11 @@ StatsManager::StatsManager() : timedUpdateListener(3600, false, true, "StatsMan"
 }
 
 void StatsManager::begin(){
+	auto err = nvs_open("StatsMan", NVS_READWRITE, &handle);
+	if(err != ESP_OK){
+		ESP_LOGW(tag, "Clock storage initialization error: %s\n", esp_err_to_name(err));
+	}
+
 	load();
 }
 
@@ -62,32 +68,29 @@ void StatsManager::setPaused(bool pause){
 }
 
 void StatsManager::store(){
-	SPIFFS.remove("/stats_backup.bin");
-	File f = SPIFFS.open("/stats_backup.bin", "w");
-	f.write((uint8_t*)&stats, sizeof(Stats));
-	f.write(gameOverCount);
-	f.write(hatched);
-	f.close();
+	auto size = sizeof(Stats) + sizeof(gameOverCount) + sizeof(hatched);
+	auto data = (uint8_t*)malloc(size);
 
-	SPIFFS.remove("/stats.bin");
-	f = SPIFFS.open("/stats.bin", "w");
-	f.write((uint8_t*)&stats, sizeof(Stats));
-	f.write(gameOverCount);
-	f.write(hatched);
-	f.close();
+	memcpy(data, (uint8_t*)&stats, sizeof(Stats));
+	memcpy(data + sizeof(Stats), &gameOverCount, 1);
+	memcpy(data + sizeof(Stats) + sizeof(gameOverCount), &hatched, 1);
+
+
+	auto err = nvs_set_blob(handle, "StatsMan", data, size);
+	if(err != ESP_OK){
+		ESP_LOGW(tag, "Clock data write failed");
+		return;
+	}
 }
 
 void StatsManager::load(){
-	File f = SPIFFS.open("/stats.bin", "r");
+	auto size = sizeof(Stats) + sizeof(gameOverCount) + sizeof(hatched);
+	auto data = (uint8_t*)malloc(size);
 
-	if(!f || f.available() != sizeof(Stats) + sizeof(gameOverCount) + sizeof(hatched)){
-		f.close();
-		if(loadBackup()){
-			ESP_LOGI(tag, "Stats file restored with backup");
-			return;
-		}
-
-		ESP_LOGW(tag, "Stats file not found or corrupt! Setting defaults.");
+	auto err = nvs_get_blob(handle, "StatsMan", data, &size);
+	if(err != ESP_OK){
+		ESP_LOGW(tag, "Clock data read failed: %s", esp_err_to_name(err));
+		ESP_LOGW(tag, "Stats data not found or corrupt! Setting defaults.");
 		stats.happiness = 100;
 		stats.oilLevel = 100;
 		stats.experience = 0;
@@ -96,14 +99,19 @@ void StatsManager::load(){
 		return;
 	}
 
-	f.read((uint8_t*)&stats, sizeof(Stats));
+	if(!data || !size || size != sizeof(Stats) + sizeof(gameOverCount) + sizeof(hatched)){
+		ESP_LOGW(tag, "Clock data read failed - data invalid");
+		ESP_LOGW(tag, "Stats data not found or corrupt! Setting defaults.");
+		stats.happiness = 100;
+		stats.oilLevel = 100;
+		stats.experience = 0;
+		gameOverCount = 0;
+		hatched = false;
+		return;
+	}
+	memcpy(&stats, data, sizeof(Stats));
 
 	if(stats.happiness > 100 || stats.oilLevel > 100){
-		f.close();
-		if(loadBackup()){
-			ESP_LOGI(tag, "Stats file restored with backup");
-			return;
-		}
 
 		ESP_LOGW(tag, "Stats file not found or corrupt! Setting defaults.");
 		stats.happiness = 100;
@@ -113,10 +121,8 @@ void StatsManager::load(){
 		hatched = false;
 		return;
 	}
-	gameOverCount = f.read();
-	hatched = f.read();
-
-	f.close();
+	memcpy(&gameOverCount, data + sizeof(Stats), 1);
+	memcpy(&hatched, data + sizeof(Stats) + sizeof(gameOverCount), 1);
 }
 
 void StatsManager::timedUpdate(){
@@ -142,26 +148,4 @@ bool StatsManager::isHatched() const{
 void StatsManager::setHatched(bool hatched){
 	StatsManager::hatched = hatched;
 	store();
-}
-
-bool StatsManager::loadBackup(){
-	File f = SPIFFS.open("/stats_backup.bin", "r");
-
-	if(!f || f.available() != sizeof(Stats) + sizeof(gameOverCount) + sizeof(hatched)){
-		return false;
-	}
-
-	Stats s{};
-	f.read((uint8_t*)&s, sizeof(Stats));
-
-	if(s.happiness > 100 || s.oilLevel > 100){
-		return false;
-	}
-
-	stats = s;
-	gameOverCount = f.read();
-	hatched = f.read();
-
-	f.close();
-	return true;
 }
