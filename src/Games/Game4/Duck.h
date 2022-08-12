@@ -29,6 +29,9 @@ private:
 	void buttonReleased(uint i) override;
 	void walk();
 
+	void jump();
+	void duck();
+
 	Game4* game4;
 	std::shared_ptr<GameObject> gameObjectRc;
 	std::shared_ptr<GameObject> gameObjectCc;
@@ -43,11 +46,12 @@ private:
 	float velocity;
 	float gravity;
 	bool isJumping = false;
+	bool isDucked = false;
 	bool isDone = false;
 
 	File walking;
 	File down;
-	File jump;
+	File jumpAnim;
 	File ducking;
 	File ducked;
 	File unDucking;
