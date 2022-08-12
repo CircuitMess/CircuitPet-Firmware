@@ -118,7 +118,20 @@ void Game4::Game4::onLoop(float deltaTime){
 	}
 	if(isDone){
 		if(speed == 0) return;
-		if(goal->getPos().x  <= 58){
+		if(goal->getPos().x <= 58){
+			auto diff = 58 - goal->getPos().x;
+
+			for(auto obj: movingObjects){
+				float x = obj->getPos().x + diff;
+				float y = obj->getPos().y;
+				obj->setPos({ x, y });
+			}
+			for(auto obj: movingTiles){
+				float x = obj->getPos().x + diff;
+				float y = obj->getPos().y;
+				obj->setPos({ x, y });
+			}
+
 			duck->win();
 			speed = 0;
 		}

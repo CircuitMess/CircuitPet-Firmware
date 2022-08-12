@@ -16,10 +16,10 @@ Game4::Duck::~Duck(){
 
 void Game4::Duck::update(float deltaTime){
 	if(isDone){
-		int x = gameObjectRc->getPos().x;
-		x += 30 * deltaTime;
+		float x = gameObjectRc->getPos().x;
+		x += 30.0f * deltaTime;
 		gameObjectRc->setPos({ x, gameObjectRc->getPos().y });
-		if(x >= 63){ //ručno izračunato
+		if(x >= 52){
 			walk();
 			isDone = false;
 			gameObjectRc->setPos({ 62, startPosY - 15 });
