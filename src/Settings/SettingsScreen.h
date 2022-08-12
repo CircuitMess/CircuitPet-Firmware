@@ -38,7 +38,7 @@ private:
 	DiscreteSlider* shutDownSlider;
 	SliderElement* brightnessSlider;
 	BooleanElement* soundSwitch;
-	BooleanElement* enableLED;
+	SliderElement* rgbSlider;
 	TextElement* inputTest;
 	TextElement* save;
 
@@ -54,7 +54,7 @@ private:
 	void buttonReleased(uint id) override;
 
 	Color* backgroundBuffer = nullptr;
-	uint32_t blinkTime = 0;
+	bool cycleRGB = false;
 };
 }
 

@@ -14,17 +14,17 @@ SettingsScreen::SettingsScreen::SettingsScreen(Display& display) : screen(displa
 																   shutDownSlider(new DiscreteSlider(screenLayout, "Auto shutdown", { 0, 1, 5, 15, 30 })),
 																   brightnessSlider(new SliderElement(screenLayout, "Brightness")),
 																   soundSwitch(new BooleanElement(screenLayout, "Sound")),
-																   enableLED(new BooleanElement(screenLayout, "LED enable")),
+																   rgbSlider(new SliderElement(screenLayout, "RGB brightness")),
 																   inputTest(new TextElement(screenLayout, "Hardware test")),
 																   save(new TextElement(screenLayout, "Save")),
-																   elements({ shutDownSlider, brightnessSlider, soundSwitch, enableLED, inputTest, save }){
+																   elements({ shutDownSlider, brightnessSlider, soundSwitch, rgbSlider, inputTest, save }){
 	instance = this;
 	buildUI();
 	shutDownSlider->setIsSelected(true);
 	shutDownSlider->setIndex(Settings.get().shutdownTime);
 	brightnessSlider->setSliderValue(Settings.get().screenBrightness);
 	soundSwitch->setBooleanSwitch(Settings.get().sound);
-	enableLED->setBooleanSwitch(Settings.get().RGBenable);
+	rgbSlider->setSliderValue(Settings.get().RGBbrightness);
 
 	screen.pack();
 }
@@ -34,16 +34,29 @@ void SettingsScreen::SettingsScreen::onStart(){
 
 	Input::getInstance()->addListener(this);
 	Input::getInstance()->setButtonHeldRepeatCallback(BTN_RIGHT, 150, [](uint){
-		if(instance == nullptr || instance->selectedSetting != 1) return;
-		instance->brightnessSlider->moveSliderValue(instance->scrollStep);
+		if(instance == nullptr) return;
+		if(instance->selectedSetting == 1){
+			instance->brightnessSlider->moveSliderValue(instance->scrollStep);
 
-		Settings.get().screenBrightness = instance->brightnessSlider->getSliderValue();
-		CircuitPet.setBrightness(instance->brightnessSlider->getSliderValue());
+			Settings.get().screenBrightness = instance->brightnessSlider->getSliderValue();
+			CircuitPet.setBrightness(instance->brightnessSlider->getSliderValue());
 
-		instance->scrollCount++;
-		if(instance->scrollCount >= 3){
-			instance->scrollCount = 0;
-			instance->scrollStep *= 2;
+			instance->scrollCount++;
+			if(instance->scrollCount >= 3){
+				instance->scrollCount = 0;
+				instance->scrollStep *= 2;
+			}
+		}else if(instance->selectedSetting == 3){
+			instance->rgbSlider->moveSliderValue(instance->scrollStep);
+
+			Settings.get().RGBbrightness = instance->rgbSlider->getSliderValue();
+			RGB.setBrightness(instance->rgbSlider->getSliderValue());
+
+			instance->scrollCount++;
+			if(instance->scrollCount >= 3){
+				instance->scrollCount = 0;
+				instance->scrollStep *= 2;
+			}
 		}
 
 
@@ -51,16 +64,29 @@ void SettingsScreen::SettingsScreen::onStart(){
 	});
 
 	Input::getInstance()->setButtonHeldRepeatCallback(BTN_LEFT, 150, [](uint){
-		if(instance == nullptr || instance->selectedSetting != 1) return;
-		instance->brightnessSlider->moveSliderValue(-instance->scrollStep);
+		if(instance == nullptr) return;
+		if(instance->selectedSetting == 1){
+			instance->brightnessSlider->moveSliderValue(-instance->scrollStep);
 
-		Settings.get().screenBrightness = instance->brightnessSlider->getSliderValue();
-		CircuitPet.setBrightness(instance->brightnessSlider->getSliderValue());
+			Settings.get().screenBrightness = instance->brightnessSlider->getSliderValue();
+			CircuitPet.setBrightness(instance->brightnessSlider->getSliderValue());
 
-		instance->scrollCount++;
-		if(instance->scrollCount >= 3){
-			instance->scrollCount = 0;
-			instance->scrollStep *= 2;
+			instance->scrollCount++;
+			if(instance->scrollCount >= 3){
+				instance->scrollCount = 0;
+				instance->scrollStep *= 2;
+			}
+		}else if(instance->selectedSetting == 3){
+			instance->rgbSlider->moveSliderValue(-instance->scrollStep);
+
+			Settings.get().RGBbrightness = instance->rgbSlider->getSliderValue();
+			RGB.setBrightness(instance->rgbSlider->getSliderValue());
+
+			instance->scrollCount++;
+			if(instance->scrollCount >= 3){
+				instance->scrollCount = 0;
+				instance->scrollStep *= 2;
+			}
 		}
 
 
@@ -138,6 +164,10 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 					brightnessSlider->moveSliderValue(-1);
 					Settings.get().screenBrightness = brightnessSlider->getSliderValue();
 					CircuitPet.setBrightness(brightnessSlider->getSliderValue());
+				}else if(selectedSetting == 3){
+					rgbSlider->moveSliderValue(-1);
+					Settings.get().RGBbrightness = rgbSlider->getSliderValue();
+					RGB.setBrightness(rgbSlider->getSliderValue());
 				}
 			}else{
 				elements[selectedSetting]->setIsSelected(false);
@@ -157,6 +187,10 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 					brightnessSlider->moveSliderValue(1);
 					Settings.get().screenBrightness = brightnessSlider->getSliderValue();
 					CircuitPet.setBrightness(brightnessSlider->getSliderValue());
+				}else if(selectedSetting == 3){
+					rgbSlider->moveSliderValue(1);
+					Settings.get().RGBbrightness = rgbSlider->getSliderValue();
+					RGB.setBrightness(rgbSlider->getSliderValue());
 				}
 			}else{
 				elements[selectedSetting]->setIsSelected(false);
@@ -169,23 +203,23 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 			break;
 
 		case BTN_A:
-			if(selectedSetting == 0 || selectedSetting == 1){
+			if(selectedSetting == 0 || selectedSetting == 1 || selectedSetting == 3){
 				editMode = !editMode;
+				if(selectedSetting == 3){
+					cycleRGB = !cycleRGB;
+					if(cycleRGB){
+						LoopManager::addListener(this);
+					}else{
+						LoopManager::removeListener(this);
+						RGB.setColor(Pixel::Black);
+					}
+				}
 			}
 			elements[selectedSetting]->toggle();
 			if(selectedSetting == 2){
 				Settings.get().sound = instance->soundSwitch->getBooleanSwitch();
 //				Playback.updateGain();
 //				Playback.tone(500, 50);
-			}else if(selectedSetting == 3){
-				Settings.get().RGBenable = enableLED->getBooleanSwitch();
-				if(!Settings.get().RGBenable){
-					RGB.setColor(Pixel::Black);
-				}else{
-					RGB.setColor(Pixel::White);
-					instance->blinkTime = millis();
-					LoopManager::addListener(this);
-				}
 			}else if(selectedSetting == 4){
 //				Context* hwTest = new UserHWTest(*CircuitPet.getDisplay());
 //				hwTest->push(this);
@@ -194,7 +228,7 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 			}else if(selectedSetting == 5){
 				Settings.get().shutdownTime = shutDownSlider->getIndex();
 				Settings.get().sound = soundSwitch->getBooleanSwitch();
-				Settings.get().RGBenable = enableLED->getBooleanSwitch();
+				Settings.get().RGBbrightness = rgbSlider->getSliderValue();
 				Settings.store();
 //				Playback.updateGain();
 				pop();
@@ -206,10 +240,13 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 			if(editMode){
 				editMode = false;
 				elements[selectedSetting]->toggle();
+				cycleRGB = false;
+				LoopManager::removeListener(this);
+				RGB.setColor(Pixel::Black);
 			}else{
 				Settings.get().shutdownTime = shutDownSlider->getIndex();
 				Settings.get().sound = soundSwitch->getBooleanSwitch();
-				Settings.get().RGBenable = enableLED->getBooleanSwitch();
+				Settings.get().RGBbrightness = rgbSlider->getSliderValue();
 				Settings.store();
 //			Playback.updateGain();
 				pop();
@@ -221,12 +258,83 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 	draw();
 }
 
-void SettingsScreen::SettingsScreen::loop(uint micros){
-	if(blinkTime != 0 && millis() - blinkTime >= 200){
-		blinkTime = 0;
-		RGB.setColor(Pixel::Black);
-		LoopManager::removeListener(this);
+
+typedef struct {
+	double r;       // a fraction between 0 and 1
+	double g;       // a fraction between 0 and 1
+	double b;       // a fraction between 0 and 1
+} rgb;
+
+typedef struct {
+	double h;       // angle in degrees
+	double s;       // a fraction between 0 and 1
+	double v;       // a fraction between 0 and 1
+} hsv;
+rgb hsv2rgb(hsv in){
+	double hh, p, q, t, ff;
+	long i;
+	rgb out;
+
+	if(in.s <= 0.0){       // < is bogus, just shuts up warnings
+		out.r = in.v;
+		out.g = in.v;
+		out.b = in.v;
+		return out;
 	}
+	hh = in.h;
+	if(hh >= 360.0) hh = 0.0;
+	hh /= 60.0;
+	i = (long) hh;
+	ff = hh - i;
+	p = in.v * (1.0 - in.s);
+	q = in.v * (1.0 - (in.s * ff));
+	t = in.v * (1.0 - (in.s * (1.0 - ff)));
+
+	switch(i){
+		case 0:
+			out.r = in.v;
+			out.g = t;
+			out.b = p;
+			break;
+		case 1:
+			out.r = q;
+			out.g = in.v;
+			out.b = p;
+			break;
+		case 2:
+			out.r = p;
+			out.g = in.v;
+			out.b = t;
+			break;
+
+		case 3:
+			out.r = p;
+			out.g = q;
+			out.b = in.v;
+			break;
+		case 4:
+			out.r = t;
+			out.g = p;
+			out.b = in.v;
+			break;
+		case 5:
+		default:
+			out.r = in.v;
+			out.g = p;
+			out.b = q;
+			break;
+	}
+	return out;
+}
+
+void SettingsScreen::SettingsScreen::loop(uint micros){
+	double hue = 360.0f * ((double)((millis() % 2000) / 2000.0));
+
+	hsv h = {hue, 1, 1};
+	rgb c = hsv2rgb(h);
+
+	RGB.setColor({(uint8_t)(c.r*255), (uint8_t)(c.g*255), (uint8_t)(c.b*255)});
+
 }
 
 void SettingsScreen::SettingsScreen::buttonReleased(uint id){
