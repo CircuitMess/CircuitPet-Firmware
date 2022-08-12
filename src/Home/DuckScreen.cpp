@@ -47,12 +47,12 @@ void DuckScreen::onStart(){
 	};
 
 	menuItems = {
-			{ "Oily",1, GameImage(base, "/MenuIcons/Icon1.raw"), GameImage(base, "/MenuIcons/Icon1.raw"),"/GameScreens/Splash1","/GameScreens/Inst1", [](){return new Game1();}},
-			{ "Flappy",2, GameImage(base, "/MenuIcons/Icon2.raw"),GameImage(base, "/MenuIcons/Locked2.raw"), "/GameScreens/Splash2","/GameScreens/Inst2", [](){return new Game2();} },
-			{ "Eaty", 3,GameImage(base, "/MenuIcons/Icon3.raw"),GameImage(base, "/MenuIcons/Locked3.raw"), "/GameScreens/Splash3","/GameScreens/Inst3", []() {return new Game3();}},
-			{ "Jump & Duck",4, GameImage(base, "/MenuIcons/Icon4.raw"), GameImage(base, "/MenuIcons/Locked4.raw"),"/GameScreens/Splash4","/GameScreens/Inst4", [](){return new Game4::Game4();} },
-			{ "Disco danceoff", 5,GameImage(base, "/MenuIcons/Icon5.raw"), GameImage(base, "/MenuIcons/Locked5.raw"), "/GameScreens/Splash5","/GameScreens/Inst5", [](){return new Game5();} },
-			{ "Space duck", 6,GameImage(base, "/MenuIcons/Icon6.raw"), GameImage(base, "/MenuIcons/Locked6.raw"),"/GameScreens/Splash6","/GameScreens/Inst6", [](){return new Game6();}},
+			{ "Oily",1, GameImage(base, "/MenuIcons/Icon1.raw"), GameImage(base, "/MenuIcons/Icon1.raw"),"/GameScreens/Splash1.raw","/GameScreens/Inst1.raw", [](){return new Game1();}},
+			{ "Flappy",2, GameImage(base, "/MenuIcons/Icon2.raw"),GameImage(base, "/MenuIcons/Locked2.raw"), "/GameScreens/Splash2.raw","/GameScreens/Inst2.raw", [](){return new Game2();} },
+			{ "Eaty", 3,GameImage(base, "/MenuIcons/Icon3.raw"),GameImage(base, "/MenuIcons/Locked3.raw"), "/GameScreens/Splash3.raw","/GameScreens/Inst3.raw", []() {return new Game3();}},
+			{ "Jump & Duck",4, GameImage(base, "/MenuIcons/Icon4.raw"), GameImage(base, "/MenuIcons/Locked4.raw"),"/GameScreens/Splash4.raw","/GameScreens/Inst4.raw", [](){return new Game4::Game4();} },
+			{ "Disco danceoff", 5,GameImage(base, "/MenuIcons/Icon5.raw"), GameImage(base, "/MenuIcons/Locked5.raw"), "/GameScreens/Splash5.raw","/GameScreens/Inst5.raw", [](){return new Game5();} },
+			{ "Space duck", 6,GameImage(base, "/MenuIcons/Icon6.raw"), GameImage(base, "/MenuIcons/Locked6.raw"),"/GameScreens/Splash6.raw","/GameScreens/Inst6.raw", [](){return new Game6();}},
 	};
 
 	menu.setOffsetY(menuY);
