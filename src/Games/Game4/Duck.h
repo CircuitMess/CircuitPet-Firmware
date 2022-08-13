@@ -48,6 +48,7 @@ private:
 	bool isJumping = false;
 	bool isDucked = false;
 	bool isDone = false;
+	bool isDead = false;
 
 	File walking;
 	File down;
