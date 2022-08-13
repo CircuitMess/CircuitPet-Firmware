@@ -15,6 +15,7 @@ Game4::Duck::~Duck(){
 }
 
 void Game4::Duck::update(float deltaTime){
+	updateInvincibility(deltaTime);
 	if(isDone){
 		float x = gameObjectRc->getPos().x;
 		x += 30.0f * deltaTime;
@@ -150,5 +151,23 @@ void Game4::Duck::win(){
 	isDone = true;
 	if(isDucked){
 		walk();
+	}
+}
+
+void Game4::Duck::updateInvincibility(float delta){
+	if(!invincible) return;
+
+	invincibilityTime += delta;
+
+	if((int)(invincibilityTime / invincibilityBlinkDuration) % 2 == 0){
+		gameObjectRc->getRenderComponent()->setVisible(false);
+	}else{
+		gameObjectRc->getRenderComponent()->setVisible(true);
+	}
+
+	if(invincibilityTime >= invincibilityDuration){
+		invincibilityTime = 0;
+		invincible = false;
+		gameObjectRc->getRenderComponent()->setVisible(true);
 	}
 }
