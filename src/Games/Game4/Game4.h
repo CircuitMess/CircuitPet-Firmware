@@ -50,6 +50,7 @@ private:
 	bool isDone = false;
 	int score = 0;
 	const int scoreMax = 30;
+	int lastIndex = 0;
 
 	std::shared_ptr<Sprite> scoreSprite;
 	std::shared_ptr<GameObject> leftWall;

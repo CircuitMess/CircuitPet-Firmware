@@ -195,16 +195,20 @@ void Game4::Game4::spawn(){
 		return;
 	}
 
-
+	reRoll:
 	int coinFlip = rand() % 2;
 	Obstacle obstacle;
 	int posY;
 	if(coinFlip == 0){
 		int under = rand() % obstacleUnder.size();
+		if(under == lastIndex) goto reRoll;
+		lastIndex = under;
 		obstacle = obstacleUnder[under];
 		posY = topY - 30 - obstacle.dim.y;
 	}else{
 		int over = rand() % obstacleOver.size();
+		if(over == lastIndex) goto reRoll;
+		lastIndex = over;
 		obstacle = obstacleOver[over];
 		posY = topY - obstacle.dim.y;
 	}
