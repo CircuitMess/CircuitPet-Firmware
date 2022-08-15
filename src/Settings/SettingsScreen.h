@@ -1,6 +1,7 @@
 #ifndef CIRCUITPET_FIRMWARE_SETTINGSSCREEN_H
 #define CIRCUITPET_FIRMWARE_SETTINGSSCREEN_H
 
+#include <UI/ScrollLayout.h>
 #include <UI/LinearLayout.h>
 #include "DiscreteSlider.h"
 #include "BooleanElement.h"
@@ -34,13 +35,14 @@ private:
 
 	Screen screen;
 
+	ScrollLayout* scrollLayout;
 	LinearLayout* screenLayout;
 	DiscreteSlider* shutDownSlider;
 	SliderElement* brightnessSlider;
 	BooleanElement* soundSwitch;
 	SliderElement* rgbSlider;
-	TextElement* inputTest;
-	TextElement* save;
+	TextElement* hwTest;
+	TextElement* factoryReset;
 
 	std::array<SettingsElement*, 6> elements;
 
