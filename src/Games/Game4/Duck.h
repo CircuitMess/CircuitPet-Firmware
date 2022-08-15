@@ -24,6 +24,7 @@ public:
 	void setFiles(File walk, File down, File jump, File ducking, File ducked, File unDucking, File up);
 	void win();
 
+	bool invincible = false;
 private:
 	void buttonPressed(uint i) override;
 	void buttonReleased(uint i) override;
@@ -31,6 +32,7 @@ private:
 
 	void jump();
 	void duck();
+	void updateInvincibility(float delta);
 
 	Game4* game4;
 	std::shared_ptr<GameObject> gameObjectRc;
@@ -45,6 +47,10 @@ private:
 	float peakTime;
 	float velocity;
 	float gravity;
+	float invincibilityTime = 0;
+	float invincibilityBlink = 0;
+	float invincibilityBlinkDuration = 0.2f;
+	constexpr static float invincibilityDuration = 2.0f;
 	bool isJumping = false;
 	bool isDucked = false;
 	bool isDone = false;

@@ -25,7 +25,8 @@ Game4::Game4::Game4() : Game("/Games/Game4", {
 		{ "/DuckJump.gif",       {}, false },
 		{ "/DuckDown.gif",       {}, false },
 		{ "/DuckWin.gif",        {}, false },
-		{ "/DuckWalk.gif",       {}, false }
+		{ "/DuckWalk.gif",       {}, true },
+		RES_HEART
 }){}
 
 
@@ -102,6 +103,11 @@ void Game4::Game4::onLoad(){
 	scoreSprite->setCursor(0, 0);
 	scoreSprite->printf("Score:%d/%d", score,scoreMax);
 	addObject(scoreObj);
+	///Hearts
+	hearts = std::make_unique<Hearts>(getFile(FILE_HEART));
+	hearts->getGO()->setPos({ 2, 2 });
+	addObject(hearts->getGO());
+
 }
 
 void Game4::Game4::onLoop(float deltaTime){
@@ -226,9 +232,8 @@ void Game4::Game4::spawn(){
 	gObj->getRenderComponent()->setLayer(1);
 
 	collision.addPair(*gObj, *duck->getGameObjectCc(), [this](){
-		speed = 0.0f;
-		spawnRate = 10000.0f;
-		duck->death();
+		if(duck->invincible) return;
+		duckHit();
 	});
 	movingObjects.push_back(gObj);
 	collision.addPair(*leftWallObject, *gObj, [this](){
@@ -236,6 +241,18 @@ void Game4::Game4::spawn(){
 		movingObjects.erase(movingObjects.begin());
 		scoreUp();
 	});
+}
+
+void Game4::Game4::duckHit(){
+	life--;
+	hearts->setLives(life);
+	if(life == 0){
+		speed = 0.0f;
+		spawnRate = 10000.0f;
+		duck->death();
+		return;
+	}
+	duck->invincible = true;
 }
 
 float Game4::Game4::getSpeed(){
