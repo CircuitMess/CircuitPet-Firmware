@@ -54,7 +54,7 @@ void DuckScreen::onStart(){
 			{ "Jump & Duck",4, GameImage(base, "/MenuIcons/Icon4.raw"), GameImage(base, "/MenuIcons/Locked4.raw"), [pushGame](){pushGame(new Game4::Game4());} },
 			{ "Disco danceoff", 5,GameImage(base, "/MenuIcons/Icon5.raw"), GameImage(base, "/MenuIcons/Locked5.raw"), [pushGame](){pushGame(new Game5());} },
 			{ "Space duck", 6,GameImage(base, "/MenuIcons/Icon6.raw"), GameImage(base, "/MenuIcons/Locked6.raw"), [pushGame](){pushGame(new Game6());} },
-			{ "Settings", 1,  GameImage(base, "/MenuIcons/Icon6.raw"), GameImage(base, "/MenuIcons/Icon6.raw"), [this](){
+			{ "Settings", 1,  GameImage(base, "/MenuIcons/settings.raw"), GameImage(base, "/MenuIcons/settings.raw"), [this](){
 				auto settings = new SettingsScreen::SettingsScreen(*CircuitPet.getDisplay());
 				settings->push(this);
 			}}
