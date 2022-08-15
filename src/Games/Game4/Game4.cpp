@@ -25,7 +25,8 @@ Game4::Game4::Game4() : Game("/Games/Game4", {
 		{ "/DuckJump.gif",       {}, false },
 		{ "/DuckDown.gif",       {}, false },
 		{ "/DuckWin.gif",        {}, false },
-		{ "/DuckWalk.gif",       {}, false }
+		{ "/DuckWalk.gif",       {}, true },
+		RES_HEART
 }){}
 
 
