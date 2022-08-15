@@ -57,6 +57,7 @@ private:
 
 	Color* backgroundBuffer = nullptr;
 	bool cycleRGB = false;
+	bool popped = false;
 };
 }
 

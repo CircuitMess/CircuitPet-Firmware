@@ -243,7 +243,8 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 				Settings.get().RGBbrightness = rgbSlider->getSliderValue();
 				Settings.store();
 //			Playback.updateGain();
-				pop();
+				popped = true;
+				LoopManager::addListener(this);
 				return;
 			}
 			break;
@@ -323,6 +324,10 @@ rgb hsv2rgb(hsv in){
 }
 
 void SettingsScreen::SettingsScreen::loop(uint micros){
+	if(popped){
+		pop();
+		return;
+	}
 	double hue = 360.0f * ((double)((millis() % 2000) / 2000.0));
 
 	hsv h = { hue, 1, 1 };
