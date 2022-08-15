@@ -46,6 +46,9 @@ void setup(){
 	baseSprite->setTextFont(0);
 	baseSprite->setTextSize(0);
 
+	StatMan.begin();
+	StatMan.setPaused(true); //stats timekeeping will be unpaused when home menu starts
+
 	auto intro = new Intro(baseSprite);
 	LoopManager::loop();
 	intro->start();

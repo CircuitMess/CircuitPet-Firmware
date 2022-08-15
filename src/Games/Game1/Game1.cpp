@@ -52,7 +52,7 @@ void Game1::onLoad(){
 			nullptr
 	);
 	addObject(oilCanGO);
-	oilCanGO->setPos({ 105, 50 });
+	oilCanGO->setPos({ 105, 40 });
 	oilCanGO->getRenderComponent()->setLayer(1);
 	oilCan->setGameObject(oilCanGO);
 
@@ -71,16 +71,6 @@ void Game1::onLoad(){
 	);
 	addObject(bg);
 	bg->getRenderComponent()->setLayer(0);
-
-	auto scoreRc = std::make_unique<SpriteRC>(PixelDim{ 50, 7 });
-	scoreSprite = scoreRc->getSprite();
-	auto scoreGo = std::make_shared<GameObject>(
-			move(scoreRc),
-			nullptr
-	);
-	addObject(scoreGo);
-	scoreGo->setPos({ 5, 5 });
-	scoreSprite->clear(TFT_TRANSPARENT);
 }
 
 void Game1::onLoop(float deltaTime){
@@ -111,6 +101,8 @@ void Game1::onStop(){
 }
 
 void Game1::buttonPressed(uint i){
+	if(done) return;
+
 	if(i == BTN_BACK){
 		pop();
 		return;
@@ -118,10 +110,6 @@ void Game1::buttonPressed(uint i){
 	if(i == BTN_ENTER){
 		tries++;
 		addPoints(indicator->getDifference());
-		scoreSprite->clear(TFT_TRANSPARENT);
-		scoreSprite->setTextColor(TFT_WHITE);
-		scoreSprite->setCursor(0, 0);
-		scoreSprite->printf("Tries: %d", tries);
 	}
 }
 
@@ -143,12 +131,14 @@ void Game1::addPoints(int difference){
 		removeObject(barGO);
 		removeObject(indicatorGO);
 		oilCan->startMoving();
+		done = true;
 		setScore(200, 100);
 	}else{
-		duckAnim->setAnim(getFile("/Games/Game1/OilyJump.gif"));
+		// TODO: game freezes after jump anim is done. uncomment after this is fixed
+		/*duckAnim->setAnim(getFile("/Games/Game1/OilyJump.gif"));
 		duckAnim->setLoopDoneCallback([this](uint32_t){
 			resetAnim();
-		});
+		});*/
 	}
 }
 

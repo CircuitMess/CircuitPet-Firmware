@@ -36,6 +36,9 @@ private:
 	Stats targetStats;
 	Stats prevStats;
 
+	bool dead = false;
+	constexpr static uint8_t rustThreshold = 25;
+
 	Menu menu;
 	MenuHider hider;
 

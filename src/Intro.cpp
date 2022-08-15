@@ -4,7 +4,7 @@
 #include "Home/DuckScreen.h"
 #include "Stats/StatsManager.h"
 #include <Loop/LoopManager.h>
-#include <FS/RamFile.h>
+#include "DeathState.h"
 #include <FS/CompressedFile.h>
 
 Intro* Intro::instance = nullptr;
@@ -36,15 +36,17 @@ void Intro::loop(uint micros){
 		instance->stop();
 		delete instance;
 
-		StatMan.begin();
 
 		if(StatMan.isHatched()){
-			auto duck = new DuckScreen(temp);
-			duck->start();
+			if(StatMan.hasDied()){
+				auto duck = new DeathState(temp);
+				duck->start();
+			}else{
+				auto duck = new DuckScreen(temp);
+				duck->start();
+			}
 		}else{
-			StatMan.setPaused(true);
 			auto hatch = new HatchingState(temp);
-			LoopManager::loop();
 			hatch->start();
 		}
 

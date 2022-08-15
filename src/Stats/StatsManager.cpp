@@ -16,6 +16,15 @@ void StatsManager::begin(){
 	Clock.addListener(&timedUpdateListener);
 }
 
+void StatsManager::reset(){
+	stats.happiness = 100;
+	stats.oilLevel = 100;
+	stats.experience = 0;
+	gameOverCount = 0;
+	hatched = false;
+	store();
+}
+
 void StatsManager::update(Stats delta){
 	uint8_t oldLevel = getLevel();
 	stats += delta;
@@ -50,7 +59,7 @@ uint8_t StatsManager::getLevel() const{
 }
 
 void StatsManager::setPaused(bool pause){
-	paused = pause;
+	pause ? Clock.removeListener(&timedUpdateListener) : Clock.addListener(&timedUpdateListener);
 }
 
 void StatsManager::store(){
@@ -81,6 +90,7 @@ void StatsManager::load(){
 		stats.happiness = 100;
 		stats.oilLevel = 100;
 		stats.experience = 0;
+		hatched = false;
 		return;
 	}
 	gameOverCount = f.read();
@@ -90,8 +100,6 @@ void StatsManager::load(){
 }
 
 void StatsManager::timedUpdate(){
-	if(paused) return;
-
 	stats -= hourlyDecrement;
 
 	if(stats.happiness == 0){
