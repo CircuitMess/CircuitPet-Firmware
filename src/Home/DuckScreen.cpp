@@ -1,25 +1,25 @@
 #include "DuckScreen.h"
 #include <Loop/LoopManager.h>
 #include "../Stats/StatsManager.h"
-#include "../Games/TestGame.h"
+#include "../Games/Game1/Game1.h"
+#include "../Games/Game3/Game3.h"
 #include "../Games/Game6/Game6.h"
 #include "../Games/Game5.h"
 #include "../Games/2/Game2.h"
+#include "../Games/Game4/Game4.h"
+#include "../DeathState.h"
 #include <CircuitPet.h>
 #include "../RGBIndicator.h"
 
-DuckScreen::DuckScreen(Sprite* base) : State(), base(base), characterSprite(base, StatMan.getLevel(), StatMan.get().oilLevel < 25, Anim::General),
+DuckScreen::DuckScreen(Sprite* base) : State(), base(base), characterSprite(base, StatMan.getLevel(), StatMan.get().oilLevel < rustThreshold, Anim::General),
 									   menu(base), hider(&menu){
 
 
 	characterSprite.setPos(characterX, characterY);
 }
 
-
 void DuckScreen::onStart(){
 	Input::getInstance()->addListener(this);
-	LoopManager::addListener(this); //Note - possible crash if start() is called before constructor finishes
-	hider.activity();
 
 	//load resources
 	bgSprite = std::make_unique<BgSprite>(base, StatMan.getLevel());
@@ -48,10 +48,10 @@ void DuckScreen::onStart(){
 	};
 
 	menuItems = {
-			{ "Oily",1, GameImage(base, "/MenuIcons/Icon1.raw"), GameImage(base, "/MenuIcons/Icon1.raw"), [pushGame](){pushGame(new TestGame());}},
+			{ "Oily",1, GameImage(base, "/MenuIcons/Icon1.raw"), GameImage(base, "/MenuIcons/Icon1.raw"), [pushGame](){pushGame(new Game1());}},
 			{ "Flappy",2, GameImage(base, "/MenuIcons/Icon2.raw"),GameImage(base, "/MenuIcons/Locked2.raw"),  [pushGame](){pushGame(new Game2());} },
-			{ "Eaty", 3,GameImage(base, "/MenuIcons/Icon3.raw"),GameImage(base, "/MenuIcons/Locked3.raw"),  {} },
-			{ "Jump & Duck",4, GameImage(base, "/MenuIcons/Icon4.raw"), GameImage(base, "/MenuIcons/Locked4.raw"), {} },
+			{ "Eaty", 3,GameImage(base, "/MenuIcons/Icon3.raw"),GameImage(base, "/MenuIcons/Locked3.raw"),  [pushGame](){ pushGame(new Game3()); } },
+			{ "Jump & Duck",4, GameImage(base, "/MenuIcons/Icon4.raw"), GameImage(base, "/MenuIcons/Locked4.raw"), [pushGame](){pushGame(new Game4::Game4());} },
 			{ "Disco danceoff", 5,GameImage(base, "/MenuIcons/Icon5.raw"), GameImage(base, "/MenuIcons/Locked5.raw"), [pushGame](){pushGame(new Game5());} },
 			{ "Space duck", 6,GameImage(base, "/MenuIcons/Icon6.raw"), GameImage(base, "/MenuIcons/Locked6.raw"), [pushGame](){pushGame(new Game6());}},
 	};
@@ -66,8 +66,9 @@ void DuckScreen::onStart(){
 
 	currentStats = targetStats = prevStats = StatMan.get();
 	StatMan.addListener(this);
+	StatMan.setPaused(false);
 
-	characterSprite.setRusty(StatMan.get().oilLevel < 25);
+	characterSprite.setRusty(StatMan.get().oilLevel < rustThreshold);
 	characterSprite.setCharLevel(StatMan.getLevel());
 	characterSprite.setAnim(Anim::General);
 
@@ -79,6 +80,7 @@ void DuckScreen::onStart(){
 void DuckScreen::onStop(){
 	Input::getInstance()->removeListener(this);
 	LoopManager::removeListener(this);
+	StatMan.removeListener(this);
 
 	//release resources
 	bgSprite.reset();
@@ -86,10 +88,23 @@ void DuckScreen::onStop(){
 	statsSprite.reset();
 	menuItems.clear();
 
+	hider.hide();
+
 	OilRGBIndicator.stop();
 }
 
 void DuckScreen::loop(uint micros){
+
+	if(dead){
+		volatile auto temp = base;
+		stop();
+		delete this;
+
+		auto duck = new DeathState(temp);
+		duck->start();
+		return;
+	}
+
 	//stats display easing when a change occurs
 	if(currentStats != targetStats){
 
@@ -99,12 +114,10 @@ void DuckScreen::loop(uint micros){
 		if(x >= 1.f){
 			currentStats = targetStats;
 		}else{
+			float ease = 1.0f - cos((x * PI) / 2.0);
 
-			float ease = 1.0f - cos((x * PI) / 2);
-
-
-			currentStats.oilLevel = prevStats.oilLevel + ((float)(targetStats.oilLevel - prevStats.oilLevel)) * ease;
-			currentStats.happiness = prevStats.happiness + ((float)(targetStats.happiness - prevStats.happiness)) * ease;
+			currentStats.oilLevel = prevStats.oilLevel + ((float)((int)(targetStats.oilLevel) - (int)(prevStats.oilLevel))) * ease;
+			currentStats.happiness = prevStats.happiness + ((float)((int)(targetStats.happiness) - (int)(prevStats.happiness))) * ease;
 		}
 
 		statsSprite->setHappiness(currentStats.happiness);
@@ -112,14 +125,14 @@ void DuckScreen::loop(uint micros){
 	}
 
 	//playing random duck animations while idling
-	randCounter+=micros;
+	randCounter += micros;
 	if(randCounter >= randInterval){
 		randCounter = 0;
 		Anim anim;
 		if(!specialAnimPlaying){
 			specialAnimPlaying = true;
 			randInterval = 1000000;
-			int num = 1 + rand() % ((uint8_t)Anim::Count-1);
+			int num = 1 + rand() % ((uint8_t)Anim::Count - 1);
 			anim = (Anim)(num);
 		}else{
 			specialAnimPlaying = false;
@@ -154,7 +167,7 @@ void DuckScreen::buttonPressed(uint i){
 			if(menu.isShaking()) return;
 			selection = menu.next();
 			break;
-		case BTN_A: {
+		case BTN_A:{
 			if(hider.getState() != MenuHider::Shown) return;
 			if(menuItems[selection].levelRequired > StatMan.getLevel()){
 				menu.shake();
@@ -168,9 +181,21 @@ void DuckScreen::buttonPressed(uint i){
 }
 
 void DuckScreen::statsChanged(const Stats& stats, bool leveledUp){
+
+	if(StatMan.hasDied()){
+		dead = true;
+		StatMan.setPaused(true);
+		return;
+	}
+
 	if(leveledUp){
 		//TODO - levelup anims
+		bgSprite->setLevel(StatMan.getLevel());
+		characterSprite.setCharLevel(StatMan.getLevel());
+		osSprite->setLevel(StatMan.getLevel());
 	}
+
+	characterSprite.setRusty(stats.oilLevel < rustThreshold);
 
 	targetStats = stats;
 	prevStats = currentStats;

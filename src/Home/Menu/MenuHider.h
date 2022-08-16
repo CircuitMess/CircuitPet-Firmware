@@ -10,6 +10,7 @@ public:
 
 	MenuHider(Menu* menu);
 	void activity();
+	void hide();
 	void loop(uint micros) override;
 	State getState() const;
 
