@@ -85,6 +85,8 @@ void DuckScreen::onStop(){
 	osSprite.reset();
 	statsSprite.reset();
 	menuItems.clear();
+
+	hider.hide();
 }
 
 void DuckScreen::loop(uint micros){
@@ -108,12 +110,10 @@ void DuckScreen::loop(uint micros){
 		if(x >= 1.f){
 			currentStats = targetStats;
 		}else{
+			float ease = 1.0f - cos((x * PI) / 2.0);
 
-			float ease = 1.0f - cos((x * PI) / 2);
-
-
-			currentStats.oilLevel = prevStats.oilLevel + ((float)(targetStats.oilLevel - prevStats.oilLevel)) * ease;
-			currentStats.happiness = prevStats.happiness + ((float)(targetStats.happiness - prevStats.happiness)) * ease;
+			currentStats.oilLevel = prevStats.oilLevel + ((float)((int)(targetStats.oilLevel) - (int)(prevStats.oilLevel))) * ease;
+			currentStats.happiness = prevStats.happiness + ((float)((int)(targetStats.happiness) - (int)(prevStats.happiness))) * ease;
 		}
 
 		statsSprite->setHappiness(currentStats.happiness);
