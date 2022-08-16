@@ -260,5 +260,5 @@ void Game3::drawBar(){
 void Game3::setScore(uint8_t oil, uint8_t happiness){
 	returnStats.oilLevel = oil;
 	returnStats.happiness = happiness;
-	returnStats.experience = oil == hungerMeterMax / 6 ? 20 : 5;
+	returnStats.experience = (oil == (hungerMeterMax / 6)) ? 20 : 5;
 }
