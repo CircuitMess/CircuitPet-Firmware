@@ -31,8 +31,7 @@ protected:
 	virtual void onLoad();
 	virtual void onLoop(float deltaTime);
 	virtual void onRender(Sprite* canvas);
-	virtual void setScore(uint8_t oil, uint8_t happiness) = 0;
-	Stats returnStats = {0,0,0};
+	virtual Stats returnStats();
 
 	File getFile(std::string path);
 

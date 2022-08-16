@@ -77,7 +77,7 @@ void Game::loop(uint micros){
 
 	poppedLabel:
 	State::pop();
-	StatMan.update(returnStats);
+	StatMan.update(returnStats());
 }
 
 void Game::onStart(){ }
@@ -92,4 +92,8 @@ void Game::onRender(Sprite* canvas){ }
 
 void Game::pop(){
 	popped = true;
+}
+
+Stats Game::returnStats(){
+	return Stats({ 0, 0, 0 });
 }

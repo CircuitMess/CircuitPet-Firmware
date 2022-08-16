@@ -222,7 +222,6 @@ void Game5::noteHit(uint8_t track){
 		notes[track].pop_front();
 		if(score >= goal){
 			gameDone(true);
-			setScore(25,50);
 			return;
 		}
 
@@ -311,8 +310,6 @@ void Game5::updateTracks(float delta){
 	}
 }
 
-void Game5::setScore(uint8_t oil, uint8_t happiness){
-	returnStats.oilLevel = oil;
-	returnStats.happiness = happiness;
-	returnStats.experience = 30;
+Stats Game5::returnStats(){
+	return Stats({(uint8_t)(score/90), (uint8_t)(score/90), (uint8_t)(score/150)});
 }

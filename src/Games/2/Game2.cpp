@@ -13,8 +13,8 @@ constexpr Game2::ObstacleDesc Game2::TopObstacles[];
 constexpr Game2::ObstacleDesc Game2::BotObstacles[];
 
 Game2::Game2() : Game("/Games/2", {
-		{ "/duck.gif",          {}, true },
-		{ "/bg.raw",            {}, true },
+		{ "/duck.gif", {}, true },
+		{ "/bg.raw", {}, true },
 		RES_HEART,
 		RES_GOBLET,
 		{ TopObstacles[0].path, {}, true },
@@ -90,7 +90,7 @@ void Game2::onLoop(float deltaTime){
 		}
 	}
 
-	for(auto& obstacle : obstacles){
+	for(auto& obstacle: obstacles){
 		if(obstacle.top->getPos().x + 15 <= duckPosX && !obstacle.passed && state == Play){
 			score++;
 			obstacle.passed = true;
@@ -100,7 +100,7 @@ void Game2::onLoop(float deltaTime){
 
 	if(state == FallOut && obstacles.empty()){
 		if(life == 0){
-			setScore(score*2, score*2);
+			setScore(score * 2, score * 2);
 			pop();
 		}else{
 			resetDuck();
@@ -162,7 +162,7 @@ void Game2::updateObstacles(float delta){
 		obj->setPos(pos);
 	};
 
-	for(auto& obstacle : obstacles){
+	for(auto& obstacle: obstacles){
 		move(obstacle.top);
 		move(obstacle.bot);
 	}
@@ -206,8 +206,8 @@ void Game2::createObstaclePair(){
 	auto botDesc = BotObstacles[boti];
 
 	auto topObj = std::make_shared<GameObject>(
-		std::make_unique<StaticRC>(getFile(topDesc.path), topDesc.dim),
-		std::make_unique<PolygonCC>(topDesc.collision)
+			std::make_unique<StaticRC>(getFile(topDesc.path), topDesc.dim),
+			std::make_unique<PolygonCC>(topDesc.collision)
 	);
 
 	auto botObj = std::make_shared<GameObject>(
@@ -240,14 +240,12 @@ void Game2::die(){
 
 	collision.wallBot(*duck, {});
 
-	for(const auto& obstacle : obstacles){
+	for(const auto& obstacle: obstacles){
 		collision.removePair(*duck, *obstacle.top);
 		collision.removePair(*duck, *obstacle.bot);
 	}
 }
 
-void Game2::setScore(uint8_t oil, uint8_t happiness){
-	returnStats.oilLevel = oil > 50 ? 50 : oil;
-	returnStats.happiness = happiness > 100 ? 100 : happiness;
-	returnStats.experience = happiness > 20 ? 15 : 0;
+Stats Game2::returnStats(){
+	return Stats({ (uint8_t )(score > 25 ? 50 : score * 2),(uint8_t ) (score > 50 ? 100 : score * 2), (uint8_t )(score > 15 ? 15 : score) });
 }

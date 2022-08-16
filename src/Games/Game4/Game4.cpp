@@ -188,7 +188,6 @@ void Game4::Game4::spawn(){
 	}
 
 	if(score >= scoreMax - 1){
-		setScore(score/2, score);
 		isDone = true;
 		goal = std::make_shared<GameObject>(
 				std::make_unique<StaticRC>(getFile("/Goal.raw"), PixelDim{ 44, 20 }),
@@ -247,7 +246,6 @@ void Game4::Game4::duckHit(){
 	life--;
 	hearts->setLives(life);
 	if(life == 0){
-		setScore(score/2, score);
 		speed = 0.0f;
 		spawnRate = 10000.0f;
 		duck->death();
@@ -268,8 +266,6 @@ void Game4::Game4::scoreUp(){
 	scoreSprite->printf("Score:%d/%d", score,scoreMax);
 }
 
-void Game4::Game4::setScore(uint8_t oil, uint8_t happiness){
-	returnStats.oilLevel = oil;
-	returnStats.happiness = happiness;
-	returnStats.experience = happiness > 25 ? 25 : happiness;
+Stats Game4::Game4::returnStats(){
+	return Stats({(uint8_t )(score/2), (uint8_t )score, (uint8_t )(score > 25 ? 25 : score)});
 }

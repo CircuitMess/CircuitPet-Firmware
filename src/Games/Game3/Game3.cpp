@@ -153,7 +153,6 @@ void Game3::collisionHandler(Item item){
 		hungerMeter += item.value;
 		drawBar();
 		if(hungerMeter >= hungerMeterMax){
-			setScore(hungerMeter / 6, hungerMeter / 8);
 			duck->filled(this);
 		}
 	}else{
@@ -161,7 +160,6 @@ void Game3::collisionHandler(Item item){
 		drawHearts();
 	}
 	if(lives <= 0){
-		setScore(hungerMeter / 6, hungerMeter / 8);
 		pop();
 	}
 }
@@ -257,8 +255,6 @@ void Game3::drawBar(){
 	hungerBar->fillRect(2, 118 - fillPercent, 4, fillPercent, c0);
 }
 
-void Game3::setScore(uint8_t oil, uint8_t happiness){
-	returnStats.oilLevel = oil;
-	returnStats.happiness = happiness;
-	returnStats.experience = oil == hungerMeterMax / 6 ? 20 : 5;
+Stats Game3::returnStats(){
+	return Stats({(uint8_t)(hungerMeter / 6), (uint8_t)(hungerMeter / 8),(uint8_t )(hungerMeter/10)});
 }

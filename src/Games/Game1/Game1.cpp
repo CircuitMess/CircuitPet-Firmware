@@ -132,7 +132,6 @@ void Game1::addPoints(int difference){
 		removeObject(indicatorGO);
 		oilCan->startMoving();
 		done = true;
-		setScore(200 / tries, 75 / tries);
 	}else{
 		// TODO: game freezes after jump anim is done. uncomment after this is fixed
 		/*duckAnim->setAnim(getFile("/Games/Game1/OilyJump.gif"));
@@ -142,8 +141,7 @@ void Game1::addPoints(int difference){
 	}
 }
 
-void Game1::setScore(uint8_t oil, uint8_t happiness){
-	returnStats.oilLevel = oil;
-	returnStats.happiness = happiness;
-	returnStats.experience = 10;
+Stats Game1::returnStats(){
+	if(!done) return Game::returnStats();
+	return Stats({ (uint8_t)(200 / tries), (uint8_t)(75 / tries), 10 });
 }
