@@ -218,6 +218,7 @@ void Menu::loop(uint micros){
 				}
 				delta = 0;
 				state = neutral;
+				repos();
 			}
 			break;
 	}
