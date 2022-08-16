@@ -43,8 +43,9 @@ private:
 	SliderElement* rgbSlider;
 	TextElement* hwTest;
 	TextElement* factoryReset;
+	TextElement* save;
 
-	std::array<SettingsElement*, 6> elements;
+	std::array<SettingsElement*, 7> elements;
 
 	bool editMode = false;
 	uint8_t scrollStep = 1;

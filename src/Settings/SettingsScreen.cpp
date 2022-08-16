@@ -19,7 +19,8 @@ SettingsScreen::SettingsScreen::SettingsScreen(Display& display) : screen(displa
 																   rgbSlider(new SliderElement(screenLayout, "RGB brightness")),
 																   hwTest(new TextElement(screenLayout, "Hardware test")),
 																   factoryReset(new TextElement(screenLayout, "Factory reset")),
-																   elements({ shutDownSlider, brightnessSlider, soundSwitch, rgbSlider, hwTest, factoryReset }){
+																   save(new TextElement(screenLayout, "Save")),
+																   elements({ shutDownSlider, brightnessSlider, soundSwitch, rgbSlider, hwTest, factoryReset, save }){
 	instance = this;
 	buildUI();
 	shutDownSlider->setIsSelected(true);
