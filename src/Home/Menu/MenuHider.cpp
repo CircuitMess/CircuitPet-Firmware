@@ -20,6 +20,22 @@ void MenuHider::activity(){
 	}
 }
 
+void MenuHider::hide(){
+	switch (state){
+		case Hidden:
+			break;
+		case Shown:
+			state = Hiding;
+			LoopManager::addListener(this);
+			break;
+		case Hiding:
+			break;
+		case Showing:
+			state = Hiding;
+			break;
+	}
+}
+
 void MenuHider::loop(uint deltaMicros){
 	switch(state){
 		case Shown:
