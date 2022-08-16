@@ -17,7 +17,7 @@ typedef struct {
 	double v;       // a fraction between 0 and 1
 } hsv;
 
-rgb hsv2rgb(hsv in){
+static rgb hsv2rgb(hsv in){
 	double hh, p, q, t, ff;
 	long i;
 	rgb out;
