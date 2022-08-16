@@ -59,6 +59,7 @@ void DuckScreen::onStart(){
 void DuckScreen::onStop(){
 	Input::getInstance()->removeListener(this);
 	LoopManager::removeListener(this);
+	StatMan.removeListener(this);
 
 	//release resources
 	bgSprite.reset();
