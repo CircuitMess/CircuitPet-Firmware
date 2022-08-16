@@ -141,3 +141,7 @@ void Game1::addPoints(int difference){
 	}
 }
 
+Stats Game1::returnStats(){
+	if(!done) return Game::returnStats();
+	return Stats({ (uint8_t)(200 / tries), (uint8_t)(75 / tries), 10 });
+}

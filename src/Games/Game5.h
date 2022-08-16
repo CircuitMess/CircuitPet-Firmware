@@ -22,6 +22,7 @@ protected:
 	void onLoad() override;
 	void onLoop(float deltaTime) override;
 	void onRender(Sprite* canvas) override;
+	Stats returnStats() override;
 
 private:
 	enum {

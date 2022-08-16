@@ -137,7 +137,6 @@ void Game4::Game4::onLoop(float deltaTime){
 				float y = obj->getPos().y;
 				obj->setPos({ x, y });
 			}
-
 			duck->win();
 			speed = 0;
 		}
@@ -265,4 +264,8 @@ void Game4::Game4::scoreUp(){
 	scoreSprite->setTextColor(TFT_BLACK);
 	scoreSprite->setCursor(0, 0);
 	scoreSprite->printf("Score:%d/%d", score,scoreMax);
+}
+
+Stats Game4::Game4::returnStats(){
+	return Stats({(uint8_t )(score/2), (uint8_t )score, (uint8_t )(score > 25 ? 25 : score)});
 }
