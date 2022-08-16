@@ -228,6 +228,15 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 				nvs_flash_erase();
 				CircuitPet.fadeOut();
 				ESP.restart();
+			}else if(selectedSetting == 6){
+				Settings.get().shutdownTime = shutDownSlider->getIndex();
+				Settings.get().sound = soundSwitch->getBooleanSwitch();
+				Settings.get().RGBbrightness = rgbSlider->getSliderValue();
+				Settings.store();
+//			Playback.updateGain();
+				popped = true;
+				LoopManager::addListener(this);
+				return;
 			}
 			break;
 
