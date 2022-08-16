@@ -20,6 +20,7 @@ protected:
 	void onStart() override;
 	void onStop() override;
 	void onRender(Sprite* canvas) override;
+	Stats returnStats() override;
 
 private:
 	std::unique_ptr<Hearts> hearts;

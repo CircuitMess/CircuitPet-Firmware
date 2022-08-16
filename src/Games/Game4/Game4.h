@@ -9,6 +9,7 @@
 #include "../../GameEngine/Rendering/AnimRC.h"
 #include "Duck.h"
 #include "../../GameEngine/Rendering/SpriteRC.h"
+#include "../Common/Hearts.h"
 
 namespace Game4 {
 class Game4 : public Game, private InputListener{
@@ -22,10 +23,13 @@ protected:
 	void onStart() override;
 	void onStop() override;
 	void onRender(Sprite* canvas) override;
+	Stats returnStats() override;
 
 private:
 	std::unique_ptr<TileManager> tileManager;
 	std::unique_ptr<Duck> duck;
+	std::unique_ptr<Hearts> hearts;
+
 
 	void buttonPressed(uint i) override;
 
@@ -37,6 +41,7 @@ private:
 	void setupObstacles();
 	void spawn();
 	void scoreUp();
+	void duckHit();
 
 	const int tileDim = 16;
 	const int topY = 128 - 32;
@@ -50,6 +55,7 @@ private:
 	bool isDone = false;
 	int score = 0;
 	const int scoreMax = 30;
+	uint8_t life = 3;
 
 	std::shared_ptr<Sprite> scoreSprite;
 	std::shared_ptr<GameObject> leftWall;
