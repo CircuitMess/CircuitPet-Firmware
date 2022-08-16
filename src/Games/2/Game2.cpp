@@ -100,7 +100,6 @@ void Game2::onLoop(float deltaTime){
 
 	if(state == FallOut && obstacles.empty()){
 		if(life == 0){
-			setScore(score * 2, score * 2);
 			pop();
 		}else{
 			resetDuck();
