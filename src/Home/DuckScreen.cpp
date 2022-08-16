@@ -85,6 +85,8 @@ void DuckScreen::onStop(){
 	osSprite.reset();
 	statsSprite.reset();
 	menuItems.clear();
+
+	hider.hide();
 }
 
 void DuckScreen::loop(uint micros){

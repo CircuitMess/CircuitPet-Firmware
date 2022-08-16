@@ -35,8 +35,6 @@ void Menu::setItems(std::vector<MenuItem>& items){
 
 	repos();
 	setOffsetY(64); //used for hiding the menu
-
-	selectedGame = 0;
 }
 
 void Menu::setOffsetY(uint8_t y){
