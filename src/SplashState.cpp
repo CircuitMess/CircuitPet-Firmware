@@ -4,10 +4,12 @@
 #include "SplashState.h"
 #include "Home/Menu/Menu.h"
 #include "Input/Input.h"
+#include <FS/CompressedFile.h>
+
 
 SplashState::SplashState(Sprite* base, const MenuItem& menuItem) : base(base){
-	splash = SPIFFS.open(menuItem.splashPath);
-	instruct = SPIFFS.open(menuItem.instructPath);
+	splash = CompressedFile::open(SPIFFS.open(menuItem.splashPath), 10, 5);
+	instruct = CompressedFile::open(SPIFFS.open(menuItem.instructPath), 10, 5);
 	game = menuItem.primary();
 }
 

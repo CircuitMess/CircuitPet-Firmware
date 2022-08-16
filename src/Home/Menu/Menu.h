@@ -26,8 +26,8 @@ struct MenuItem {
 	std::function<void()> secondary;
 	bool loaded = false;
 
-	MenuItem(String text, uint8_t levelRequired, const GameImage& image = GameImage(), const GameImage& imageLocked = GameImage(), char* splashPath = "",
-			 char* instructPath = "", std::function<Game*()> primary = {}, std::function<void()> secondary = {});
+	MenuItem(String text, uint8_t levelRequired, const GameImage& image = GameImage(), const GameImage& imageLocked = GameImage(),const char* splashPath = "",
+			 const char* instructPath = "", std::function<Game*()> primary = {}, std::function<void()> secondary = {});
 
 };
 
