@@ -137,7 +137,6 @@ void Game4::Game4::onLoop(float deltaTime){
 				float y = obj->getPos().y;
 				obj->setPos({ x, y });
 			}
-
 			duck->win();
 			speed = 0;
 		}
@@ -189,6 +188,7 @@ void Game4::Game4::spawn(){
 	}
 
 	if(score >= scoreMax - 1){
+		setScore(score/2, score);
 		isDone = true;
 		goal = std::make_shared<GameObject>(
 				std::make_unique<StaticRC>(getFile("/Goal.raw"), PixelDim{ 44, 20 }),
@@ -247,6 +247,7 @@ void Game4::Game4::duckHit(){
 	life--;
 	hearts->setLives(life);
 	if(life == 0){
+		setScore(score/2, score);
 		speed = 0.0f;
 		spawnRate = 10000.0f;
 		duck->death();
@@ -265,4 +266,10 @@ void Game4::Game4::scoreUp(){
 	scoreSprite->setTextColor(TFT_BLACK);
 	scoreSprite->setCursor(0, 0);
 	scoreSprite->printf("Score:%d/%d", score,scoreMax);
+}
+
+void Game4::Game4::setScore(uint8_t oil, uint8_t happiness){
+	returnStats.oilLevel = oil;
+	returnStats.happiness = happiness;
+	returnStats.experience = happiness > 25 ? 25 : happiness;
 }

@@ -222,7 +222,7 @@ void Game5::noteHit(uint8_t track){
 		notes[track].pop_front();
 		if(score >= goal){
 			gameDone(true);
-			setScore(30,50);
+			setScore(25,50);
 			return;
 		}
 
