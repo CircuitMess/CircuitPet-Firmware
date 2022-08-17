@@ -14,13 +14,13 @@ constexpr Game6::ImageDesc Game6::asteroidIcons[];
 constexpr std::initializer_list<glm::vec2> Game6::playerHitbox;
 constexpr glm::vec2 Game6::startPosition;
 
-Game6::Game6() : wrapWalls({ .top =  { nullptr, std::make_unique<RectCC>(glm::vec2 { wrapWallsSize.x, 100 }) },
-							 .bot =  { nullptr, std::make_unique<RectCC>(glm::vec2 { wrapWallsSize.x, 100 }) },
-							 .left =  { nullptr, std::make_unique<RectCC>(glm::vec2 { 100, wrapWallsSize.y }) },
-							 .right =  { nullptr, std::make_unique<RectCC>(glm::vec2 { 100, wrapWallsSize.y }) }
+Game6::Game6() : wrapWalls({ .top =  { nullptr, std::make_unique<RectCC>(glm::vec2{ wrapWallsSize.x, 100 }) },
+								   .bot =  { nullptr, std::make_unique<RectCC>(glm::vec2{ wrapWallsSize.x, 100 }) },
+								   .left =  { nullptr, std::make_unique<RectCC>(glm::vec2{ 100, wrapWallsSize.y }) },
+								   .right =  { nullptr, std::make_unique<RectCC>(glm::vec2{ 100, wrapWallsSize.y }) }
 						   }),
 				 Game("/Games/6", {
-						 { "/bg.raw",             {}, true },
+						 { "/bg.raw", {}, true },
 						 { asteroidIcons[0].path, {}, true },
 						 { asteroidIcons[1].path, {}, true },
 						 { asteroidIcons[2].path, {}, true },
@@ -30,25 +30,26 @@ Game6::Game6() : wrapWalls({ .top =  { nullptr, std::make_unique<RectCC>(glm::ve
 						 RES_GOBLET
 				 }){
 
-	wrapWalls.top.setPos(glm::vec2 { 0, -100 } - (2 * asteroidRadius[(uint8_t)AsteroidSize::Large] + 1));
-	wrapWalls.bot.setPos(glm::vec2 { -(2 * asteroidRadius[(uint8_t)AsteroidSize::Large] + 1), 128 + (2 * asteroidRadius[(uint8_t)AsteroidSize::Large] + 1) });
-	wrapWalls.left.setPos(glm::vec2 { -100, 0 } - (2 * asteroidRadius[(uint8_t)AsteroidSize::Large] + 1));
-	wrapWalls.right.setPos(glm::vec2 { 160 + (2 * asteroidRadius[(uint8_t)AsteroidSize::Large] + 1), -(2 * asteroidRadius[(uint8_t)AsteroidSize::Large] + 1) });
+	wrapWalls.top.setPos(glm::vec2{ 0, -100 } - (2 * asteroidRadius[(uint8_t) AsteroidSize::Large] + 1));
+	wrapWalls.bot.setPos(glm::vec2{ -(2 * asteroidRadius[(uint8_t) AsteroidSize::Large] + 1), 128 + (2 * asteroidRadius[(uint8_t) AsteroidSize::Large] + 1) });
+	wrapWalls.left.setPos(glm::vec2{ -100, 0 } - (2 * asteroidRadius[(uint8_t) AsteroidSize::Large] + 1));
+	wrapWalls.right.setPos(
+			glm::vec2{ 160 + (2 * asteroidRadius[(uint8_t) AsteroidSize::Large] + 1), -(2 * asteroidRadius[(uint8_t) AsteroidSize::Large] + 1) });
 }
 
 void Game6::onLoad(){
 	auto pat = std::make_shared<GameObject>(
 			std::make_unique<AnimRC>(getFile("/player.gif")),
-			std::make_unique<PolygonCC>(playerHitbox, glm::vec2{19.0/2.0, 44 / 2.0}));
+			std::make_unique<PolygonCC>(playerHitbox, glm::vec2{ 19.0 / 2.0, 44 / 2.0 }));
 
 	playerAnim = std::static_pointer_cast<AnimRC>(pat->getRenderComponent());
 	addObject(pat);
 	player.setObj(pat);
-	pat->setPos({startPosition.x, 0});
+	pat->setPos({ startPosition.x, 0 });
 
 
 	auto bg = std::make_shared<GameObject>(
-			std::make_unique<StaticRC>(getFile("/bg.raw"), PixelDim { 160, 128 }),
+			std::make_unique<StaticRC>(getFile("/bg.raw"), PixelDim{ 160, 128 }),
 			nullptr
 	);
 	addObject(bg);
@@ -112,7 +113,7 @@ void Game6::onLoop(float deltaTime){
 			updateAsteroids(deltaTime);
 			updateBullets(deltaTime);
 
-			deathTimer+=deltaTime;
+			deathTimer += deltaTime;
 			if(deathTimer >= deathPauseTime){
 				pop();
 			}
@@ -124,7 +125,7 @@ void Game6::onLoop(float deltaTime){
 
 			winTimer += deltaTime;
 			if(winTimer > 1.f){
-				player.getObj()->setPos(player.getObj()->getPos() + direction * winAcceleration * (float)pow(winTimer - 1.0f, 2));
+				player.getObj()->setPos(player.getObj()->getPos() + direction * winAcceleration * (float) pow(winTimer - 1.0f, 2));
 			}
 			if(winTimer >= winTime){
 				pop();
@@ -182,7 +183,7 @@ void Game6::buttonReleased(uint i){
 }
 
 void Game6::updateBullets(float deltaTime){
-	for(auto& bullet : bulletPool){
+	for(auto& bullet: bulletPool){
 		bullet.gObj->setPos(bullet.gObj->getPos() + bullet.velocity * deltaTime);
 	}
 }
@@ -190,17 +191,17 @@ void Game6::updateBullets(float deltaTime){
 void Game6::shootBullet(){
 	if(bulletPool.size() >= 4) return;
 
-	auto spriteRC = std::make_unique<SpriteRC>(PixelDim { 4, 4 });
+	auto spriteRC = std::make_unique<SpriteRC>(PixelDim{ 4, 4 });
 	spriteRC->getSprite()->clear(TFT_TRANSPARENT);
 	spriteRC->getSprite()->fillRoundRect(0, 0, 4, 4, 1, TFT_WHITE);
 
 	auto bullet = std::make_shared<GameObject>(std::move(spriteRC),
-											   std::make_unique<CircleCC>(2, glm::vec2 { 2, 2 }));
+											   std::make_unique<CircleCC>(2, glm::vec2{ 2, 2 }));
 	addObject(bullet);
 
-	glm::vec2 center = player.getObj()->getPos() + glm::vec2{8, 44/2};
+	glm::vec2 center = player.getObj()->getPos() + glm::vec2{ 8, 44 / 2 };
 	glm::vec2 direction = { cos(M_PI * (player.getAngle() - 90.f) / 180.0), sin(M_PI * (player.getAngle() - 90.f) / 180.0) };
-	glm::vec2 bulletPos = (direction * (float)(44/2)) + center;
+	glm::vec2 bulletPos = (direction * (float) (44 / 2)) + center;
 	glm::vec2 speed = direction * bulletSpeed;
 
 	bullet->setPos(bulletPos);
@@ -208,7 +209,7 @@ void Game6::shootBullet(){
 	Bullet b = { bullet, speed };
 	bulletPool.push_back(b);
 
-	for(auto &asteroid: asteroidPool){
+	for(auto& asteroid: asteroidPool){
 		collision.addPair(*asteroid.gObj, *bullet, [this, b, asteroid](){
 			bulletPool.erase(std::remove(bulletPool.begin(), bulletPool.end(), b), bulletPool.end());
 			removeObject(b.gObj);
@@ -226,9 +227,9 @@ void Game6::shootBullet(){
 
 void Game6::createAsteroid(Game6::AsteroidSize size, glm::vec2 pos){
 	std::shared_ptr<GameObject> asteroid;
-		asteroid = std::make_shared<GameObject>(
-				std::make_unique<StaticRC>(getFile(asteroidIcons[(uint8_t)size].path), asteroidIcons[(uint8_t)size].dim),
-				std::make_unique<CircleCC>(asteroidRadius[(uint8_t)size], glm::vec2 { asteroidRadius[(uint8_t)size], asteroidRadius[(uint8_t)size] }));
+	asteroid = std::make_shared<GameObject>(
+			std::make_unique<StaticRC>(getFile(asteroidIcons[(uint8_t) size].path), asteroidIcons[(uint8_t) size].dim),
+			std::make_unique<CircleCC>(asteroidRadius[(uint8_t) size], glm::vec2{ asteroidRadius[(uint8_t) size], asteroidRadius[(uint8_t) size] }));
 
 	addObject(asteroid);
 	asteroid->setPos(pos);
@@ -243,12 +244,12 @@ void Game6::createAsteroid(Game6::AsteroidSize size, glm::vec2 pos){
 	}
 
 	glm::vec2 direction = { cos(M_PI * angle / 180.0), sin(M_PI * angle / 180.0) };
-	glm::vec2 speed = direction * asteroidSpeed[(uint8_t)size];
+	glm::vec2 speed = direction * asteroidSpeed[(uint8_t) size];
 
 	Asteroid a = { asteroid, speed, size };
 	asteroidPool.push_back(a);
 
-	for(auto &bullet: bulletPool){
+	for(auto& bullet: bulletPool){
 		collision.addPair(*asteroid, *bullet.gObj, [this, bullet, a](){
 			bulletPool.erase(std::remove(bulletPool.begin(), bulletPool.end(), bullet), bulletPool.end());
 			removeObject(bullet.gObj);
@@ -270,18 +271,18 @@ void Game6::createAsteroid(Game6::AsteroidSize size, glm::vec2 pos){
 		asteroid->setPos({ asteroid->getPos().x, 128.0f });
 	});
 	collision.addPair(*asteroid, wrapWalls.bot, [asteroid](){
-		asteroid->setPos({ asteroid->getPos().x, -(2 * asteroidRadius[(uint8_t)AsteroidSize::Large]) });
+		asteroid->setPos({ asteroid->getPos().x, -(2 * asteroidRadius[(uint8_t) AsteroidSize::Large]) });
 	});
 	collision.addPair(*asteroid, wrapWalls.left, [asteroid](){
 		asteroid->setPos({ 160.0f, asteroid->getPos().y });
 	});
 	collision.addPair(*asteroid, wrapWalls.right, [asteroid](){
-		asteroid->setPos({ -(2 * asteroidRadius[(uint8_t)AsteroidSize::Large]), asteroid->getPos().y });
+		asteroid->setPos({ -(2 * asteroidRadius[(uint8_t) AsteroidSize::Large]), asteroid->getPos().y });
 	});
 }
 
 void Game6::updateAsteroids(float deltaTime){
-	for(auto& asteroid : asteroidPool){
+	for(auto& asteroid: asteroidPool){
 		asteroid.gObj->setPos(asteroid.gObj->getPos() + asteroid.velocity * deltaTime);
 	}
 }
@@ -289,12 +290,16 @@ void Game6::updateAsteroids(float deltaTime){
 void Game6::asteroidHit(const Game6::Asteroid& asteroid){
 	switch(asteroid.size){
 		case AsteroidSize::Large:
-			createAsteroid(AsteroidSize::Medium, asteroid.gObj->getPos() + (asteroidRadius[(uint8_t)AsteroidSize::Large] - asteroidRadius[(uint8_t)AsteroidSize::Medium]));
-			createAsteroid(AsteroidSize::Medium, asteroid.gObj->getPos() + (asteroidRadius[(uint8_t)AsteroidSize::Large] - asteroidRadius[(uint8_t)AsteroidSize::Medium]));
+			createAsteroid(AsteroidSize::Medium,
+						   asteroid.gObj->getPos() + (asteroidRadius[(uint8_t) AsteroidSize::Large] - asteroidRadius[(uint8_t) AsteroidSize::Medium]));
+			createAsteroid(AsteroidSize::Medium,
+						   asteroid.gObj->getPos() + (asteroidRadius[(uint8_t) AsteroidSize::Large] - asteroidRadius[(uint8_t) AsteroidSize::Medium]));
 			break;
 		case AsteroidSize::Medium:
-			createAsteroid(AsteroidSize::Small, asteroid.gObj->getPos() + (asteroidRadius[(uint8_t)AsteroidSize::Medium] - asteroidRadius[(uint8_t)AsteroidSize::Small]));
-			createAsteroid(AsteroidSize::Small, asteroid.gObj->getPos() + (asteroidRadius[(uint8_t)AsteroidSize::Medium] - asteroidRadius[(uint8_t)AsteroidSize::Small]));
+			createAsteroid(AsteroidSize::Small,
+						   asteroid.gObj->getPos() + (asteroidRadius[(uint8_t) AsteroidSize::Medium] - asteroidRadius[(uint8_t) AsteroidSize::Small]));
+			createAsteroid(AsteroidSize::Small,
+						   asteroid.gObj->getPos() + (asteroidRadius[(uint8_t) AsteroidSize::Medium] - asteroidRadius[(uint8_t) AsteroidSize::Small]));
 			break;
 		case AsteroidSize::Small:
 			break;
@@ -309,7 +314,7 @@ void Game6::updateInvincibility(float delta){
 
 	invincibilityTime += delta;
 
-	if((int)(invincibilityTime / invincibilityBlinkDuration) % 2 == 0){
+	if((int) (invincibilityTime / invincibilityBlinkDuration) % 2 == 0){
 		player.getObj()->getRenderComponent()->setVisible(false);
 	}else{
 		player.getObj()->getRenderComponent()->setVisible(true);
@@ -347,7 +352,7 @@ void Game6::spawnRandomAsteroid(){
 	//y in range (-2*asteroidRadius[Large], 128), x either -2*asteroidRadius[Large] or 160
 
 	//top left corner of rectangle outside of the screen, wider by 2*radius[Large] than screen
-	glm::vec2 topLeft = {-2*asteroidRadius[(uint8_t)AsteroidSize::Large], -2*asteroidRadius[(uint8_t)AsteroidSize::Large]};
+	glm::vec2 topLeft = { -2 * asteroidRadius[(uint8_t) AsteroidSize::Large], -2 * asteroidRadius[(uint8_t) AsteroidSize::Large] };
 
 	//pick border for asteroid to spawn on
 	enum class Border : uint8_t {
@@ -355,20 +360,20 @@ void Game6::spawnRandomAsteroid(){
 	} side = static_cast<Border>(rand() % 4);
 
 	if(side == Border::Up || side == Border::Down){
-		float xpos = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (160.0f  - topLeft.x)));
+		float xpos = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (160.0f - topLeft.x)));
 
 		if(side == Border::Up){
-			pos = {topLeft.x + xpos, topLeft.y};
+			pos = { topLeft.x + xpos, topLeft.y };
 		}else if(side == Border::Down){
-			pos = {topLeft.x + xpos, 128.0f};
+			pos = { topLeft.x + xpos, 128.0f };
 		}
-	}else if(side == Border::Left ||side == Border::Right){
-		float ypos = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (128.0f  - topLeft.y)));
+	}else if(side == Border::Left || side == Border::Right){
+		float ypos = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (128.0f - topLeft.y)));
 
 		if(side == Border::Left){
-			pos = {topLeft.x, topLeft.y + ypos};
+			pos = { topLeft.x, topLeft.y + ypos };
 		}else if(side == Border::Right){
-			pos = {160.0f, topLeft.y + ypos};
+			pos = { 160.0f, topLeft.y + ypos };
 		}
 	}
 
@@ -378,18 +383,22 @@ void Game6::spawnRandomAsteroid(){
 void Game6::gameOver(){
 	Input::getInstance()->removeListener(this);
 
-	for(auto& asteroid : asteroidPool){
+	for(auto& asteroid: asteroidPool){
 		collision.removePair(*asteroid.gObj, *player.getObj());
-		for(auto& bullet : bulletPool){
+		for(auto& bullet: bulletPool){
 			collision.removePair(*asteroid.gObj, *bullet.gObj);
 		}
 	}
 
 	state = DeathAnim;
 	playerAnim->setAnim(getFile("/explosion.gif"));
-	player.getObj()->setPos(player.getObj()->getPos() - glm::vec2{23, 11.5});
+	player.getObj()->setPos(player.getObj()->getPos() - glm::vec2{ 23, 11.5 });
 	playerAnim->setLoopDoneCallback([this](uint32_t){
 		state = DeathPause;
 		playerAnim->stop();
 	});
+}
+
+Stats Game6::returnStats(){
+	return Stats({ (uint8_t) (score * 5), (uint8_t) (score * 5), 0 });
 }
