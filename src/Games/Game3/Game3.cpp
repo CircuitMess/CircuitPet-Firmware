@@ -69,6 +69,12 @@ void Game3::onLoad(){
 }
 
 void Game3::onLoop(float deltaTime){
+	if(dead){
+		delay(500);
+		pop();
+		return;
+	}
+
 	duck->loop(deltaTime);
 	timeToSpawn += deltaTime;
 	if(timeToSpawn >= spawnRate){
@@ -160,7 +166,7 @@ void Game3::collisionHandler(Item item){
 		drawHearts();
 	}
 	if(lives <= 0){
-		pop();
+		dead = true;
 	}
 }
 
