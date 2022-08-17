@@ -49,7 +49,7 @@ void DuckScreen::onStart(){
 
 		printf("\nStarting...\n");
 
-		LoopManager::loop();
+		LoopManager::resetTime();
 		game->push(this);
 	};
 
@@ -69,7 +69,7 @@ void DuckScreen::onStart(){
 	menu.setItems(menuItems);
 
 
-	LoopManager::loop();
+	LoopManager::resetTime();
 	LoopManager::addListener(this); //Note - possible crash if start() is called before constructor finishes
 	hider.activity();
 
