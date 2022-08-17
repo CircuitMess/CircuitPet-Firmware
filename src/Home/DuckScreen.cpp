@@ -10,6 +10,7 @@
 #include "../DeathState.h"
 #include <CircuitPet.h>
 #include "../Settings/SettingsScreen.h"
+#include <Battery/BatteryService.h>
 
 DuckScreen::DuckScreen(Sprite* base) : State(), base(base),
 									   menu(base), hider(&menu){
@@ -96,6 +97,12 @@ void DuckScreen::onStop(){
 }
 
 void DuckScreen::loop(uint micros){
+
+	if(Battery.charging()){
+		statsSprite->setBattery((millis() % 2001) / 20);
+	}else{
+		statsSprite->setBattery(Battery.getPercentage());
+	}
 
 	if(dead){
 		volatile auto temp = base;
