@@ -47,6 +47,9 @@ private:
 	const int speedMax = 80;
 	const float spawnRate = 0.5f;
 	float timeToSpawn = 0.0f;
+
+	bool dead = false;
+
 	std::unique_ptr<Duck> duck;
 
 	std::shared_ptr<Sprite> hearts;

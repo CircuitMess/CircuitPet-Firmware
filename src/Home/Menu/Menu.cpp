@@ -38,7 +38,7 @@ void Menu::setItems(std::vector<MenuItem>& items){
 	setOffsetY(64); //used for hiding the menu
 }
 
-void Menu::setOffsetY(uint8_t y){
+void Menu::setOffsetY(int16_t y){
 	offsetY = y;
 	for(auto& item: items){
 		item.image.setY(originY + offsetY);
@@ -219,7 +219,10 @@ void Menu::loop(uint micros){
 				}
 				delta = 0;
 				state = neutral;
-				repos();
+
+				getLGame()->setX(origin - width - gutter);
+				getCGame()->setX(origin);
+				getRGame()->setX(origin + width + gutter);
 			}
 			break;
 	}

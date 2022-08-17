@@ -66,7 +66,7 @@ void loop(){
 	baseSprite->setTextSize(0);
 	baseSprite->setTextColor(TFT_WHITE);
 	baseSprite->setCursor(1, 119);
-	baseSprite->printf("%.1fms - %.1ffps\n", frameTime * 1000.0f, 1.0f / frameTime);
+	// baseSprite->printf("%.1fms - %.1ffps\n", frameTime * 1000.0f, 1.0f / frameTime);
 	t = t2;
 
 	display->commit();

@@ -37,6 +37,11 @@ void MenuHider::hide(){
 }
 
 void MenuHider::loop(uint deltaMicros){
+	auto easeOutElastic = [](float t){
+		constexpr float c4 = (2.0f * M_PI) / 3.0f;
+		return t <= 0 ? 0 : t >= 1 ? 1 : pow(2.0f, -10.0f * t) * sin((t * 10.0f - 0.75f) * c4) + 1.0f;
+	};
+
 	switch(state){
 		case Shown:
 			inactivityCount += deltaMicros;
@@ -50,7 +55,7 @@ void MenuHider::loop(uint deltaMicros){
 
 		case Showing:
 			transition -= (float)deltaMicros/(float)duration;
-			menu->setOffsetY(deltaY*transition);
+			menu->setOffsetY(deltaY*(1.0f - easeOutElastic(1.0f - transition)));
 			if(transition <= 0.0f){
 				transition = 0.0f;
 				menu->setOffsetY(0);
@@ -61,7 +66,7 @@ void MenuHider::loop(uint deltaMicros){
 
 		case Hiding:
 			transition += (float)deltaMicros/(float)duration;
-			menu->setOffsetY(deltaY*transition);
+			menu->setOffsetY(deltaY*pow(transition, 5));
 			if(transition >= 1.0f){
 				transition = 1.0f;
 				menu->setOffsetY(deltaY);
