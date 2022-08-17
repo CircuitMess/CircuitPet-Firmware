@@ -26,7 +26,7 @@ private:
 
 	std::unique_ptr<BgSprite> bgSprite;
 	std::unique_ptr<OSSprite> osSprite;
-	CharacterSprite characterSprite;
+	std::unique_ptr<CharacterSprite> characterSprite;
 
 	std::unique_ptr<StatsSprite> statsSprite;
 	void statsChanged(const Stats& stats, bool leveledUp) override;

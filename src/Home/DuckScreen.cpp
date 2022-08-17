@@ -11,11 +11,11 @@
 #include <CircuitPet.h>
 #include "../Settings/SettingsScreen.h"
 
-DuckScreen::DuckScreen(Sprite* base) : State(), base(base), characterSprite(base, StatMan.getLevel(), StatMan.get().oilLevel < rustThreshold, Anim::General),
+DuckScreen::DuckScreen(Sprite* base) : State(), base(base),
 									   menu(base), hider(&menu){
 
 
-	characterSprite.setPos(characterX, characterY);
+	menu.setOffsetY(menuY);
 }
 
 void DuckScreen::onStart(){
@@ -25,8 +25,15 @@ void DuckScreen::onStart(){
 	bgSprite = std::make_unique<BgSprite>(base, StatMan.getLevel());
 	osSprite = std::make_unique<OSSprite>(base, StatMan.getLevel());
 	statsSprite = std::make_unique<StatsSprite>(base, StatMan.get().oilLevel,  StatMan.get().happiness, 100);
+	characterSprite = std::make_unique<CharacterSprite>(base, StatMan.getLevel(), StatMan.get().oilLevel < rustThreshold, Anim::General);
+
 	osSprite->setPos(osX, osY);
 	statsSprite->setPos(statsX, statsY);
+	characterSprite->setPos(characterX, characterY);
+
+	characterSprite->setRusty(StatMan.get().oilLevel < rustThreshold);
+	characterSprite->setCharLevel(StatMan.getLevel());
+	characterSprite->setAnim(Anim::General);
 
 	auto pushGame = [this](Game* game){
 		stop();
@@ -60,7 +67,6 @@ void DuckScreen::onStart(){
 			}}
 	};
 
-	menu.setOffsetY(menuY);
 	menu.setItems(menuItems);
 
 
@@ -71,10 +77,6 @@ void DuckScreen::onStart(){
 	currentStats = targetStats = prevStats = StatMan.get();
 	StatMan.addListener(this);
 	StatMan.setPaused(false);
-
-	characterSprite.setRusty(StatMan.get().oilLevel < rustThreshold);
-	characterSprite.setCharLevel(StatMan.getLevel());
-	characterSprite.setAnim(Anim::General);
 
 	randInterval = rand() % 4000000 + 2000000;
 
@@ -89,6 +91,7 @@ void DuckScreen::onStop(){
 	bgSprite.reset();
 	osSprite.reset();
 	statsSprite.reset();
+	characterSprite.reset();
 	menuItems.clear();
 
 	hider.hide();
@@ -141,7 +144,7 @@ void DuckScreen::loop(uint micros){
 			anim = Anim::General;
 		}
 
-		characterSprite.setAnim(anim);
+		characterSprite->setAnim(anim);
 	}
 
 	bgSprite->push();
@@ -150,8 +153,8 @@ void DuckScreen::loop(uint micros){
 
 	osSprite->push();
 
-	characterSprite.loop(micros);
-	characterSprite.push();
+	characterSprite->loop(micros);
+	characterSprite->push();
 
 	menu.push();
 }
@@ -192,11 +195,11 @@ void DuckScreen::statsChanged(const Stats& stats, bool leveledUp){
 	if(leveledUp){
 		//TODO - levelup anims
 		bgSprite->setLevel(StatMan.getLevel());
-		characterSprite.setCharLevel(StatMan.getLevel());
+		characterSprite->setCharLevel(StatMan.getLevel());
 		osSprite->setLevel(StatMan.getLevel());
 	}
 
-	characterSprite.setRusty(stats.oilLevel < rustThreshold);
+	characterSprite->setRusty(stats.oilLevel < rustThreshold);
 
 	targetStats = stats;
 	prevStats = currentStats;
