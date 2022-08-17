@@ -26,7 +26,7 @@ private:
 
 	std::unique_ptr<BgSprite> bgSprite;
 	std::unique_ptr<OSSprite> osSprite;
-	CharacterSprite characterSprite;
+	std::unique_ptr<CharacterSprite> characterSprite;
 
 	std::unique_ptr<StatsSprite> statsSprite;
 	void statsChanged(const Stats& stats, bool leveledUp) override;
@@ -58,8 +58,6 @@ private:
 
 	constexpr static uint8_t statsX = 1;
 	constexpr static uint8_t statsY = 0;
-
-	constexpr static uint8_t menuY = 64;
 
 	void buttonPressed(uint i) override;
 };
