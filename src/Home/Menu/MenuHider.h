@@ -20,7 +20,7 @@ private:
 	State state = Hidden;
 
 	const uint32_t duration = 1400000; //micros
-	const int16_t deltaY = 56;
+	const int16_t deltaY = 47;
 	float transition = 1.0f; //0 to a 1 real quick
 
 	const uint32_t inactivityTimeout = 5000000; //micros

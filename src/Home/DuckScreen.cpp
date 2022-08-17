@@ -15,7 +15,6 @@ DuckScreen::DuckScreen(Sprite* base) : State(), base(base),
 									   menu(base), hider(&menu){
 
 
-	menu.setOffsetY(menuY);
 }
 
 void DuckScreen::onStart(){
