@@ -19,6 +19,7 @@ protected:
 	void onStart() override;
 	void onStop() override;
 	void onRender(Sprite* canvas) override;
+	Stats returnStats() override;
 
 	void resetAnim();
 private:

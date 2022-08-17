@@ -150,9 +150,9 @@ void Game3::collisionHandler(Item item){
 	removeObject(item.go);
 	duck->startEating(item.value);
 	if(item.value > 0){
-		hugerMeter += item.value;
+		hungerMeter += item.value;
 		drawBar();
-		if(hugerMeter >= hugerMeterMax){
+		if(hungerMeter >= hungerMeterMax){
 			duck->filled(this);
 		}
 	}else{
@@ -245,7 +245,7 @@ rgb hsv2rgb(hsv in){
 
 
 void Game3::drawBar(){
-	float fillPercent = ((float) hugerMeter / (float) hugerMeterMax) * 118.0f;
+	float fillPercent = ((float) hungerMeter / (float) hungerMeterMax) * 118.0f;
 
 	float difference = abs(118 - fillPercent);
 	double hue = (118.0f - difference) / 100.0 * 60.0 / 255.0 * 360;
@@ -253,4 +253,8 @@ void Game3::drawBar(){
 	uint16_t c0 = lgfx::color565(rgbColor0.r * 255.0, rgbColor0.g * 255.0, rgbColor0.b * 255.0);
 
 	hungerBar->fillRect(2, 118 - fillPercent, 4, fillPercent, c0);
+}
+
+Stats Game3::returnStats(){
+	return Stats({(uint8_t)(hungerMeter / 6), (uint8_t)(hungerMeter / 8),(uint8_t )(hungerMeter/10)});
 }

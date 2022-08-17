@@ -9,6 +9,7 @@
 #include "../Games/Game4/Game4.h"
 #include "../DeathState.h"
 #include <CircuitPet.h>
+#include "../Settings/SettingsScreen.h"
 
 DuckScreen::DuckScreen(Sprite* base) : State(), base(base), characterSprite(base, StatMan.getLevel(), StatMan.get().oilLevel < rustThreshold, Anim::General),
 									   menu(base), hider(&menu){
@@ -34,6 +35,10 @@ void DuckScreen::onStart(){
 			{ "Jump & Duck",4, GameImage(base, "/MenuIcons/Icon4.raw"), GameImage(base, "/MenuIcons/Locked4.raw"),"/GameScreens/Splash4.raw","/GameScreens/Inst4.raw", [](){return new Game4::Game4();} },
 			{ "Disco danceoff", 5,GameImage(base, "/MenuIcons/Icon5.raw"), GameImage(base, "/MenuIcons/Locked5.raw"), "/GameScreens/Splash5.raw","/GameScreens/Inst5.raw", [](){return new Game5();} },
 			{ "Space duck", 6,GameImage(base, "/MenuIcons/Icon6.raw"), GameImage(base, "/MenuIcons/Locked6.raw"),"/GameScreens/Splash6.raw","/GameScreens/Inst6.raw", [](){return new Game6();}},
+			{ "Settings", 1,  GameImage(base, "/MenuIcons/settings.raw"), GameImage(base, "/MenuIcons/settings.raw"), "", "", [this](){
+				auto settings = new SettingsScreen::SettingsScreen(*CircuitPet.getDisplay());
+				settings->push(this);
+			}}
 	};
 
 	menu.setOffsetY(menuY);
@@ -66,6 +71,8 @@ void DuckScreen::onStop(){
 	osSprite.reset();
 	statsSprite.reset();
 	menuItems.clear();
+
+	hider.hide();
 }
 
 void DuckScreen::loop(uint micros){
@@ -89,12 +96,10 @@ void DuckScreen::loop(uint micros){
 		if(x >= 1.f){
 			currentStats = targetStats;
 		}else{
+			float ease = 1.0f - cos((x * PI) / 2.0);
 
-			float ease = 1.0f - cos((x * PI) / 2);
-
-
-			currentStats.oilLevel = prevStats.oilLevel + ((float)(targetStats.oilLevel - prevStats.oilLevel)) * ease;
-			currentStats.happiness = prevStats.happiness + ((float)(targetStats.happiness - prevStats.happiness)) * ease;
+			currentStats.oilLevel = prevStats.oilLevel + ((float)((int)(targetStats.oilLevel) - (int)(prevStats.oilLevel))) * ease;
+			currentStats.happiness = prevStats.happiness + ((float)((int)(targetStats.happiness) - (int)(prevStats.happiness))) * ease;
 		}
 
 		statsSprite->setHappiness(currentStats.happiness);
@@ -102,14 +107,14 @@ void DuckScreen::loop(uint micros){
 	}
 
 	//playing random duck animations while idling
-	randCounter+=micros;
+	randCounter += micros;
 	if(randCounter >= randInterval){
 		randCounter = 0;
 		Anim anim;
 		if(!specialAnimPlaying){
 			specialAnimPlaying = true;
 			randInterval = 1000000;
-			int num = 1 + rand() % ((uint8_t)Anim::Count-1);
+			int num = 1 + rand() % ((uint8_t)Anim::Count - 1);
 			anim = (Anim)(num);
 		}else{
 			specialAnimPlaying = false;
