@@ -32,6 +32,7 @@ void CharacterSprite::setCharLevel(uint8_t charLevel){
 
 	CharacterSprite::charLevel = charLevel;
 	registerNextAnim();
+	startNextAnim();
 }
 
 void CharacterSprite::setRusty(bool rusty){
@@ -51,6 +52,8 @@ void CharacterSprite::setAnim(Anim anim){
 void CharacterSprite::startNextAnim(){
 	if(!nextAnim) return;
 
+	// Free up ram
+	sprite = GIFAnimatedSprite(nullptr, File());
 	sprite = GIFAnimatedSprite(parentSprite, getAnimFile(nextAnim->charLevel, nextAnim->rusty, nextAnim->anim));
 
 	sprite.setLoopMode(GIF::Infinite);
