@@ -34,7 +34,6 @@ void Menu::setItems(std::vector<MenuItem>& items){
 	}
 
 	repos();
-	setOffsetY(64); //used for hiding the menu
 }
 
 void Menu::setOffsetY(int16_t y){
@@ -172,8 +171,16 @@ void Menu::loop(uint micros){
 	}
 	switch (state){
 		case neutral:
+			for(auto& item : items){
+				item.image.setX(-200);
+				item.imageLocked.setX(-200);
+			}
+
+			getLGame()->setX(origin - width - gutter);
+			getCGame()->setX(origin);
+			getRGame()->setX(origin + width + gutter);
+
 			LoopManager::removeListener(this);
-			repos();
 			break;
 
 		case shaking:
@@ -219,9 +226,16 @@ void Menu::loop(uint micros){
 				delta = 0;
 				state = neutral;
 
+				for(auto& item : items){
+					item.image.setX(-200);
+					item.imageLocked.setX(-200);
+				}
+
 				getLGame()->setX(origin - width - gutter);
 				getCGame()->setX(origin);
 				getRGame()->setX(origin + width + gutter);
+
+				LoopManager::removeListener(this);
 			}
 			break;
 	}
