@@ -44,6 +44,7 @@ void DuckScreen::onStart(){
 			{ "Settings", 1,  GameImage(base, "/MenuIcons/settings.raw"), GameImage(base, "/MenuIcons/settings.raw"), "", "", [this](){
 				auto settings = new SettingsScreen::SettingsScreen(*CircuitPet.getDisplay());
 				settings->push(this);
+				return nullptr;
 			}}
 	};
 
@@ -155,8 +156,12 @@ void DuckScreen::buttonPressed(uint i){
 				menu.shake();
 				return;
 			}
-			splashState = new SplashState(base, menuItems[selection]);
-			splashState->push(this);
+			if(selection == 6){ //settings
+				menuItems[selection].primary();
+			}else{
+				splashState = new SplashState(base, menuItems[selection]);
+				splashState->push(this);
+			}
 			return;
 		}
 	}
