@@ -218,7 +218,10 @@ void Menu::loop(uint micros){
 				}
 				delta = 0;
 				state = neutral;
-				repos();
+
+				getLGame()->setX(origin - width - gutter);
+				getCGame()->setX(origin);
+				getRGame()->setX(origin + width + gutter);
 			}
 			break;
 	}
