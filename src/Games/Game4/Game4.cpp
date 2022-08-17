@@ -83,7 +83,7 @@ void Game4::Game4::onLoad(){
 			nullptr
 	);
 	addObject(duckGoRc);
-	duckGoRc->getRenderComponent()->setLayer(0);
+	duckGoRc->getRenderComponent()->setLayer(10);
 	duckGoRc->setPos({ 5, 50 });
 
 	duck = std::make_unique<Duck>(duckGoRc, duckGoCc, this);
