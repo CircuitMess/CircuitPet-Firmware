@@ -71,6 +71,7 @@ void DuckScreen::onStart(){
 
 	LoopManager::resetTime();
 	LoopManager::addListener(this); //Note - possible crash if start() is called before constructor finishes
+	hider.hide();
 	hider.activity();
 
 	currentStats = targetStats = prevStats = StatMan.get();
@@ -92,8 +93,6 @@ void DuckScreen::onStop(){
 	statsSprite.reset();
 	characterSprite.reset();
 	menuItems.clear();
-
-	hider.hide();
 }
 
 void DuckScreen::loop(uint micros){
