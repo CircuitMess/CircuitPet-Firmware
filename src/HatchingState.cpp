@@ -11,7 +11,7 @@ HatchingState::HatchingState(Sprite* base) : gif(base, SPIFFS.open("/hatching.gi
 }
 
 void HatchingState::onStart(){
-	LoopManager::loop();
+	LoopManager::resetTime();
 
 	gif.start();
 	gif.stop();

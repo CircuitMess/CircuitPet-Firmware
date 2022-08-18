@@ -54,7 +54,7 @@ private:
 	const float speedIncrement = 0.5f;
 	bool isDone = false;
 	int score = 0;
-	const int scoreMax = 30;
+	const int scoreMax = 40;
 	uint8_t life = 3;
 
 	std::shared_ptr<Sprite> scoreSprite;
@@ -64,6 +64,7 @@ private:
 	std::shared_ptr<GameObject> goal;
 	std::vector<Obstacle> obstacleUnder;
 	std::vector<Obstacle> obstacleOver;
+	std::set<uint8_t> obstacleIndex;
 	std::vector<std::shared_ptr<GameObject>> movingObjects;
 	std::vector<std::shared_ptr<GameObject>> movingTiles;
 };

@@ -7,6 +7,7 @@ MenuHider::MenuHider(Menu* menu): menu(menu){
 void MenuHider::activity(){
 	switch (state){
 		case Hidden:
+			transition = 1.0f;
 			LoopManager::addListener(this);
 			state = Showing;
 		case Shown:
@@ -21,19 +22,9 @@ void MenuHider::activity(){
 }
 
 void MenuHider::hide(){
-	switch (state){
-		case Hidden:
-			break;
-		case Shown:
-			state = Hiding;
-			LoopManager::addListener(this);
-			break;
-		case Hiding:
-			break;
-		case Showing:
-			state = Hiding;
-			break;
-	}
+	transition = 1.0f;
+	menu->setOffsetY(deltaY);
+	state = Hidden;
 }
 
 void MenuHider::loop(uint deltaMicros){
