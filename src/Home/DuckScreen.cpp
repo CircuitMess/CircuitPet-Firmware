@@ -9,6 +9,8 @@
 #include "../Games/Game4/Game4.h"
 #include "../DeathState.h"
 #include <CircuitPet.h>
+#include <SPIFFS.h>
+#include <FS/RamFile.h>
 #include "../Settings/SettingsScreen.h"
 
 DuckScreen::DuckScreen(Sprite* base) : State(), base(base),
@@ -89,6 +91,93 @@ void DuckScreen::loop(uint micros){
 		return;
 	}
 
+	if(luState != None){
+		hider.activity();
+
+		if(luState == FadeIn || luState == FadeOut){
+			if(luMicros == 0){
+				luMicros = ::micros();
+				return;
+			}
+
+			bgSprite->push();
+			statsSprite->push();
+			osSprite->push();
+			characterSprite->push();
+			menu.push();
+
+			luFile.seek(0);
+
+			float t = (float) (::micros() - luMicros) / 500000.0f;
+			if(t >= 1.0f){
+				if(luState == FadeIn){
+					luState = Image;
+					base->drawIcon(luFile, 0, 0, 160, 128);
+					luMicros = ::micros();
+				}else if(luState == FadeOut){
+					luState = None;
+					luMicros = 0;
+					luFile.close();
+				}
+
+				return;
+			}
+
+			if(luState == FadeOut){
+				t = 1.0f - t;
+			}
+
+			luFile.seek(0);
+			for(int i = 0; i < 160 * 128; i++){
+				int y = i / 160;
+				int x = i - y * 160;
+
+				Color target;
+				luFile.read(reinterpret_cast<uint8_t*>(&target), 2);
+
+				Color original = base->readPixel(x, y);
+
+				uint8_t oR = (original >> 11) & 0b11111;
+				uint8_t oG = (original >> 5) & 0b111111;
+				uint8_t oB = original & 0b11111;
+
+				uint8_t tR = (target >> 11) & 0b11111;
+				uint8_t tG = (target >> 5) & 0b111111;
+				uint8_t tB = target & 0b11111;
+
+				uint8_t r = oR + (tR - oR) * t;
+				uint8_t g = oG + (tG - oG) * t;
+				uint8_t b = oB + (tB - oB) * t;
+
+				uint16_t computed =
+						(r & 0b11111) << 11 |
+						(g & 0b111111) << 5 |
+						(b & 0b11111);
+
+				base->writePixel(x, y, computed);
+			}
+		}else if(luState == Image){
+			if(!luApplied){
+				currentStats = targetStats = prevStats = StatMan.get();
+
+				characterSprite->setRusty(currentStats.oilLevel < rustThreshold);
+				characterSprite->setCharLevel(StatMan.getLevel());
+				bgSprite->setLevel(StatMan.getLevel());
+				osSprite->setLevel(StatMan.getLevel());
+				luApplied = true;
+
+				menu.repos();
+			}
+
+			if(::micros() - luMicros >= 3000000){
+				luState = FadeOut;
+				luMicros = ::micros();
+			}
+		}
+
+		return;
+	}
+
 	//stats display easing when a change occurs
 	if(currentStats != targetStats){
 
@@ -138,6 +227,8 @@ void DuckScreen::loop(uint micros){
 }
 
 void DuckScreen::buttonPressed(uint i){
+	if(luState != None) return;
+
 	hider.activity();
 
 	switch(i){
@@ -175,10 +266,13 @@ void DuckScreen::statsChanged(const Stats& stats, bool leveledUp){
 	}
 
 	if(leveledUp){
-		//TODO - levelup anims
-		bgSprite->setLevel(StatMan.getLevel());
-		characterSprite->setCharLevel(StatMan.getLevel());
-		osSprite->setLevel(StatMan.getLevel());
+		File file = SPIFFS.open(String("/LevelUp/") + StatMan.getLevel() + ".raw");
+		luFile = RamFile::open(file);
+
+		luState = FadeIn;
+		luMicros = 0;
+		luApplied = false;
+		return;
 	}
 
 	characterSprite->setRusty(stats.oilLevel < rustThreshold);
