@@ -3,6 +3,7 @@
 
 #include <Display/GIFAnimatedSprite.h>
 #include <experimental/optional>
+#include <map>
 
 enum class Anim : uint8_t{
 	General, Scratch, LookAround, Count // Stretch, Wave, Dance, Knock, TODO - add other anims when available
@@ -39,6 +40,11 @@ private:
 	void registerNextAnim(); //queues up nextAnim to be started when current anim ends
 	void startNextAnim(); //starts queued nextAnim, then clears it
 	File getAnimFile(uint8_t charLevel, bool rustLevel, Anim anim);
+
+	void preloadAnims();
+	uint8_t getGIFLevel(uint8_t level);
+
+	std::map<Anim, File> animMap = {{ Anim::General, {}}, { Anim::Scratch, {}}, { Anim::LookAround, {}}};
 
 	int16_t x = 0, y = 0;
 
