@@ -171,7 +171,7 @@ void Game2::buttonPressed(uint i){
 	if(i == BTN_BACK){
 		pop();
 		return;
-	}else if(i != BTN_A) return;
+	}else if(i != BTN_LEFT) return;
 
 	if(state == Wait || state == FlyIn){
 		anim->setLoopMode(GIF::Single);
