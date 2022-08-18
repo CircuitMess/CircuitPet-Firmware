@@ -60,6 +60,11 @@ private:
 	constexpr static uint8_t statsY = 0;
 
 	void buttonPressed(uint i) override;
+
+	enum LevelUpState { None, FadeIn, Image, FadeOut } luState = None;
+	File luFile;
+	uint32_t luMicros = 0;
+	bool luApplied = false;
 };
 
 

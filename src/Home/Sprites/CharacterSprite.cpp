@@ -39,6 +39,7 @@ void CharacterSprite::setCharLevel(uint8_t charLevel){
 	if(CharacterSprite::charLevel == nextLevel) return;
 	CharacterSprite::charLevel = nextLevel;
 	registerNextAnim();
+	startNextAnim();
 }
 
 void CharacterSprite::setRusty(bool rusty){
