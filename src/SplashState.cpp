@@ -7,20 +7,21 @@
 #include <FS/CompressedFile.h>
 
 
-SplashState::SplashState(Sprite* base, const MenuItem& menuItem) : base(base){
-	splash = CompressedFile::open(SPIFFS.open(menuItem.splashPath), 10, 5);
-	instruct = CompressedFile::open(SPIFFS.open(menuItem.instructPath), 10, 5);
+SplashState::SplashState(Sprite* base, const MenuItem& menuItem) : base(base), instructPath(menuItem.instructPath), splashPath(menuItem.splashPath){
 	game = menuItem.primary();
 }
 
 void SplashState::onStart(){
 	game->load();
 	startTime = millis();
-	LoopManager::loop();
+	LoopManager::resetTime();
 	LoopManager::addListener(this);
 	Input::getInstance()->addListener(this);
+
+	File splash = CompressedFile::open(SPIFFS.open(splashPath), 10, 5);
 	base->drawIcon(splash, 0, 0, 160, 128);
 	base->push();
+	splash.close();
 }
 
 void SplashState::onStop(){
@@ -31,8 +32,10 @@ void SplashState::onStop(){
 void SplashState::loop(uint micros){
 	if(!splashDone && game->isLoaded() && (millis() - startTime >= minSplashTime)){
 		splashDone = true;
+		File instruct = CompressedFile::open(SPIFFS.open(instructPath), 10, 5);
 		base->drawIcon(instruct, 0, 0, 160, 128);
 		base->push();
+		instruct.close();
 	}
 }
 
@@ -43,6 +46,7 @@ void SplashState::buttonPressed(uint i){
 	stop();
 	delete this;
 
+	LoopManager::resetTime();
 	game->push(p);
 
 }

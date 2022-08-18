@@ -24,9 +24,9 @@ private:
 	const uint minSplashTime = 2000;
 	uint startTime;
 	bool splashDone = false;
-	File splash;
-	File instruct;
 	Game* game;
+	const char* instructPath;
+	const char* splashPath;
 
 	void buttonPressed(uint i) override;
 };
