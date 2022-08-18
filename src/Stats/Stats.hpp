@@ -11,13 +11,13 @@ struct Stats {
 	Stats operator+(const Stats& right){
 		return { (uint8_t)(min(max(0, happiness + right.happiness), 100)),
 				 (uint8_t)(min(max(0, oilLevel + right.oilLevel), 100)),
-				 (uint8_t)(min(max(0, experience + right.experience), UINT16_MAX)) };
+				 (uint16_t)(min(max(0, experience + right.experience), UINT16_MAX)) };
 	}
 
 	Stats operator-(const Stats& right){
 		return { (uint8_t)(min(max(0, happiness - right.happiness), 100)),
 				 (uint8_t)(min(max(0, oilLevel - right.oilLevel), 100)),
-				 (uint8_t)(min(max(0, experience - right.experience), UINT16_MAX)) };
+				 (uint16_t)(min(max(0, experience - right.experience), UINT16_MAX)) };
 	}
 
 	Stats& operator+=(const Stats& right){
