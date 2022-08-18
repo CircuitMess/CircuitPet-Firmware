@@ -28,9 +28,16 @@ void CharacterSprite::push(){
 }
 
 void CharacterSprite::setCharLevel(uint8_t charLevel){
-	if(CharacterSprite::charLevel == charLevel) return;
-
-	CharacterSprite::charLevel = charLevel;
+	uint8_t nextLevel;
+	if(charLevel <= 3){
+		nextLevel = 1;
+	}else if(charLevel <= 5){
+		nextLevel = 4;
+	}else{
+		nextLevel = 6;
+	}
+	if(CharacterSprite::charLevel == nextLevel) return;
+	CharacterSprite::charLevel = nextLevel;
 	registerNextAnim();
 }
 
