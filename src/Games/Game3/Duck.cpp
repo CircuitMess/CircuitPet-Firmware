@@ -76,10 +76,6 @@ void Duck::filled(Game3* game){
 	});
 }
 
-bool Duck::isEating() const{
-	return eating;
-}
-
 bool Duck::isEatingBad() const{
 	return eatingBad;
 }

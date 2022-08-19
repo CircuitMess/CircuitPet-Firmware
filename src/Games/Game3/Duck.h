@@ -18,7 +18,6 @@ public:
 	void startEating(int value);
 	void filled(Game3* game);
 
-	bool isEating() const;
 	bool isEatingBad() const;
 
 private:
