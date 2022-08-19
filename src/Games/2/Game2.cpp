@@ -19,6 +19,8 @@ Game2::Game2() : Game("/Games/2", {
 		RES_GOBLET,
 		{ TopObstacles[0].path, {}, true },
 		{ TopObstacles[1].path, {}, true },
+		{ TopObstacles[2].path, {}, true },
+		{ TopObstacles[3].path, {}, true },
 		{ BotObstacles[0].path, {}, true },
 		{ BotObstacles[1].path, {}, true },
 		{ BotObstacles[2].path, {}, true },
