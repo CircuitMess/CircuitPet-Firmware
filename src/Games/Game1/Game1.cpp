@@ -4,6 +4,7 @@
 #include "../../GameEngine/Rendering/StaticRC.h"
 #include "../../GameEngine/Rendering/SpriteRC.h"
 #include "../../Stats/StatsManager.h"
+#include "../../RGBController.h"
 
 std::string bgPath[6] = { "/Bg/Level1.raw",
 						  "/Bg/Level2.raw",
@@ -109,6 +110,12 @@ void Game1::buttonPressed(uint i){
 	}
 	if(i == BTN_LEFT){
 		tries++;
+		Serial.println(indicator->getDifference());
+		if(indicator->getDifference() > 50){
+			RGBSlot.blink(Pixel::Red);
+		}else{
+			RGBSlot.blink(Pixel::Green);
+		}
 		addPoints(indicator->getDifference());
 	}
 }

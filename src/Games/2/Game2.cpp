@@ -8,6 +8,7 @@
 #include <Pins.hpp>
 #include <Input/Input.h>
 #include <glm/gtx/vector_angle.hpp>
+#include "../../RGBController.h"
 
 constexpr Game2::ObstacleDesc Game2::TopObstacles[];
 constexpr Game2::ObstacleDesc Game2::BotObstacles[];
@@ -92,6 +93,7 @@ void Game2::onLoop(float deltaTime){
 
 	for(auto& obstacle: obstacles){
 		if(obstacle.top->getPos().x + 15 <= duckPosX && !obstacle.passed && state == Play){
+			RGBSlot.blink(Pixel::Green);
 			score++;
 			obstacle.passed = true;
 			scoreDisplay->setScore(score);
@@ -231,6 +233,7 @@ void Game2::createObstaclePair(){
 
 void Game2::die(){
 	if(state != Play) return;
+	RGBSlot.blink(Pixel::Red);
 
 	life--;
 	hearts->setLives(life);

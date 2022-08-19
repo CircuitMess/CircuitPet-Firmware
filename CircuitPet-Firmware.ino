@@ -6,6 +6,7 @@
 #include "src/Intro.h"
 #include "src/Stats/StatsManager.h"
 #include "src/Clock/ClockMaster.h"
+#include "src/RGBController.h"
 
 extern "C" {
 #include <bootloader_random.h>
@@ -49,6 +50,8 @@ void setup(){
 	StatMan.begin();
 	StatMan.setPaused(true); //stats timekeeping will be unpaused when home menu starts
 
+	RGBSlot.begin();
+
 	auto intro = new Intro(baseSprite);
 	LoopManager::loop();
 	intro->start();
@@ -71,5 +74,4 @@ void loop(){
 
 	display->commit();
 }
-
 

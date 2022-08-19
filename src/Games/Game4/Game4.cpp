@@ -4,6 +4,7 @@
 #include "../../GameEngine/Collision/RectCC.h"
 #include "../../GameEngine/Collision/PolygonCC.h"
 #include <Input/Input.h>
+#include "../../RGBController.h"
 
 Game4::Game4::Game4() : Game("/Games/Game4", {
 		{ "/Background.raw",     {}, true },
@@ -250,6 +251,8 @@ void Game4::Game4::spawn(){
 }
 
 void Game4::Game4::duckHit(){
+	RGBSlot.blink(Pixel::Red);
+
 	life--;
 	hearts->setLives(life);
 	if(life == 0){
@@ -266,6 +269,7 @@ float Game4::Game4::getSpeed(){
 }
 
 void Game4::Game4::scoreUp(){
+	RGBSlot.blink(Pixel::Green);
 	score++;
 	scoreSprite->clear(TFT_TRANSPARENT);
 	scoreSprite->setTextColor(TFT_BLACK);

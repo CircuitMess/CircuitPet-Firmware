@@ -4,6 +4,7 @@
 #include "../GameEngine/Rendering/SpriteRC.h"
 #include "../GameEngine/Rendering/StaticRC.h"
 #include <Util/GIF.h>
+#include "../RGBController.h"
 
 constexpr const char* Game5::barsIcons[4];
 constexpr const char* Game5::circlesIcons[3];
@@ -213,6 +214,9 @@ void Game5::noteHit(uint8_t track){
 
 
 	if(diff <= noteTolerance){
+
+		RGBSlot.blink(Pixel::Green);
+
 		score += notePoints + (int)(diff * perfectBonus / noteTolerance);
 
 		adjustTempo();
@@ -234,6 +238,8 @@ void Game5::noteHit(uint8_t track){
 		});
 
 	}else{
+		RGBSlot.blink(Pixel::Red);
+
 		life--;
 		hearts->setLives(life);
 
