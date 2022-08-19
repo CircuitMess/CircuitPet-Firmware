@@ -1,4 +1,5 @@
 #include "State.h"
+#include <Arduino.h>
 
 State::State(State* parent) : parent(parent){
 
@@ -32,4 +33,8 @@ void State::pop(){
 
 bool State::isStarted() const{
 	return started;
+}
+
+State* State::getParent() const{
+	return parent;
 }

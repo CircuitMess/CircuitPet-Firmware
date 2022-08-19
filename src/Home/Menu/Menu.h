@@ -8,6 +8,7 @@
 #include <functional>
 #include "GameImage.h"
 #include <math.h>
+#include "../../GameEngine/Game.h"
 
 class Sprite;
 class Launcher;
@@ -19,12 +20,14 @@ struct MenuItem {
 	GameImage image;
 	GameImage imageLocked;
 	uint8_t levelRequired;
-	std::function<void()> primary;
+	const char* splashPath;
+	const char* instructPath;
+	std::function<Game*()> primary;
 	std::function<void()> secondary;
 	bool loaded = false;
 
-	MenuItem(String text, uint8_t levelRequired, const GameImage& image = GameImage(), const GameImage& imageLocked = GameImage(), std::function<void()> primary = {},
-			 std::function<void()> secondary = {});
+	MenuItem(String text, uint8_t levelRequired, const GameImage& image = GameImage(), const GameImage& imageLocked = GameImage(),const char* splashPath = "",
+			 const char* instructPath = "", std::function<Game*()> primary = {}, std::function<void()> secondary = {});
 
 };
 

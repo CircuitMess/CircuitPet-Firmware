@@ -107,7 +107,7 @@ void Game1::buttonPressed(uint i){
 		pop();
 		return;
 	}
-	if(i == BTN_ENTER){
+	if(i == BTN_LEFT){
 		tries++;
 		addPoints(indicator->getDifference());
 	}

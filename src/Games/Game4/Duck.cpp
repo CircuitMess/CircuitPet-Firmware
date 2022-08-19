@@ -53,9 +53,9 @@ void Game4::Duck::update(float deltaTime){
 		if(isDead){
 			return;
 		}
-		if(Input::getInstance()->getButtonState(BTN_LEFT)){
+		if(Input::getInstance()->getButtonState(BTN_RIGHT)){
 			jump();
-		}else if(Input::getInstance()->getButtonState(BTN_RIGHT)){
+		}else if(Input::getInstance()->getButtonState(BTN_LEFT)){
 			duck();
 		}else{
 			animRc->setAnim(walking);
@@ -67,14 +67,14 @@ void Game4::Duck::update(float deltaTime){
 void Game4::Duck::buttonPressed(uint i){
 	if(isDone) return;
 
-	if(i == BTN_RIGHT){
+	if(i == BTN_LEFT){
 		if(isJumping){
 			multiplier = 10.0f;
 		}else{
 			duck();
 		}
 	}
-	if(i == BTN_LEFT){
+	if(i == BTN_RIGHT){
 		jump();
 	}
 }
@@ -82,7 +82,7 @@ void Game4::Duck::buttonPressed(uint i){
 void Game4::Duck::buttonReleased(uint i){
 	if(isDone) return;
 
-	if(i == BTN_RIGHT){
+	if(i == BTN_LEFT){
 		if(isJumping) return;
 		walk();
 	}

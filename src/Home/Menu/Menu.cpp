@@ -6,16 +6,17 @@
 #include <FS/RamFile.h>
 #include "../../Stats/StatsManager.h"
 
-MenuItem::MenuItem(String text, uint8_t levelRequired, const GameImage& image, const GameImage& imageLocked, std::function<void()> primary,
-				   std::function<void()> secondary) :
-					text(std::move(text)), levelRequired(levelRequired),image(image), imageLocked(imageLocked), primary(primary), secondary(secondary){}
+MenuItem::MenuItem(String text, uint8_t levelRequired, const GameImage& image, const GameImage& imageLocked, const char* splashPath, const char* instructPath,
+				   std::function<Game*()> primary, std::function<void()> secondary) :
+		text(std::move(text)), levelRequired(levelRequired), image(image), imageLocked(imageLocked), splashPath(splashPath),
+		instructPath(instructPath), primary(primary), secondary(secondary){}
 
 
 Menu::Menu(Sprite* canvas) : canvas(canvas), origin((canvas->width() - width) / 2){
 	borderFile = RamFile::open(SPIFFS.open(borderPath));
 }
 
-Menu::Menu(Sprite* canvas, std::vector<MenuItem>& items) : Menu(canvas) {
+Menu::Menu(Sprite* canvas, std::vector<MenuItem>& items) : Menu(canvas){
 	setItems(items);
 }
 
@@ -26,7 +27,7 @@ Menu::~Menu(){
 void Menu::setItems(std::vector<MenuItem>& items){
 	this->items = items;
 
-	for(auto& item : this->items){
+	for(auto& item: this->items){
 		item.image.setX(-width);
 		item.image.setY(originY);
 		item.imageLocked.setX(-width);
@@ -38,7 +39,7 @@ void Menu::setItems(std::vector<MenuItem>& items){
 
 void Menu::setOffsetY(int16_t y){
 	offsetY = y;
-	for(auto& item : items){
+	for(auto& item: items){
 		item.image.setY(originY + offsetY);
 		item.imageLocked.setY(originY + offsetY);
 	}
@@ -49,7 +50,7 @@ void Menu::splash(float f){
 
 	getCGame()->setX(f * (float) (origin + width) - width);
 	getLGame()->setX(f * (float) (origin + width) - 2 * width - gutter);
-	getRGame()->setX(f * (float) (origin + width + gutter - (origin + 2*width + 2*gutter)) + origin + 2*width + 2*gutter);
+	getRGame()->setX(f * (float) (origin + width + gutter - (origin + 2 * width + 2 * gutter)) + origin + 2 * width + 2 * gutter);
 }
 
 void Menu::load(float f){
@@ -59,7 +60,7 @@ void Menu::load(float f){
 
 	f = 1.0f - f;
 	getLGame()->setX(f * (float) (origin + width) - 2 * width - gutter);
-	getRGame()->setX(f * (float) (origin + width + gutter - (origin + 2*width + 2*gutter)) + origin + 2*width + 2*gutter);
+	getRGame()->setX(f * (float) (origin + width + gutter - (origin + 2 * width + 2 * gutter)) + origin + 2 * width + 2 * gutter);
 }
 
 void Menu::finish(float f){
@@ -79,7 +80,7 @@ void Menu::reset(){
 }
 
 void Menu::repos(){
-	for(auto& item : items){
+	for(auto& item: items){
 		item.image.setX(-width);
 		item.image.setY(originY);
 		item.imageLocked.setX(-width);
@@ -97,7 +98,7 @@ uint8_t Menu::prev(){
 	if(items.size() < 4) return 0;
 
 	if(scrolling() && direction == PREV){
-		multiplier = min(2, multiplier+1);
+		multiplier = min(2, multiplier + 1);
 		queued = true;
 		return (selectedGame < 2) ? items.size() - 2 + selectedGame : selectedGame - 2;
 	}
@@ -123,7 +124,7 @@ uint8_t Menu::next(){
 	if(items.size() < 4) return 0;
 
 	if(scrolling() && direction == NEXT){
-		multiplier = min(2, multiplier+1);
+		multiplier = min(2, multiplier + 1);
 		queued = true;
 		return (selectedGame + 2) % items.size();
 	}
@@ -160,7 +161,7 @@ void Menu::push(){
 		}
 	}
 
-	canvas->drawIcon(borderFile, origin-2, originY+offsetY-2, width+4, width+4);
+	canvas->drawIcon(borderFile, origin - 2, originY + offsetY - 2, width + 4, width + 4);
 }
 
 void Menu::loop(uint micros){
@@ -169,7 +170,7 @@ void Menu::loop(uint micros){
 		LoopManager::removeListener(this);
 		return;
 	}
-	switch (state){
+	switch(state){
 		case neutral:
 			for(auto& item : items){
 				item.image.setX(-200);
@@ -192,7 +193,7 @@ void Menu::loop(uint micros){
 				repos();
 			}else{
 				time += micros / 1000000.0f;
-				float x = peakAmplitude* sin(velocity*time) + 64;
+				float x = peakAmplitude * sin(velocity * time) + 64;
 				getCGame()->setX(x);
 			}
 			break;
@@ -272,7 +273,7 @@ GameImage* Menu::getLGame(){
 		}
 		return &items.back().imageLocked;
 	}else{
-		if(items[selectedGame-1].levelRequired <= StatMan.getLevel()){
+		if(items[selectedGame - 1].levelRequired <= StatMan.getLevel()){
 			return &items[selectedGame - 1].image;
 		}
 		return &items[selectedGame - 1].imageLocked;
@@ -312,7 +313,7 @@ GameImage* Menu::getRRGame(){
 void Menu::setCanvas(Sprite* canvas){
 	Menu::canvas = canvas;
 
-	for(auto& item : items){
+	for(auto& item: items){
 		if(!item.image) continue;
 		item.image.setCanvas(canvas);
 		if(!item.imageLocked) continue;
@@ -331,6 +332,6 @@ void Menu::shake(){
 }
 
 bool Menu::isShaking(){
-	if(state == shaking) return  true;
+	if(state == shaking) return true;
 	return false;
 }
