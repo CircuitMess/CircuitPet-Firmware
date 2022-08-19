@@ -251,14 +251,14 @@ rgb hsv2rgb(hsv in){
 
 
 void Game3::drawBar(){
-	float fillPercent = ((float) hungerMeter / (float) hungerMeterMax) * 118.0f;
+	float fillPercent = ((float) hungerMeter / (float) hungerMeterMax) * 122.0f;
 
 	float difference = abs(118 - fillPercent);
 	double hue = (118.0f - difference) / 100.0 * 60.0 / 255.0 * 360;
 	rgb rgbColor0 = hsv2rgb({ hue, 1.0, 1.0 });
 	uint16_t c0 = lgfx::color565(rgbColor0.r * 255.0, rgbColor0.g * 255.0, rgbColor0.b * 255.0);
 
-	hungerBar->fillRect(2, 118 - fillPercent, 4, fillPercent, c0);
+	hungerBar->fillRect(2, 122 - fillPercent, 4, fillPercent, c0);
 }
 
 Stats Game3::returnStats(){
