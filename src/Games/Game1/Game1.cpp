@@ -107,7 +107,7 @@ void Game1::buttonPressed(uint i){
 		pop();
 		return;
 	}
-	if(i == BTN_ENTER){
+	if(i == BTN_LEFT){
 		tries++;
 		addPoints(indicator->getDifference());
 	}
@@ -134,10 +134,14 @@ void Game1::addPoints(int difference){
 		done = true;
 	}else{
 		// TODO: game freezes after jump anim is done. uncomment after this is fixed
-		/*duckAnim->setAnim(getFile("/Games/Game1/OilyJump.gif"));
+		duckAnim->setAnim(getFile("/Games/Game1/OilyJump.gif"));
 		duckAnim->setLoopDoneCallback([this](uint32_t){
 			resetAnim();
-		});*/
+		});
 	}
 }
 
+Stats Game1::returnStats(){
+	if(!done) return Game::returnStats();
+	return Stats({ (uint8_t)(200 / tries), (uint8_t)(75 / tries), 10 });
+}

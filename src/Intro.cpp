@@ -77,7 +77,7 @@ static rgb hsv2rgb(hsv in){
 }
 
 Intro* Intro::instance = nullptr;
-Intro::Intro(Sprite* base) : gif(base, CompressedFile::open(SPIFFS.open("/intro.hs"), 10, 5)), base(base){
+Intro::Intro(Sprite* base) : gif(base, CompressedFile::open(SPIFFS.open("/intro.hs"), 8, 4)), base(base){
 	instance = this;
 }
 

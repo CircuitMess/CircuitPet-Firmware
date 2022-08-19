@@ -309,3 +309,7 @@ void Game5::updateTracks(float delta){
 		}
 	}
 }
+
+Stats Game5::returnStats(){
+	return Stats({(uint8_t)(score/90), (uint8_t)(score/90), (uint8_t)(score/150)});
+}

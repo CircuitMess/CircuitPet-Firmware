@@ -9,13 +9,15 @@
 #include "../Games/Game4/Game4.h"
 #include "../DeathState.h"
 #include <CircuitPet.h>
+#include <SPIFFS.h>
+#include <FS/RamFile.h>
+#include "../Settings/SettingsScreen.h"
 #include "../RGBIndicator.h"
 
-DuckScreen::DuckScreen(Sprite* base) : State(), base(base), characterSprite(base, StatMan.getLevel(), StatMan.get().oilLevel < rustThreshold, Anim::General),
+DuckScreen::DuckScreen(Sprite* base) : State(), base(base),
 									   menu(base), hider(&menu){
 
 
-	characterSprite.setPos(characterX, characterY);
 }
 
 void DuckScreen::onStart(){
@@ -25,52 +27,41 @@ void DuckScreen::onStart(){
 	bgSprite = std::make_unique<BgSprite>(base, StatMan.getLevel());
 	osSprite = std::make_unique<OSSprite>(base, StatMan.getLevel());
 	statsSprite = std::make_unique<StatsSprite>(base, StatMan.get().oilLevel,  StatMan.get().happiness, 100);
+	characterSprite = std::make_unique<CharacterSprite>(base, StatMan.getLevel(), StatMan.get().oilLevel < rustThreshold, Anim::General);
+
 	osSprite->setPos(osX, osY);
 	statsSprite->setPos(statsX, statsY);
+	characterSprite->setPos(characterX, characterY);
 
-	auto pushGame = [this](Game* game){
-		stop();
-
-		game->load();
-
-		printf("Loading.");
-		while(!game->isLoaded()){
-			delay(500);
-			printf(".");
-		}
-		printf("\n");
-		printf("Free heap: %d B\n", ESP.getFreeHeap());
-
-		printf("\nStarting...\n");
-
-		LoopManager::loop();
-		game->push(this);
-	};
+	characterSprite->setRusty(StatMan.get().oilLevel < rustThreshold);
+	characterSprite->setCharLevel(StatMan.getLevel());
+	characterSprite->setAnim(Anim::General);
 
 	menuItems = {
-			{ "Oily",1, GameImage(base, "/MenuIcons/Icon1.raw"), GameImage(base, "/MenuIcons/Icon1.raw"), [pushGame](){pushGame(new Game1());}},
-			{ "Flappy",2, GameImage(base, "/MenuIcons/Icon2.raw"),GameImage(base, "/MenuIcons/Locked2.raw"),  [pushGame](){pushGame(new Game2());} },
-			{ "Eaty", 3,GameImage(base, "/MenuIcons/Icon3.raw"),GameImage(base, "/MenuIcons/Locked3.raw"),  [pushGame](){ pushGame(new Game3()); } },
-			{ "Jump & Duck",4, GameImage(base, "/MenuIcons/Icon4.raw"), GameImage(base, "/MenuIcons/Locked4.raw"), [pushGame](){pushGame(new Game4::Game4());} },
-			{ "Disco danceoff", 5,GameImage(base, "/MenuIcons/Icon5.raw"), GameImage(base, "/MenuIcons/Locked5.raw"), [pushGame](){pushGame(new Game5());} },
-			{ "Space duck", 6,GameImage(base, "/MenuIcons/Icon6.raw"), GameImage(base, "/MenuIcons/Locked6.raw"), [pushGame](){pushGame(new Game6());}},
+			{ "Oily",1, GameImage(base, "/MenuIcons/Icon1.raw"), GameImage(base, "/MenuIcons/Icon1.raw"),"/GameScreens/Splash1.raw","/GameScreens/Inst1.raw", [](){return new Game1();}},
+			{ "Flappy",2, GameImage(base, "/MenuIcons/Icon2.raw"),GameImage(base, "/MenuIcons/Locked2.raw"), "/GameScreens/Splash2.raw","/GameScreens/Inst2.raw", [](){return new Game2();} },
+			{ "Eaty", 3,GameImage(base, "/MenuIcons/Icon3.raw"),GameImage(base, "/MenuIcons/Locked3.raw"), "/GameScreens/Splash3.raw","/GameScreens/Inst3.raw", []() {return new Game3();}},
+			{ "Jump & Duck",4, GameImage(base, "/MenuIcons/Icon4.raw"), GameImage(base, "/MenuIcons/Locked4.raw"),"/GameScreens/Splash4.raw","/GameScreens/Inst4.raw", [](){return new Game4::Game4();} },
+			{ "Disco danceoff", 5,GameImage(base, "/MenuIcons/Icon5.raw"), GameImage(base, "/MenuIcons/Locked5.raw"), "/GameScreens/Splash5.raw","/GameScreens/Inst5.raw", [](){return new Game5();} },
+			{ "Space duck", 6,GameImage(base, "/MenuIcons/Icon6.raw"), GameImage(base, "/MenuIcons/Locked6.raw"),"/GameScreens/Splash6.raw","/GameScreens/Inst6.raw", [](){return new Game6();}},
+			{ "Settings", 1,  GameImage(base, "/MenuIcons/settings.raw"), GameImage(base, "/MenuIcons/settings.raw"), "", "", [this](){
+				auto settings = new SettingsScreen::SettingsScreen(*CircuitPet.getDisplay());
+				settings->push(this);
+				return nullptr;
+			}}
 	};
 
-	menu.setOffsetY(menuY);
 	menu.setItems(menuItems);
 
 
-	LoopManager::loop();
+	LoopManager::resetTime();
 	LoopManager::addListener(this); //Note - possible crash if start() is called before constructor finishes
+	hider.hide();
 	hider.activity();
 
 	currentStats = targetStats = prevStats = StatMan.get();
 	StatMan.addListener(this);
 	StatMan.setPaused(false);
-
-	characterSprite.setRusty(StatMan.get().oilLevel < rustThreshold);
-	characterSprite.setCharLevel(StatMan.getLevel());
-	characterSprite.setAnim(Anim::General);
 
 	randInterval = rand() % 4000000 + 2000000;
 
@@ -86,9 +77,8 @@ void DuckScreen::onStop(){
 	bgSprite.reset();
 	osSprite.reset();
 	statsSprite.reset();
+	characterSprite.reset();
 	menuItems.clear();
-
-	hider.hide();
 
 	OilRGBIndicator.stop();
 }
@@ -102,6 +92,93 @@ void DuckScreen::loop(uint micros){
 
 		auto duck = new DeathState(temp);
 		duck->start();
+		return;
+	}
+
+	if(luState != None){
+		hider.activity();
+
+		if(luState == FadeIn || luState == FadeOut){
+			if(luMicros == 0){
+				luMicros = ::micros();
+				return;
+			}
+
+			bgSprite->push();
+			statsSprite->push();
+			osSprite->push();
+			characterSprite->push();
+			menu.push();
+
+			luFile.seek(0);
+
+			float t = (float) (::micros() - luMicros) / 500000.0f;
+			if(t >= 1.0f){
+				if(luState == FadeIn){
+					luState = Image;
+					base->drawIcon(luFile, 0, 0, 160, 128);
+					luMicros = ::micros();
+				}else if(luState == FadeOut){
+					luState = None;
+					luMicros = 0;
+					luFile.close();
+				}
+
+				return;
+			}
+
+			if(luState == FadeOut){
+				t = 1.0f - t;
+			}
+
+			luFile.seek(0);
+			for(int i = 0; i < 160 * 128; i++){
+				int y = i / 160;
+				int x = i - y * 160;
+
+				Color target;
+				luFile.read(reinterpret_cast<uint8_t*>(&target), 2);
+
+				Color original = base->readPixel(x, y);
+
+				uint8_t oR = (original >> 11) & 0b11111;
+				uint8_t oG = (original >> 5) & 0b111111;
+				uint8_t oB = original & 0b11111;
+
+				uint8_t tR = (target >> 11) & 0b11111;
+				uint8_t tG = (target >> 5) & 0b111111;
+				uint8_t tB = target & 0b11111;
+
+				uint8_t r = oR + (tR - oR) * t;
+				uint8_t g = oG + (tG - oG) * t;
+				uint8_t b = oB + (tB - oB) * t;
+
+				uint16_t computed =
+						(r & 0b11111) << 11 |
+						(g & 0b111111) << 5 |
+						(b & 0b11111);
+
+				base->writePixel(x, y, computed);
+			}
+		}else if(luState == Image){
+			if(!luApplied){
+				currentStats = targetStats = prevStats = StatMan.get();
+
+				characterSprite->setRusty(currentStats.oilLevel < rustThreshold);
+				characterSprite->setCharLevel(StatMan.getLevel());
+				bgSprite->setLevel(StatMan.getLevel());
+				osSprite->setLevel(StatMan.getLevel());
+				luApplied = true;
+
+				menu.repos();
+			}
+
+			if(::micros() - luMicros >= 3000000){
+				luState = FadeOut;
+				luMicros = ::micros();
+			}
+		}
+
 		return;
 	}
 
@@ -140,22 +217,22 @@ void DuckScreen::loop(uint micros){
 			anim = Anim::General;
 		}
 
-		characterSprite.setAnim(anim);
+		characterSprite->setAnim(anim);
 	}
 
 	bgSprite->push();
-
 	statsSprite->push();
-
 	osSprite->push();
 
-	characterSprite.loop(micros);
-	characterSprite.push();
+	characterSprite->loop(micros);
+	characterSprite->push();
 
 	menu.push();
 }
 
 void DuckScreen::buttonPressed(uint i){
+	if(luState != None) return;
+
 	hider.activity();
 
 	switch(i){
@@ -173,8 +250,12 @@ void DuckScreen::buttonPressed(uint i){
 				menu.shake();
 				return;
 			}
-			auto func = menuItems[selection].primary;
-			if(func) func();
+			if(selection == 6){ //settings
+				menuItems[selection].primary();
+			}else{
+				splashState = new SplashState(base, menuItems[selection]);
+				splashState->push(this);
+			}
 			return;
 		}
 	}
@@ -189,13 +270,16 @@ void DuckScreen::statsChanged(const Stats& stats, bool leveledUp){
 	}
 
 	if(leveledUp){
-		//TODO - levelup anims
-		bgSprite->setLevel(StatMan.getLevel());
-		characterSprite.setCharLevel(StatMan.getLevel());
-		osSprite->setLevel(StatMan.getLevel());
+		File file = SPIFFS.open(String("/LevelUp/") + StatMan.getLevel() + ".raw");
+		luFile = RamFile::open(file);
+
+		luState = FadeIn;
+		luMicros = 0;
+		luApplied = false;
+		return;
 	}
 
-	characterSprite.setRusty(stats.oilLevel < rustThreshold);
+	characterSprite->setRusty(stats.oilLevel < rustThreshold);
 
 	targetStats = stats;
 	prevStats = currentStats;

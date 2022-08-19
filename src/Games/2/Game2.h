@@ -21,6 +21,7 @@ protected:
 	void onStart() override;
 	void onStop() override;
 	void onRender(Sprite* canvas) override;
+	Stats returnStats() override;
 
 private:
 	static constexpr float gravity = 140.0f;

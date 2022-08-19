@@ -8,6 +8,7 @@
 #include <functional>
 #include "GameImage.h"
 #include <math.h>
+#include "../../GameEngine/Game.h"
 
 class Sprite;
 class Launcher;
@@ -19,12 +20,14 @@ struct MenuItem {
 	GameImage image;
 	GameImage imageLocked;
 	uint8_t levelRequired;
-	std::function<void()> primary;
+	const char* splashPath;
+	const char* instructPath;
+	std::function<Game*()> primary;
 	std::function<void()> secondary;
 	bool loaded = false;
 
-	MenuItem(String text, uint8_t levelRequired, const GameImage& image = GameImage(), const GameImage& imageLocked = GameImage(), std::function<void()> primary = {},
-			 std::function<void()> secondary = {});
+	MenuItem(String text, uint8_t levelRequired, const GameImage& image = GameImage(), const GameImage& imageLocked = GameImage(),const char* splashPath = "",
+			 const char* instructPath = "", std::function<Game*()> primary = {}, std::function<void()> secondary = {});
 
 };
 
@@ -52,7 +55,7 @@ public:
 	void repos();
 	uint getSelectedIndex() const;
 
-	void setOffsetY(uint8_t y);
+	void setOffsetY(int16_t y);
 
 	void shake();
 	bool isShaking();
@@ -61,8 +64,8 @@ private:
 	const uint8_t gutter = 25;
 	const uint8_t width = 32;
 	const uint8_t origin;
-	const uint8_t originY = 75;
-	uint8_t offsetY = 0;
+	const uint8_t originY = 84;
+	int16_t offsetY = 0;
 	const float speed = 250;
 	fs::File borderFile;
 	const char* borderPath = "/MenuIcons/Border.raw";

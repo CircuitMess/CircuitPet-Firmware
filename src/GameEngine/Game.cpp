@@ -3,6 +3,7 @@
 #include <utility>
 #include <Loop/LoopManager.h>
 #include <CircuitPet.h>
+#include "../Stats/StatsManager.h"
 
 Game::Game(const char* root, std::vector<ResDescriptor> resources) : resMan(root), resources(std::move(resources)),
 loadTask("loadTask", [](Task* t){
@@ -75,6 +76,7 @@ void Game::loop(uint micros){
 	return;
 
 	poppedLabel:
+	StatMan.update(returnStats());
 	State::pop();
 }
 
@@ -90,4 +92,8 @@ void Game::onRender(Sprite* canvas){ }
 
 void Game::pop(){
 	popped = true;
+}
+
+Stats Game::returnStats(){
+	return Stats({ 0, 0, 0 });
 }
