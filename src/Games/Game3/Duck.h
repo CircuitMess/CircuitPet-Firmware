@@ -17,6 +17,7 @@ public:
 	void loop(float deltaTime);
 	void startEating(int value);
 	void filled(Game3* game);
+	void killed(Game3* game);
 
 	bool isEatingBad() const;
 

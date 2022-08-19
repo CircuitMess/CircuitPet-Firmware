@@ -70,8 +70,6 @@ void Game3::onLoad(){
 
 void Game3::onLoop(float deltaTime){
 	if(dead){
-		delay(500);
-		pop();
 		return;
 	}
 
@@ -166,6 +164,7 @@ void Game3::collisionHandler(Item item){
 		drawHearts();
 	}
 	if(lives <= 0){
+		duck->killed(this);
 		dead = true;
 	}
 }

@@ -79,3 +79,12 @@ void Duck::filled(Game3* game){
 bool Duck::isEatingBad() const{
 	return eatingBad;
 }
+
+void Duck::killed(Game3* game){
+	anim->setAnim(eatBad);
+	anim->setLoopMode(GIF::Single);
+	anim->setLoopDoneCallback([game](uint32_t){
+		delay(500);
+		game->pop();
+	});
+}
