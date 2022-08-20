@@ -71,7 +71,7 @@ void Game::loop(uint micros){
 	onRender(CircuitPet.getDisplay()->getBaseSprite());
 	if(popped) goto poppedLabel;
 
-	collision.drawDebug(CircuitPet.getDisplay()->getBaseSprite());
+	// collision.drawDebug(CircuitPet.getDisplay()->getBaseSprite());
 
 	return;
 
