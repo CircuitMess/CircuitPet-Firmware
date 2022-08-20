@@ -67,11 +67,6 @@ void setup(){
 	StatMan.begin();
 	StatMan.setPaused(true); //stats timekeeping will be unpaused when home menu starts
 
-	auto intro = new Intro(baseSprite);
-	LoopManager::loop();
-	intro->start();
-
-	CircuitPet.fadeIn();
 	if(!Settings.get().hwTested){
 		auto test = new UserHWTest(baseSprite, [](){
 			Settings.get().hwTested = true;
@@ -79,7 +74,7 @@ void setup(){
 			CircuitPet.fadeOut();
 
 			auto intro = new Intro(baseSprite);
-			LoopManager::loop();
+			LoopManager::resetTime();
 			intro->start();
 
 			CircuitPet.fadeIn();
