@@ -1,4 +1,5 @@
 #include "SettingsScreen.h"
+#include "../UserHWTest.h"
 //#include "../UserHWTest/UserHWTest.h"
 #include <Input/Input.h>
 #include <FS/CompressedFile.h>
@@ -220,9 +221,8 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 //				Playback.updateGain();
 //				Playback.tone(500, 50);
 			}else if(selectedSetting == 4){
-//				Context* hwTest = new UserHWTest(*CircuitPet.getDisplay());
-//				hwTest->push(this);
-//				draw();
+				auto* hwTest = new UserHWTest(CircuitPet.getDisplay()->getBaseSprite(), [this](){ start(); });
+				hwTest->push(this);
 				break;
 			}else if(selectedSetting == 5){
 				nvs_flash_erase();
