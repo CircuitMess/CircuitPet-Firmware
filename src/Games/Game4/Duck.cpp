@@ -15,6 +15,7 @@ Game4::Duck::~Duck(){
 }
 
 void Game4::Duck::update(float deltaTime){
+	updateInvincibility(deltaTime);
 	if(isDone){
 		float x = gameObjectRc->getPos().x;
 		x += 30.0f * deltaTime;
@@ -35,7 +36,7 @@ void Game4::Duck::update(float deltaTime){
 	y += velocity * deltaTime + 0.5f * gravity * pow(deltaTime, 2);
 	velocity += gravity * deltaTime * multiplier;
 
-	if(time < peakTime){
+	if(time < peakTime && !isDead){
 		time += deltaTime;
 	}else{
 		multiplier = 5;
@@ -49,10 +50,12 @@ void Game4::Duck::update(float deltaTime){
 		multiplier = 1.0f;
 		isJumping = false;
 		time = 0.0f;
-
-		if(Input::getInstance()->getButtonState(BTN_LEFT)){
+		if(isDead){
+			return;
+		}
+		if(Input::getInstance()->getButtonState(BTN_RIGHT)){
 			jump();
-		}else if(Input::getInstance()->getButtonState(BTN_RIGHT)){
+		}else if(Input::getInstance()->getButtonState(BTN_LEFT)){
 			duck();
 		}else{
 			animRc->setAnim(walking);
@@ -64,14 +67,14 @@ void Game4::Duck::update(float deltaTime){
 void Game4::Duck::buttonPressed(uint i){
 	if(isDone) return;
 
-	if(i == BTN_DOWN){
+	if(i == BTN_LEFT){
 		if(isJumping){
 			multiplier = 10.0f;
 		}else{
 			duck();
 		}
 	}
-	if(i == BTN_UP){
+	if(i == BTN_RIGHT){
 		jump();
 	}
 }
@@ -79,7 +82,7 @@ void Game4::Duck::buttonPressed(uint i){
 void Game4::Duck::buttonReleased(uint i){
 	if(isDone) return;
 
-	if(i == BTN_DOWN){
+	if(i == BTN_LEFT){
 		if(isJumping) return;
 		walk();
 	}
@@ -121,9 +124,10 @@ void Game4::Duck::duck(){
 }
 
 void Game4::Duck::death(){
-	isJumping = false;
+	isDead = true;
 	Input::getInstance()->removeListener(this);
 	animRc->setAnim(down);
+	animRc->setLoopMode(GIF::Single);
 	animRc->setLoopDoneCallback([this](uint32_t){
 		animRc->stop();
 		delay(1400);
@@ -150,5 +154,23 @@ void Game4::Duck::win(){
 	isDone = true;
 	if(isDucked){
 		walk();
+	}
+}
+
+void Game4::Duck::updateInvincibility(float delta){
+	if(!invincible) return;
+
+	invincibilityTime += delta;
+
+	if((int)(invincibilityTime / invincibilityBlinkDuration) % 2 == 0){
+		gameObjectRc->getRenderComponent()->setVisible(false);
+	}else{
+		gameObjectRc->getRenderComponent()->setVisible(true);
+	}
+
+	if(invincibilityTime >= invincibilityDuration){
+		invincibilityTime = 0;
+		invincible = false;
+		gameObjectRc->getRenderComponent()->setVisible(true);
 	}
 }

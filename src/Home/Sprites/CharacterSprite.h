@@ -28,7 +28,7 @@ public:
 
 private:
 	Sprite* parentSprite;
-	GIFAnimatedSprite sprite;
+	std::unique_ptr<GIFAnimatedSprite> gif;
 
 	uint8_t charLevel; //0-3
 	bool rusty; //0-1

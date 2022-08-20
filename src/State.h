@@ -18,6 +18,7 @@ public:
 protected:
 	virtual void onStart() = 0;
 	virtual void onStop() = 0;
+	State* getParent() const;
 
 private:
 	State* parent = nullptr;

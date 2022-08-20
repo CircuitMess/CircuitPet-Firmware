@@ -8,17 +8,20 @@
 #include <Pins.hpp>
 #include <Input/Input.h>
 #include <glm/gtx/vector_angle.hpp>
+#include <CircuitPet.h>
 
 constexpr Game2::ObstacleDesc Game2::TopObstacles[];
 constexpr Game2::ObstacleDesc Game2::BotObstacles[];
 
 Game2::Game2() : Game("/Games/2", {
-		{ "/duck.gif",          {}, true },
-		{ "/bg.raw",            {}, true },
+		{ "/duck.gif", {}, true },
+		{ "/bg.raw", {}, true },
 		RES_HEART,
 		RES_GOBLET,
 		{ TopObstacles[0].path, {}, true },
 		{ TopObstacles[1].path, {}, true },
+		{ TopObstacles[2].path, {}, true },
+		{ TopObstacles[3].path, {}, true },
 		{ BotObstacles[0].path, {}, true },
 		{ BotObstacles[1].path, {}, true },
 		{ BotObstacles[2].path, {}, true },
@@ -90,8 +93,9 @@ void Game2::onLoop(float deltaTime){
 		}
 	}
 
-	for(auto& obstacle : obstacles){
+	for(auto& obstacle: obstacles){
 		if(obstacle.top->getPos().x + 15 <= duckPosX && !obstacle.passed && state == Play){
+			RGB.blink(Pixel::Green);
 			score++;
 			obstacle.passed = true;
 			scoreDisplay->setScore(score);
@@ -161,7 +165,7 @@ void Game2::updateObstacles(float delta){
 		obj->setPos(pos);
 	};
 
-	for(auto& obstacle : obstacles){
+	for(auto& obstacle: obstacles){
 		move(obstacle.top);
 		move(obstacle.bot);
 	}
@@ -171,7 +175,7 @@ void Game2::buttonPressed(uint i){
 	if(i == BTN_BACK){
 		pop();
 		return;
-	}else if(i != BTN_A) return;
+	}else if(i != BTN_LEFT) return;
 
 	if(state == Wait || state == FlyIn){
 		anim->setLoopMode(GIF::Single);
@@ -205,8 +209,8 @@ void Game2::createObstaclePair(){
 	auto botDesc = BotObstacles[boti];
 
 	auto topObj = std::make_shared<GameObject>(
-		std::make_unique<StaticRC>(getFile(topDesc.path), topDesc.dim),
-		std::make_unique<PolygonCC>(topDesc.collision)
+			std::make_unique<StaticRC>(getFile(topDesc.path), topDesc.dim),
+			std::make_unique<PolygonCC>(topDesc.collision)
 	);
 
 	auto botObj = std::make_shared<GameObject>(
@@ -231,6 +235,7 @@ void Game2::createObstaclePair(){
 
 void Game2::die(){
 	if(state != Play) return;
+	RGB.blinkTwice(Pixel::Red);
 
 	life--;
 	hearts->setLives(life);
@@ -239,8 +244,12 @@ void Game2::die(){
 
 	collision.wallBot(*duck, {});
 
-	for(const auto& obstacle : obstacles){
+	for(const auto& obstacle: obstacles){
 		collision.removePair(*duck, *obstacle.top);
 		collision.removePair(*duck, *obstacle.bot);
 	}
+}
+
+Stats Game2::returnStats(){
+	return Stats({ (uint8_t )(score > 25 ? 50 : score * 2),(uint8_t ) (score > 50 ? 100 : score * 2), (uint8_t )(score > 15 ? 15 : score) });
 }

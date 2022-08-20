@@ -98,3 +98,14 @@ void Bar::draw(){
 	sprite->drawRoundRect(0, 0, width, height, 0, TFT_BLACK);
 	sprite->fillRect(0, yGoal, width, 3, TFT_DARKGREEN);
 }
+
+Pixel Bar::getColor(int diff){
+	double hue = (100.0f - diff) / 100.0 * 60.0 / 255.0 * 360;
+	rgb color = hsv2rgb({ hue, 1.0, 1.0 });
+
+	return {
+			(uint8_t) min(255.0, color.r * 255.0),
+			(uint8_t) min(255.0, color.g * 255.0),
+			(uint8_t) min(255.0, color.b * 255.0)
+	};
+}

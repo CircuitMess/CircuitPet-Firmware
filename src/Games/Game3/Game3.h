@@ -17,6 +17,7 @@ protected:
 	void onStart() override;
 	void onStop() override;
 	void onRender(Sprite* canvas) override;
+	Stats returnStats() override;
 
 private:
 	void buttonPressed(uint i) override;
@@ -39,13 +40,16 @@ private:
 	void spawnItem(Template temp);
 	void collisionHandler(Item item);
 
-	const int hugerMeterMax = 200;
-	int hugerMeter = 0;
+	const int hungerMeterMax = 200;
+	int hungerMeter = 0;
 	int lives = 3;
 	const int speedMin = 60;
 	const int speedMax = 80;
 	const float spawnRate = 0.5f;
 	float timeToSpawn = 0.0f;
+
+	bool dead = false;
+
 	std::unique_ptr<Duck> duck;
 
 	std::shared_ptr<Sprite> hearts;

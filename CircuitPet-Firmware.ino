@@ -6,9 +6,16 @@
 #include "src/Intro.h"
 #include "src/Stats/StatsManager.h"
 #include "src/Clock/ClockMaster.h"
+#include "src/JigHWTest/JigHWTest.h"
 
 extern "C" {
 #include <bootloader_random.h>
+}
+
+
+bool checkJig(){
+ //TODO - add jig detection
+ return false;
 }
 
 Display* display;
@@ -40,6 +47,15 @@ void setup(){
 	display = CircuitPet.getDisplay();
 	baseSprite = display->getBaseSprite();
 
+	if(checkJig()){
+		CircuitPet.fadeIn(0);
+		printf("Jig\n");
+		auto test = new JigHWTest(display);
+		test->start();
+		for(;;);
+	}
+
+
 	baseSprite->clear(TFT_BLACK);
 	display->commit();
 
@@ -65,10 +81,9 @@ void loop(){
 	baseSprite->setTextSize(0);
 	baseSprite->setTextColor(TFT_WHITE);
 	baseSprite->setCursor(1, 119);
-	baseSprite->printf("%.1fms - %.1ffps\n", frameTime * 1000.0f, 1.0f / frameTime);
+	// baseSprite->printf("%.1fms - %.1ffps\n", frameTime * 1000.0f, 1.0f / frameTime);
 	t = t2;
 
 	display->commit();
 }
-
 

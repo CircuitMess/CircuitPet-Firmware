@@ -4,6 +4,7 @@
 #include "../../GameEngine/Collision/RectCC.h"
 #include "../../GameEngine/Collision/PolygonCC.h"
 #include <Input/Input.h>
+#include <CircuitPet.h>
 
 Game4::Game4::Game4() : Game("/Games/Game4", {
 		{ "/Background.raw",     {}, true },
@@ -25,7 +26,8 @@ Game4::Game4::Game4() : Game("/Games/Game4", {
 		{ "/DuckJump.gif",       {}, false },
 		{ "/DuckDown.gif",       {}, false },
 		{ "/DuckWin.gif",        {}, false },
-		{ "/DuckWalk.gif",       {}, false }
+		{ "/DuckWalk.gif",       {}, true },
+		RES_HEART
 }){}
 
 
@@ -82,7 +84,7 @@ void Game4::Game4::onLoad(){
 			nullptr
 	);
 	addObject(duckGoRc);
-	duckGoRc->getRenderComponent()->setLayer(0);
+	duckGoRc->getRenderComponent()->setLayer(10);
 	duckGoRc->setPos({ 5, 50 });
 
 	duck = std::make_unique<Duck>(duckGoRc, duckGoCc, this);
@@ -102,6 +104,11 @@ void Game4::Game4::onLoad(){
 	scoreSprite->setCursor(0, 0);
 	scoreSprite->printf("Score:%d/%d", score,scoreMax);
 	addObject(scoreObj);
+	///Hearts
+	hearts = std::make_unique<Hearts>(getFile(FILE_HEART));
+	hearts->getGO()->setPos({ 2, 2 });
+	addObject(hearts->getGO());
+
 }
 
 void Game4::Game4::onLoop(float deltaTime){
@@ -131,7 +138,6 @@ void Game4::Game4::onLoop(float deltaTime){
 				float y = obj->getPos().y;
 				obj->setPos({ x, y });
 			}
-
 			duck->win();
 			speed = 0;
 		}
@@ -166,14 +172,14 @@ void Game4::Game4::buttonPressed(uint i){
 
 
 void Game4::Game4::setupObstacles(){
-	obstacleOver.push_back({ getFile("/ObstacleOver1.raw"), { 40, 31 }, {{ 0, 30 }, { 25, 0 }, { 39, 0 }}});
-	obstacleOver.push_back({ getFile("/ObstacleOver2.raw"), { 24, 19 }, {{ 3, 18 }, { 20, 0 }, { 21, 18 }}});
-	obstacleOver.push_back({ getFile("/ObstacleOver3.raw"), { 22, 19 }, {}});
-	obstacleOver.push_back({ getFile("/ObstacleOver4.raw"), { 33, 19 }, {{2, 18}, {2, 6}, {10, 1}, {21, 1}, {30, 18}}});
+	obstacleOver.push_back({ getFile("/ObstacleOver1.raw"), { 40, 31 }, {{ 0, 30 }, { 25, 0 }, { 39, 0 }}});        ///0
+	obstacleOver.push_back({ getFile("/ObstacleOver2.raw"), { 24, 19 }, {{ 3, 18 }, { 20, 0 }, { 21, 18 }}});		///1
+	obstacleOver.push_back({ getFile("/ObstacleOver3.raw"), { 22, 19 }, {}});										///2
+	obstacleOver.push_back({ getFile("/ObstacleOver4.raw"), { 33, 19 }, {{2, 18}, {2, 6}, {10, 1}, {21, 1}, {30, 18}}});///3
 
-	obstacleUnder.push_back({ getFile("/ObstacleUnder1.raw"), { 36, 27 }, {{ 1, 17 }, { 11, 8 }, { 22, 8 }, { 35, 17 }, { 22, 26 }, { 11, 26 }}});
-	obstacleUnder.push_back({ getFile("/ObstacleUnder2.raw"), { 40, 30 }, {{ 0, 20 }, { 9, 11 }, { 27, 20 }, { 9, 29 }}});
-	obstacleUnder.push_back({ getFile("/ObstacleUnder3.raw"), { 19, 19 }, {}});
+	obstacleUnder.push_back({ getFile("/ObstacleUnder1.raw"), { 36, 27 }, {{ 1, 17 }, { 11, 8 }, { 22, 8 }, { 35, 17 }, { 22, 26 }, { 11, 26 }}});///4
+	obstacleUnder.push_back({ getFile("/ObstacleUnder2.raw"), { 40, 30 }, {{ 0, 20 }, { 9, 11 }, { 27, 20 }, { 9, 29 }}});///5
+	obstacleUnder.push_back({ getFile("/ObstacleUnder3.raw"), { 19, 19 }, {}});										///6
 }
 
 void Game4::Game4::spawn(){
@@ -195,19 +201,26 @@ void Game4::Game4::spawn(){
 		return;
 	}
 
+	if(obstacleIndex.empty()){
+		for(int i = 0; i < 7; i++){
+			obstacleIndex.insert(i);
+		}
+	}
 
-	int coinFlip = rand() % 2;
+	auto item = obstacleIndex.begin();
+	std::advance( item, random(obstacleIndex.size()) );
+
+	uint8_t in = *item;
 	Obstacle obstacle;
 	int posY;
-	if(coinFlip == 0){
-		int under = rand() % obstacleUnder.size();
-		obstacle = obstacleUnder[under];
+	if(in >= obstacleOver.size()){
+		obstacle = obstacleUnder[in-obstacleOver.size()];
 		posY = topY - 30 - obstacle.dim.y;
 	}else{
-		int over = rand() % obstacleOver.size();
-		obstacle = obstacleOver[over];
+		obstacle = obstacleOver[in];
 		posY = topY - obstacle.dim.y;
 	}
+	obstacleIndex.erase(item);
 
 	std::shared_ptr<GameObject> gObj;
 	if(obstacle.points.size() >= 3){
@@ -226,9 +239,8 @@ void Game4::Game4::spawn(){
 	gObj->getRenderComponent()->setLayer(1);
 
 	collision.addPair(*gObj, *duck->getGameObjectCc(), [this](){
-		speed = 0.0f;
-		spawnRate = 10000.0f;
-		duck->death();
+		if(duck->invincible) return;
+		duckHit();
 	});
 	movingObjects.push_back(gObj);
 	collision.addPair(*leftWallObject, *gObj, [this](){
@@ -238,14 +250,33 @@ void Game4::Game4::spawn(){
 	});
 }
 
+void Game4::Game4::duckHit(){
+	RGB.blinkTwice(Pixel::Red);
+
+	life--;
+	hearts->setLives(life);
+	if(life == 0){
+		speed = 0.0f;
+		spawnRate = 10000.0f;
+		duck->death();
+		return;
+	}
+	duck->invincible = true;
+}
+
 float Game4::Game4::getSpeed(){
 	return speed;
 }
 
 void Game4::Game4::scoreUp(){
+	RGB.blink(Pixel::Green);
 	score++;
 	scoreSprite->clear(TFT_TRANSPARENT);
 	scoreSprite->setTextColor(TFT_BLACK);
 	scoreSprite->setCursor(0, 0);
 	scoreSprite->printf("Score:%d/%d", score,scoreMax);
+}
+
+Stats Game4::Game4::returnStats(){
+	return Stats({(uint8_t )(score/2), (uint8_t )score, (uint8_t )(min(25,score))});
 }
