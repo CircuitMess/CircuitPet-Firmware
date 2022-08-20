@@ -12,6 +12,7 @@
 #include <SPIFFS.h>
 #include <FS/RamFile.h>
 #include "../Settings/SettingsScreen.h"
+#include "../RGBIndicator.h"
 
 DuckScreen::DuckScreen(Sprite* base) : State(), base(base),
 									   menu(base), hider(&menu){
@@ -64,6 +65,7 @@ void DuckScreen::onStart(){
 
 	randInterval = rand() % 4000000 + 2000000;
 
+	OilRGBIndicator.start();
 }
 
 void DuckScreen::onStop(){
@@ -77,6 +79,8 @@ void DuckScreen::onStop(){
 	statsSprite.reset();
 	characterSprite.reset();
 	menuItems.clear();
+
+	OilRGBIndicator.stop();
 }
 
 void DuckScreen::loop(uint micros){

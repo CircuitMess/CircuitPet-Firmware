@@ -9,7 +9,7 @@ void SettingsScreen::SliderElement::toggle(){
 }
 
 void SettingsScreen::SliderElement::moveSliderValue(int8_t value){
-	sliderValue = constrain(sliderValue + 10 * value, 0, 255);
+	sliderValue = constrain(sliderValue + 20 * value, 0, 255);
 }
 
 void SettingsScreen::SliderElement::setSliderValue(uint8_t sliderValue){

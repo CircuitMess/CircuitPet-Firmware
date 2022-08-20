@@ -10,6 +10,8 @@ public:
 	Bar(std::shared_ptr<Sprite> sprite);
 	void resetGoal();
 	int getY();
+	Pixel getColor(int diff);
+
 private:
 	void draw();
 	uint8_t yGoal;
