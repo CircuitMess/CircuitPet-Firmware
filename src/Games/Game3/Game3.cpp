@@ -157,14 +157,14 @@ void Game3::collisionHandler(Item item){
 	removeObject(item.go);
 	duck->startEating(item.value);
 	if(item.value > 0){
-		RGBSlot.blink(Pixel::Green);
+		RGB.blink(Pixel::Green);
 		hungerMeter += item.value;
 		drawBar();
 		if(hungerMeter >= hungerMeterMax){
 			duck->filled(this);
 		}
 	}else{
-		RGBSlot.blink(Pixel::Red);
+		RGB.blink(Pixel::Red);
 		lives--;
 		drawHearts();
 	}

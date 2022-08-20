@@ -95,7 +95,7 @@ void Game2::onLoop(float deltaTime){
 
 	for(auto& obstacle: obstacles){
 		if(obstacle.top->getPos().x + 15 <= duckPosX && !obstacle.passed && state == Play){
-			RGBSlot.blink(Pixel::Green);
+			RGB.blink(Pixel::Green);
 			score++;
 			obstacle.passed = true;
 			scoreDisplay->setScore(score);
@@ -235,7 +235,7 @@ void Game2::createObstaclePair(){
 
 void Game2::die(){
 	if(state != Play) return;
-	RGBSlot.blink(Pixel::Red);
+	RGB.blinkTwice(Pixel::Red);
 
 	life--;
 	hearts->setLives(life);

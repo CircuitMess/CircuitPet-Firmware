@@ -251,7 +251,7 @@ void Game4::Game4::spawn(){
 }
 
 void Game4::Game4::duckHit(){
-	RGBSlot.blink(Pixel::Red);
+	RGB.blinkTwice(Pixel::Red);
 
 	life--;
 	hearts->setLives(life);
@@ -269,7 +269,7 @@ float Game4::Game4::getSpeed(){
 }
 
 void Game4::Game4::scoreUp(){
-	RGBSlot.blink(Pixel::Green);
+	RGB.blink(Pixel::Green);
 	score++;
 	scoreSprite->clear(TFT_TRANSPARENT);
 	scoreSprite->setTextColor(TFT_BLACK);

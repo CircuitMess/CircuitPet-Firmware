@@ -110,12 +110,7 @@ void Game1::buttonPressed(uint i){
 	}
 	if(i == BTN_LEFT){
 		tries++;
-		Serial.println(indicator->getDifference());
-		if(indicator->getDifference() > 50){
-			RGBSlot.blink(Pixel::Red);
-		}else{
-			RGBSlot.blink(Pixel::Green);
-		}
+		RGB.blinkTwice(bar->getColor(indicator->getDifference()));
 		addPoints(indicator->getDifference());
 	}
 }

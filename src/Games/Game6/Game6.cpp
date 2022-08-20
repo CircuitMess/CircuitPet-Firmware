@@ -289,7 +289,7 @@ void Game6::updateAsteroids(float deltaTime){
 }
 
 void Game6::asteroidHit(const Game6::Asteroid& asteroid){
-	RGBSlot.blink(Pixel::Green);
+	RGB.blink(Pixel::Green);
 
 	switch(asteroid.size){
 		case AsteroidSize::Large:
@@ -331,7 +331,7 @@ void Game6::updateInvincibility(float delta){
 }
 
 void Game6::playerHit(){
-	RGBSlot.blink(Pixel::Red);
+	RGB.blinkTwice(Pixel::Red);
 
 	life--;
 	hearts->setLives(life);

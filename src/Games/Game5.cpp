@@ -214,7 +214,7 @@ void Game5::noteHit(uint8_t track){
 
 	if(diff <= noteTolerance){
 
-		RGBSlot.blink(Pixel::Green);
+		RGB.blink(Pixel::Green);
 
 		score += notePoints + (int)(diff * perfectBonus / noteTolerance);
 
@@ -237,7 +237,7 @@ void Game5::noteHit(uint8_t track){
 		});
 
 	}else{
-		RGBSlot.blink(Pixel::Red);
+		RGB.blinkTwice(Pixel::Red);
 
 		life--;
 		hearts->setLives(life);
