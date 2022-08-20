@@ -1,6 +1,7 @@
 #include <Pins.hpp>
 #include "Game1.h"
 #include <Input/Input.h>
+#include <CircuitPet.h>
 #include "../../GameEngine/Rendering/StaticRC.h"
 #include "../../GameEngine/Rendering/SpriteRC.h"
 #include "../../Stats/StatsManager.h"
@@ -107,8 +108,9 @@ void Game1::buttonPressed(uint i){
 		pop();
 		return;
 	}
-	if(i == BTN_ENTER){
+	if(i == BTN_LEFT){
 		tries++;
+		RGB.blinkTwice(bar->getColor(indicator->getDifference()));
 		addPoints(indicator->getDifference());
 	}
 }

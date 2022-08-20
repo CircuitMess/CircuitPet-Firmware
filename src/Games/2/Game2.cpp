@@ -8,6 +8,7 @@
 #include <Pins.hpp>
 #include <Input/Input.h>
 #include <glm/gtx/vector_angle.hpp>
+#include <CircuitPet.h>
 
 constexpr Game2::ObstacleDesc Game2::TopObstacles[];
 constexpr Game2::ObstacleDesc Game2::BotObstacles[];
@@ -19,6 +20,8 @@ Game2::Game2() : Game("/Games/2", {
 		RES_GOBLET,
 		{ TopObstacles[0].path, {}, true },
 		{ TopObstacles[1].path, {}, true },
+		{ TopObstacles[2].path, {}, true },
+		{ TopObstacles[3].path, {}, true },
 		{ BotObstacles[0].path, {}, true },
 		{ BotObstacles[1].path, {}, true },
 		{ BotObstacles[2].path, {}, true },
@@ -92,6 +95,7 @@ void Game2::onLoop(float deltaTime){
 
 	for(auto& obstacle: obstacles){
 		if(obstacle.top->getPos().x + 15 <= duckPosX && !obstacle.passed && state == Play){
+			RGB.blink(Pixel::Green);
 			score++;
 			obstacle.passed = true;
 			scoreDisplay->setScore(score);
@@ -171,7 +175,7 @@ void Game2::buttonPressed(uint i){
 	if(i == BTN_BACK){
 		pop();
 		return;
-	}else if(i != BTN_A) return;
+	}else if(i != BTN_LEFT) return;
 
 	if(state == Wait || state == FlyIn){
 		anim->setLoopMode(GIF::Single);
@@ -231,6 +235,7 @@ void Game2::createObstaclePair(){
 
 void Game2::die(){
 	if(state != Play) return;
+	RGB.blinkTwice(Pixel::Red);
 
 	life--;
 	hearts->setLives(life);

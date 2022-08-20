@@ -1,12 +1,9 @@
-#include "Intro.h"
-#include <SPIFFS.h>
-#include "HatchingState.h"
-#include "Home/DuckScreen.h"
+#include "RGBIndicator.h"
 #include "Stats/StatsManager.h"
 #include <Loop/LoopManager.h>
-#include "DeathState.h"
-#include <FS/CompressedFile.h>
 #include <CircuitPet.h>
+
+RGBIndicator OilRGBIndicator;
 
 typedef struct {
 	double r;       // a fraction between 0 and 1
@@ -19,6 +16,7 @@ typedef struct {
 	double s;       // a fraction between 0 and 1
 	double v;       // a fraction between 0 and 1
 } hsv;
+
 static rgb hsv2rgb(hsv in){
 	double hh, p, q, t, ff;
 	long i;
@@ -76,63 +74,55 @@ static rgb hsv2rgb(hsv in){
 	return out;
 }
 
-Intro* Intro::instance = nullptr;
-Intro::Intro(Sprite* base) : gif(base, CompressedFile::open(SPIFFS.open("/intro.hs"), 8, 4)), base(base){
-	instance = this;
-}
 
-void Intro::onStart(){
-	gif.start();
-	gif.setLoop(false);
-	gif.setLoopDoneCallback([](){
-		instance->exit = true;
-	});
-
+void RGBIndicator::start(){
+	StatMan.addListener(this);
 	LoopManager::addListener(this);
+
+	currentOil = prevOil = targetOil = StatMan.get().oilLevel;
 }
 
-
-
-void Intro::onStop(){
-	gif.stop();
+void RGBIndicator::stop(){
+	StatMan.removeListener(this);
 	LoopManager::removeListener(this);
+
+	RGB.setColor(Pixel::Black);
 }
 
-void Intro::loop(uint micros){
-	if(exit){
-		RGB.setColor(Pixel::Black);
-		delay(500);
-		volatile auto temp = instance->base;
-		instance->stop();
-		delete instance;
+void RGBIndicator::loop(uint micros){
+	if(currentOil != targetOil){
 
+		easeTimer += micros / 1000000.0;
+		float x = easeTimer / easeTime;
 
-		if(StatMan.isHatched()){
-			if(StatMan.hasDied()){
-				auto duck = new DeathState(temp);
-				duck->start();
-			}else{
-				auto duck = new DuckScreen(temp);
-				duck->start();
-			}
+		if(x >= 1.f){
+			currentOil = targetOil;
 		}else{
-			auto hatch = new HatchingState(temp);
-			hatch->start();
+
+			float ease = 1.0f - cos((x * PI) / 2);
+
+			currentOil = prevOil + ((float)(targetOil - prevOil)) * ease;
 		}
 
-		return;
 	}
 
-	double hue = 360.0f * ((double)((millis() % 2000) / 2000.0));
-
-	hsv h = {hue, 1, 1};
-	rgb c = hsv2rgb(h);
-
-	RGB.setColor({(uint8_t)(c.r*255), (uint8_t)(c.g*255), (uint8_t)(c.b*255)});
-
-
-	if(gif.checkFrame()){
-		gif.nextFrame();
+	if(currentOil < 15){
+		if(millis() % 1000 < 200){
+			RGB.setColor(Pixel::Red);
+		}else{
+			RGB.setColor(Pixel::Black);
+		}
+	}else{
+		double hue = (float)(currentOil - 15) / 85.0 * 60.0 / 255.0 * 360;
+		rgb r = hsv2rgb({hue, 1, 1});
+		Pixel p = {(uint8_t)(r.r*255.0), (uint8_t)(r.g*255.0), (uint8_t)(r.b*255.0)};
+		RGB.setColor(p);
 	}
-	gif.push();
+}
+
+void RGBIndicator::statsChanged(const Stats& stats, bool leveledUp){
+	targetOil = stats.oilLevel;
+	prevOil = currentOil;
+
+	easeTimer = 0;
 }

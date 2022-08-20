@@ -5,6 +5,7 @@
 #include "../../GameEngine/Collision/RectCC.h"
 #include <Input/Input.h>
 #include <time.h>
+#include <CircuitPet.h>
 
 Game3::Game3() : Game("/Games/Game3", {
 		{ "/Background.raw", {}, true },
@@ -156,12 +157,14 @@ void Game3::collisionHandler(Item item){
 	removeObject(item.go);
 	duck->startEating(item.value);
 	if(item.value > 0){
+		RGB.blink(Pixel::Green);
 		hungerMeter += item.value;
 		drawBar();
 		if(hungerMeter >= hungerMeterMax){
 			duck->filled(this);
 		}
 	}else{
+		RGB.blink(Pixel::Red);
 		lives--;
 		drawHearts();
 	}
