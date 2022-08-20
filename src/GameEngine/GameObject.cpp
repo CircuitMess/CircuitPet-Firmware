@@ -16,7 +16,7 @@ std::shared_ptr<RenderComponent> GameObject::getRenderComponent() const{
 	return renderComponent;
 }
 
-std::shared_ptr<const CollisionComponent> GameObject::getCollisionComponent() const{
+std::shared_ptr<CollisionComponent> GameObject::getCollisionComponent() const{
 	return collisionComponent;
 }
 

@@ -213,6 +213,9 @@ void Game5::noteHit(uint8_t track){
 
 
 	if(diff <= noteTolerance){
+
+		RGB.blink(Pixel::Green);
+
 		score += notePoints + (int)(diff * perfectBonus / noteTolerance);
 
 		adjustTempo();
@@ -234,6 +237,8 @@ void Game5::noteHit(uint8_t track){
 		});
 
 	}else{
+		RGB.blinkTwice(Pixel::Red);
+
 		life--;
 		hearts->setLives(life);
 
@@ -308,4 +313,8 @@ void Game5::updateTracks(float delta){
 			}
 		}
 	}
+}
+
+Stats Game5::returnStats(){
+	return Stats({(uint8_t)(score/90), (uint8_t)(score/90), (uint8_t)(score/150)});
 }

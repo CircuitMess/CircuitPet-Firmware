@@ -5,7 +5,7 @@
 StatsManager StatMan;
 static const char* tag = "StatsManager";
 
-const uint16_t StatsManager::levelupThresholds[] = { 100, 200, 300, 400, 500 }; //TODO - settati levelUp threshove
+const uint16_t StatsManager::levelupThresholds[] = { 50, 150, 350, 750, 1550 }; //TODO - settati levelUp threshove
 const Stats StatsManager::hourlyDecrement = { 2, 5, 0 };
 
 StatsManager::StatsManager() : timedUpdateListener(3600000, false, true, "StatsMan", [this](){ timedUpdate(); }){
@@ -14,6 +14,15 @@ StatsManager::StatsManager() : timedUpdateListener(3600000, false, true, "StatsM
 void StatsManager::begin(){
 	load();
 	Clock.addListener(&timedUpdateListener);
+}
+
+void StatsManager::reset(){
+	stats.happiness = 100;
+	stats.oilLevel = 100;
+	stats.experience = 0;
+	gameOverCount = 0;
+	hatched = false;
+	store();
 }
 
 void StatsManager::update(Stats delta){
@@ -50,7 +59,7 @@ uint8_t StatsManager::getLevel() const{
 }
 
 void StatsManager::setPaused(bool pause){
-	paused = pause;
+	pause ? Clock.removeListener(&timedUpdateListener) : Clock.addListener(&timedUpdateListener);
 }
 
 void StatsManager::store(){
@@ -81,6 +90,7 @@ void StatsManager::load(){
 		stats.happiness = 100;
 		stats.oilLevel = 100;
 		stats.experience = 0;
+		hatched = false;
 		return;
 	}
 	gameOverCount = f.read();
@@ -90,8 +100,6 @@ void StatsManager::load(){
 }
 
 void StatsManager::timedUpdate(){
-	if(paused) return;
-
 	stats -= hourlyDecrement;
 
 	if(stats.happiness == 0){

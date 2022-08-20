@@ -15,9 +15,12 @@ public:
 	void push(State* parent);
 	virtual void pop();
 
+	void setParent(State* parent);
+
 protected:
 	virtual void onStart() = 0;
 	virtual void onStop() = 0;
+	State* getParent() const;
 
 private:
 	State* parent = nullptr;

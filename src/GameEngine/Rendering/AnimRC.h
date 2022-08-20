@@ -37,7 +37,7 @@ protected:
 	void push(Sprite* parent, PixelDim pos, float rot) const override;
 
 private:
-	GIFAnimatedSprite gif;
+	std::unique_ptr<GIFAnimatedSprite> gif;
 	bool playing = false;
 
 	GIF::LoopMode loopMode = GIF::Infinite;
