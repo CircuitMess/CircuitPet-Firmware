@@ -4,7 +4,7 @@
 #include "../../GameEngine/Collision/RectCC.h"
 #include "../../GameEngine/Collision/PolygonCC.h"
 #include <Input/Input.h>
-#include "../../RGBController.h"
+#include <CircuitPet.h>
 
 Game4::Game4::Game4() : Game("/Games/Game4", {
 		{ "/Background.raw",     {}, true },

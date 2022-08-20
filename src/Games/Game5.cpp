@@ -4,7 +4,6 @@
 #include "../GameEngine/Rendering/SpriteRC.h"
 #include "../GameEngine/Rendering/StaticRC.h"
 #include <Util/GIF.h>
-#include "../RGBController.h"
 
 constexpr const char* Game5::barsIcons[4];
 constexpr const char* Game5::circlesIcons[3];

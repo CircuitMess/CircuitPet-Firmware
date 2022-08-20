@@ -8,7 +8,7 @@
 #include <Pins.hpp>
 #include <Input/Input.h>
 #include <glm/gtx/vector_angle.hpp>
-#include "../../RGBController.h"
+#include <CircuitPet.h>
 
 constexpr Game2::ObstacleDesc Game2::TopObstacles[];
 constexpr Game2::ObstacleDesc Game2::BotObstacles[];

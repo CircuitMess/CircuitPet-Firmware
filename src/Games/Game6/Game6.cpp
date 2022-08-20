@@ -6,7 +6,7 @@
 #include "../../GameEngine/Collision/PolygonCC.h"
 #include "../../GameEngine/Rendering/SpriteRC.h"
 #include <Input/Input.h>
-#include "../../RGBController.h"
+#include <CircuitPet.h>
 
 //compiler says declarations are required, not redundant
 constexpr std::array<float, 3> Game6::asteroidSpeed;

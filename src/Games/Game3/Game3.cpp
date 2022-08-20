@@ -5,7 +5,7 @@
 #include "../../GameEngine/Collision/RectCC.h"
 #include <Input/Input.h>
 #include <time.h>
-#include "../../RGBController.h"
+#include <CircuitPet.h>
 
 Game3::Game3() : Game("/Games/Game3", {
 		{ "/Background.raw", {}, true },

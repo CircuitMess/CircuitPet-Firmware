@@ -1,10 +1,10 @@
 #include <Pins.hpp>
 #include "Game1.h"
 #include <Input/Input.h>
+#include <CircuitPet.h>
 #include "../../GameEngine/Rendering/StaticRC.h"
 #include "../../GameEngine/Rendering/SpriteRC.h"
 #include "../../Stats/StatsManager.h"
-#include "../../RGBController.h"
 
 std::string bgPath[6] = { "/Bg/Level1.raw",
 						  "/Bg/Level2.raw",
