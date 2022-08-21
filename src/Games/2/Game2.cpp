@@ -95,6 +95,7 @@ void Game2::onLoop(float deltaTime){
 
 	for(auto& obstacle: obstacles){
 		if(obstacle.top->getPos().x + 15 <= duckPosX && !obstacle.passed && state == Play){
+			Audio.play({{900, 900, 50}});
 			RGB.blink(Pixel::Green);
 			score++;
 			obstacle.passed = true;
@@ -173,6 +174,7 @@ void Game2::updateObstacles(float delta){
 
 void Game2::buttonPressed(uint i){
 	if(i == BTN_BACK){
+		Audio.play(Sound { Chirp { 400, 350, 50 }});
 		pop();
 		return;
 	}else if(i != BTN_LEFT) return;
@@ -188,6 +190,7 @@ void Game2::buttonPressed(uint i){
 	anim->start();
 
 	velocity.y = -flapSpeedY;
+	Audio.play({{400, 800, 100}});
 }
 
 void Game2::resetDuck(){
@@ -238,6 +241,15 @@ void Game2::die(){
 	RGB.blinkTwice(Pixel::Red);
 
 	life--;
+	if(life > 0){
+		Audio.play({{200, 50, 100}});
+	}else{
+		Audio.play({{ 400, 300, 200 },
+					{ 0,   0,   50 },
+					{ 300, 200, 200 },
+					{ 0,   0,   50 },
+					{ 200, 50,  400 }});
+	}
 	hearts->setLives(life);
 
 	state = FallOut;
