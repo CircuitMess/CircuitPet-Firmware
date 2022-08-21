@@ -76,8 +76,9 @@ void Game::loop(uint micros){
 	return;
 
 	poppedLabel:
-	StatMan.update(returnStats());
+	auto stats = returnStats();
 	State::pop();
+	StatMan.update(stats);
 }
 
 void Game::onStart(){ }
