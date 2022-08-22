@@ -44,7 +44,7 @@ private:
 	int hungerMeter = 0;
 	int lives = 3;
 	const int speedMin = 60;
-	const int speedMax = 80;
+	const int speedMax = 75;
 	const float spawnRate = 0.5f;
 	float timeToSpawn = 0.0f;
 
