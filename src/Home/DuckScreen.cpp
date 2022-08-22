@@ -12,6 +12,8 @@
 #include <SPIFFS.h>
 #include <FS/RamFile.h>
 #include "../Settings/SettingsScreen.h"
+#include "../RGBIndicator.h"
+#include <Battery/BatteryService.h>
 
 DuckScreen::DuckScreen(Sprite* base) : State(), base(base),
 									   menu(base), hider(&menu){
@@ -64,6 +66,7 @@ void DuckScreen::onStart(){
 
 	randInterval = rand() % 4000000 + 2000000;
 
+	OilRGBIndicator.start();
 }
 
 void DuckScreen::onStop(){
@@ -77,9 +80,17 @@ void DuckScreen::onStop(){
 	statsSprite.reset();
 	characterSprite.reset();
 	menuItems.clear();
+
+	OilRGBIndicator.stop();
 }
 
 void DuckScreen::loop(uint micros){
+
+	if(Battery.charging()){
+		statsSprite->setBattery((millis() % 2001) / 20);
+	}else{
+		statsSprite->setBattery(Battery.getPercentage());
+	}
 
 	if(dead){
 		volatile auto temp = base;
@@ -234,18 +245,23 @@ void DuckScreen::buttonPressed(uint i){
 	switch(i){
 		case BTN_LEFT:
 			if(menu.isShaking()) return;
+			Audio.play({{500, 500, 50}});
 			selection = menu.prev();
 			break;
 		case BTN_RIGHT:
 			if(menu.isShaking()) return;
+			Audio.play({{500, 500, 50}});
 			selection = menu.next();
 			break;
 		case BTN_A:{
 			if(hider.getState() != MenuHider::Shown) return;
 			if(menuItems[selection].levelRequired > StatMan.getLevel()){
+				Audio.play({{300, 300, 50}, {0, 0, 50}, {300, 300, 50}});
 				menu.shake();
 				return;
 			}
+
+			Audio.play({{500, 700, 50}});
 			if(selection == 6){ //settings
 				menuItems[selection].primary();
 			}else{

@@ -5,6 +5,7 @@
 #include "../../GameEngine/Collision/RectCC.h"
 #include <Input/Input.h>
 #include <time.h>
+#include <CircuitPet.h>
 
 Game3::Game3() : Game("/Games/Game3", {
 		{ "/Background.raw", {}, true },
@@ -102,6 +103,7 @@ void Game3::onRender(Sprite* canvas){
 
 void Game3::buttonPressed(uint i){
 	if(i == BTN_BACK){
+		Audio.play(Sound { Chirp { 400, 350, 50 }});
 		pop();
 	}
 }
@@ -144,8 +146,8 @@ void Game3::spawnItem(Game3::Template temp){
 			return;
 		}
 
-		movingObjects.erase(std::make_pair(item.go, speed));
 		collisionHandler(item);
+		movingObjects.erase(std::make_pair(item.go, speed));
 	});
 	collision.addPair(*collectorBot, *item.go, [this, item, speed](){
 		movingObjects.erase(std::make_pair(item.go, speed));
@@ -157,17 +159,35 @@ void Game3::collisionHandler(Item item){
 	removeObject(item.go);
 	duck->startEating(item.value);
 	if(item.value > 0){
+		RGB.blink(Pixel::Green);
 		hungerMeter += item.value;
 		drawBar();
 		if(hungerMeter >= hungerMeterMax){
+			Sound s = {{ 600, 400,  200 },
+					   { 400, 1000, 200 }};
+			Audio.play(s);
 			duck->filled(this);
+		}else{
+			Audio.play({{ 250, 200, 50 },
+						{ 400, 700, 50 }});
 		}
 	}else{
+		RGB.blink(Pixel::Red);
 		lives--;
+		if(lives > 0){
+			Audio.play({{ 300, 300, 100 },
+						{ 0,   0,   20 },
+						{ 100, 100, 100 }});
+		}
 		drawHearts();
 	}
 	if(lives <= 0){
 		duck->killed(this);
+		Audio.play({{ 400, 300, 200 },
+					{ 0,   0,   50 },
+					{ 300, 200, 200 },
+					{ 0,   0,   50 },
+					{ 200, 50,  400 }});
 		dead = true;
 	}
 }

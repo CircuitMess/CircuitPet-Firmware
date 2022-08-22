@@ -1,6 +1,7 @@
 #include <Pins.hpp>
 #include "Game1.h"
 #include <Input/Input.h>
+#include <CircuitPet.h>
 #include "../../GameEngine/Rendering/StaticRC.h"
 #include "../../GameEngine/Rendering/SpriteRC.h"
 #include "../../Stats/StatsManager.h"
@@ -104,12 +105,16 @@ void Game1::buttonPressed(uint i){
 	if(done) return;
 
 	if(i == BTN_BACK){
+		Audio.play(Sound { Chirp { 400, 350, 50 }});
 		pop();
 		return;
 	}
 	if(i == BTN_LEFT){
 		tries++;
+		RGB.blinkTwice(bar->getColor(indicator->getDifference()));
+		Serial.println(indicator->getDifference());
 		addPoints(indicator->getDifference());
+
 	}
 }
 
@@ -124,9 +129,19 @@ void Game1::addPoints(int difference){
 	fillPercent += multiplier * maxPoints;
 	oilCan->fill(fillPercent);
 	bar->resetGoal();
-	indicator->setGoal(bar->getY());
+
+	if(done){
+
+	}else if(indicator->getDifference() < 30){
+		Audio.play({{250, 200, 50}, {400, 700, 50}});
+	}else if(indicator->getDifference() >= 30){
+		Audio.play({{300, 300, 50}, {0, 0, 50}, {300, 300, 50}});
+	}
 
 	if(fillPercent >= 0.999f){
+		Sound s = {{ 600, 400 , 200 }, { 400, 1000 , 200 }};
+		Audio.play(s);
+
 		Input::getInstance()->removeListener(this);
 		removeObject(barGO);
 		removeObject(indicatorGO);
@@ -138,7 +153,15 @@ void Game1::addPoints(int difference){
 		duckAnim->setLoopDoneCallback([this](uint32_t){
 			resetAnim();
 		});
+
+		if(indicator->getDifference() < 30){
+			Audio.play({{250, 200, 50}, {400, 700, 50}});
+		}else if(indicator->getDifference() >= 30){
+			Audio.play({{300, 300, 50}, {0, 0, 50}, {300, 300, 50}});
+		}
 	}
+
+	indicator->setGoal(bar->getY());
 }
 
 Stats Game1::returnStats(){

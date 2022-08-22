@@ -149,6 +149,7 @@ void Game5::onRender(Sprite* canvas){
 
 void Game5::buttonPressed(uint i){
 	if(i == BTN_BACK){
+		Audio.play(Sound { Chirp { 400, 350, 50 }});
 		pop();
 		return;
 	}
@@ -213,6 +214,9 @@ void Game5::noteHit(uint8_t track){
 
 
 	if(diff <= noteTolerance){
+		Audio.play({{400, 600, 50}});
+		RGB.blink(Pixel::Green);
+
 		score += notePoints + (int)(diff * perfectBonus / noteTolerance);
 
 		adjustTempo();
@@ -234,6 +238,9 @@ void Game5::noteHit(uint8_t track){
 		});
 
 	}else{
+		Audio.play({{300, 300, 50}, {0, 0, 50}, {300, 300, 50}});
+		RGB.blinkTwice(Pixel::Red);
+
 		life--;
 		hearts->setLives(life);
 
@@ -255,9 +262,16 @@ void Game5::adjustTempo(){
 
 void Game5::gameDone(bool success){
 	if(success){
+		Sound s = {{ 600, 400 , 200 }, { 400, 1000 , 200 }};
+		Audio.play(s);
 		duckRC->setAnim(getFile("/win.gif"));
 		std::static_pointer_cast<StaticRC>(scoreStar->getRenderComponent())->setFile(getFile("/starFull.raw"));
 	}else{
+		Audio.play({{ 400, 300, 200 },
+					{ 0,   0,   50 },
+					{ 300, 200, 200 },
+					{ 0,   0,   50 },
+					{ 200, 50,  400 }});
 		duckRC->setAnim(getFile("/fail.gif"));
 	}
 

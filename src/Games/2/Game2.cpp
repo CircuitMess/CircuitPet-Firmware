@@ -8,6 +8,7 @@
 #include <Pins.hpp>
 #include <Input/Input.h>
 #include <glm/gtx/vector_angle.hpp>
+#include <CircuitPet.h>
 
 constexpr Game2::ObstacleDesc Game2::TopObstacles[];
 constexpr Game2::ObstacleDesc Game2::BotObstacles[];
@@ -19,6 +20,8 @@ Game2::Game2() : Game("/Games/2", {
 		RES_GOBLET,
 		{ TopObstacles[0].path, {}, true },
 		{ TopObstacles[1].path, {}, true },
+		{ TopObstacles[2].path, {}, true },
+		{ TopObstacles[3].path, {}, true },
 		{ BotObstacles[0].path, {}, true },
 		{ BotObstacles[1].path, {}, true },
 		{ BotObstacles[2].path, {}, true },
@@ -92,6 +95,8 @@ void Game2::onLoop(float deltaTime){
 
 	for(auto& obstacle: obstacles){
 		if(obstacle.top->getPos().x + 15 <= duckPosX && !obstacle.passed && state == Play){
+			Audio.play({{900, 900, 50}});
+			RGB.blink(Pixel::Green);
 			score++;
 			obstacle.passed = true;
 			scoreDisplay->setScore(score);
@@ -169,6 +174,7 @@ void Game2::updateObstacles(float delta){
 
 void Game2::buttonPressed(uint i){
 	if(i == BTN_BACK){
+		Audio.play(Sound { Chirp { 400, 350, 50 }});
 		pop();
 		return;
 	}else if(i != BTN_LEFT) return;
@@ -184,6 +190,7 @@ void Game2::buttonPressed(uint i){
 	anim->start();
 
 	velocity.y = -flapSpeedY;
+	Audio.play({{400, 800, 100}});
 }
 
 void Game2::resetDuck(){
@@ -231,8 +238,18 @@ void Game2::createObstaclePair(){
 
 void Game2::die(){
 	if(state != Play) return;
+	RGB.blinkTwice(Pixel::Red);
 
 	life--;
+	if(life > 0){
+		Audio.play({{200, 50, 100}});
+	}else{
+		Audio.play({{ 400, 300, 200 },
+					{ 0,   0,   50 },
+					{ 300, 200, 200 },
+					{ 0,   0,   50 },
+					{ 200, 50,  400 }});
+	}
 	hearts->setLives(life);
 
 	state = FallOut;

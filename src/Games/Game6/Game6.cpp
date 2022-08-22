@@ -6,6 +6,7 @@
 #include "../../GameEngine/Collision/PolygonCC.h"
 #include "../../GameEngine/Rendering/SpriteRC.h"
 #include <Input/Input.h>
+#include <CircuitPet.h>
 
 //compiler says declarations are required, not redundant
 constexpr std::array<float, 3> Game6::asteroidSpeed;
@@ -97,6 +98,9 @@ void Game6::onLoop(float deltaTime){
 			if(asteroidPool.empty()){
 				if(level == 4){
 					state = Win;
+					Sound s = {{ 600, 400,  200 },
+							   { 400, 1000, 200 }};
+					Audio.play(s);
 					Input::getInstance()->removeListener(this);
 					return;
 				}
@@ -152,6 +156,7 @@ void Game6::onStop(){
 void Game6::buttonPressed(uint i){
 	switch(i){
 		case BTN_BACK:
+			Audio.play(Sound { Chirp { 400, 350, 50 }});
 			pop();
 			break;
 
@@ -190,6 +195,8 @@ void Game6::updateBullets(float deltaTime){
 
 void Game6::shootBullet(){
 	if(bulletPool.size() >= 4) return;
+
+	Audio.play({{450, 300, 100}});
 
 	auto spriteRC = std::make_unique<SpriteRC>(PixelDim{ 4, 4 });
 	spriteRC->getSprite()->clear(TFT_TRANSPARENT);
@@ -288,6 +295,9 @@ void Game6::updateAsteroids(float deltaTime){
 }
 
 void Game6::asteroidHit(const Game6::Asteroid& asteroid){
+	RGB.blink(Pixel::Green);
+	Audio.play({{100, 100, 50}});
+
 	switch(asteroid.size){
 		case AsteroidSize::Large:
 			createAsteroid(AsteroidSize::Medium,
@@ -328,12 +338,20 @@ void Game6::updateInvincibility(float delta){
 }
 
 void Game6::playerHit(){
+	RGB.blinkTwice(Pixel::Red);
+
 	life--;
 	hearts->setLives(life);
 	if(life == 0){
+		Audio.play({{ 400, 300, 200 },
+					{ 0,   0,   50 },
+					{ 300, 200, 200 },
+					{ 0,   0,   50 },
+					{ 200, 50,  400 }});
 		gameOver();
 		return;
 	}
+	Audio.play({{300, 300, 50}, {0, 0, 50}, {300, 300, 50}});
 	invincible = true;
 }
 

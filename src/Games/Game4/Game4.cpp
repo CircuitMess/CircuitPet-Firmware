@@ -4,6 +4,7 @@
 #include "../../GameEngine/Collision/RectCC.h"
 #include "../../GameEngine/Collision/PolygonCC.h"
 #include <Input/Input.h>
+#include <CircuitPet.h>
 
 Game4::Game4::Game4() : Game("/Games/Game4", {
 		{ "/Background.raw",     {}, true },
@@ -165,6 +166,7 @@ void Game4::Game4::buttonPressed(uint i){
 	if(isDone) return;
 
 	if(i == BTN_BACK){
+		Audio.play(Sound { Chirp { 400, 350, 50 }});
 		pop();
 	}
 }
@@ -250,15 +252,23 @@ void Game4::Game4::spawn(){
 }
 
 void Game4::Game4::duckHit(){
+	RGB.blinkTwice(Pixel::Red);
+
 	life--;
 	hearts->setLives(life);
 	if(life == 0){
 		speed = 0.0f;
 		spawnRate = 10000.0f;
 		duck->death();
+		Audio.play({{ 400, 300, 200 },
+					{ 0,   0,   50 },
+					{ 300, 200, 200 },
+					{ 0,   0,   50 },
+					{ 200, 50,  400 }});
 		return;
 	}
 	duck->invincible = true;
+	Audio.play({{100, 100, 50}});
 }
 
 float Game4::Game4::getSpeed(){
@@ -266,6 +276,8 @@ float Game4::Game4::getSpeed(){
 }
 
 void Game4::Game4::scoreUp(){
+	Audio.play({{900, 900, 50}});
+	RGB.blink(Pixel::Green);
 	score++;
 	scoreSprite->clear(TFT_TRANSPARENT);
 	scoreSprite->setTextColor(TFT_BLACK);

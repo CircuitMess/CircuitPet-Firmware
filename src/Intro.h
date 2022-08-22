@@ -22,6 +22,7 @@ private:
 	Sprite* base;
 
 	bool exit = false;
+	bool firstLoop = true;
 };
 
 

@@ -1,4 +1,5 @@
 #include "SettingsScreen.h"
+#include "../UserHWTest.h"
 //#include "../UserHWTest/UserHWTest.h"
 #include <Input/Input.h>
 #include <FS/CompressedFile.h>
@@ -8,6 +9,7 @@
 #include <CircuitPet.h>
 #include <Loop/LoopManager.h>
 #include <nvs_flash.h>
+#include <Audio/Piezo.h>
 
 SettingsScreen::SettingsScreen* SettingsScreen::SettingsScreen::instance = nullptr;
 
@@ -26,7 +28,7 @@ SettingsScreen::SettingsScreen::SettingsScreen(Display& display) : screen(displa
 	shutDownSlider->setIsSelected(true);
 	shutDownSlider->setIndex(Settings.get().shutdownTime);
 	brightnessSlider->setSliderValue(Settings.get().screenBrightness);
-	soundSwitch->setBooleanSwitch(Settings.get().sound);
+	soundSwitch->setBooleanSwitch(!Settings.get().sound);
 	rgbSlider->setSliderValue(Settings.get().RGBbrightness);
 	screen.pack();
 }
@@ -38,6 +40,8 @@ void SettingsScreen::SettingsScreen::onStart(){
 	Input::getInstance()->setButtonHeldRepeatCallback(BTN_RIGHT, 150, [](uint){
 		if(instance == nullptr) return;
 		if(instance->selectedSetting == 1 && instance->editMode){
+			Audio.play({{500, 500, 50}});
+
 			instance->brightnessSlider->moveSliderValue(instance->scrollStep);
 
 			Settings.get().screenBrightness = instance->brightnessSlider->getSliderValue();
@@ -49,6 +53,8 @@ void SettingsScreen::SettingsScreen::onStart(){
 				instance->scrollStep *= 2;
 			}
 		}else if(instance->selectedSetting == 3 && instance->editMode){
+			Audio.play({{500, 500, 50}});
+
 			instance->rgbSlider->moveSliderValue(instance->scrollStep);
 
 			Settings.get().RGBbrightness = instance->rgbSlider->getSliderValue();
@@ -68,6 +74,8 @@ void SettingsScreen::SettingsScreen::onStart(){
 	Input::getInstance()->setButtonHeldRepeatCallback(BTN_LEFT, 150, [](uint){
 		if(instance == nullptr) return;
 		if(instance->selectedSetting == 1){
+			Audio.play({{500, 500, 50}});
+
 			instance->brightnessSlider->moveSliderValue(-instance->scrollStep);
 
 			Settings.get().screenBrightness = instance->brightnessSlider->getSliderValue();
@@ -79,6 +87,8 @@ void SettingsScreen::SettingsScreen::onStart(){
 				instance->scrollStep *= 2;
 			}
 		}else if(instance->selectedSetting == 3){
+			Audio.play({{500, 500, 50}});
+
 			instance->rgbSlider->moveSliderValue(-instance->scrollStep);
 
 			Settings.get().RGBbrightness = instance->rgbSlider->getSliderValue();
@@ -154,6 +164,7 @@ void SettingsScreen::SettingsScreen::buildUI(){
 void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 	switch(id){
 		case BTN_LEFT:
+			Audio.play({{500, 500, 50}});
 			if(editMode){
 				if(selectedSetting == 0){
 					shutDownSlider->selectPrev();
@@ -178,6 +189,7 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 			break;
 
 		case BTN_RIGHT:
+			Audio.play({{500, 500, 50}});
 			if(editMode){
 				if(selectedSetting == 0){
 					shutDownSlider->selectNext();
@@ -202,6 +214,8 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 			break;
 
 		case BTN_A:
+			Audio.play({{500, 700, 50}});
+
 			if(selectedSetting == 0 || selectedSetting == 1 || selectedSetting == 3){
 				editMode = !editMode;
 				if(selectedSetting == 3){
@@ -216,13 +230,11 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 			}
 			elements[selectedSetting]->toggle();
 			if(selectedSetting == 2){
-				Settings.get().sound = instance->soundSwitch->getBooleanSwitch();
-//				Playback.updateGain();
-//				Playback.tone(500, 50);
+				Settings.get().sound = !instance->soundSwitch->getBooleanSwitch();
+				Piezo.setMute(Settings.get().sound);
 			}else if(selectedSetting == 4){
-//				Context* hwTest = new UserHWTest(*CircuitPet.getDisplay());
-//				hwTest->push(this);
-//				draw();
+				auto* hwTest = new UserHWTest(CircuitPet.getDisplay()->getBaseSprite(), [this](){ start(); });
+				hwTest->push(this);
 				break;
 			}else if(selectedSetting == 5){
 				nvs_flash_erase();
@@ -233,7 +245,7 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 				Settings.get().sound = soundSwitch->getBooleanSwitch();
 				Settings.get().RGBbrightness = rgbSlider->getSliderValue();
 				Settings.store();
-//			Playback.updateGain();
+				Piezo.setMute(Settings.get().sound);
 				popped = true;
 				LoopManager::addListener(this);
 				return;
@@ -241,6 +253,8 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 			break;
 
 		case BTN_B:
+			Audio.play(Sound { Chirp { 400, 350, 50 }});
+
 			if(editMode){
 				editMode = false;
 				elements[selectedSetting]->toggle();
@@ -249,10 +263,10 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 				RGB.setColor(Pixel::Black);
 			}else{
 				Settings.get().shutdownTime = shutDownSlider->getIndex();
-				Settings.get().sound = soundSwitch->getBooleanSwitch();
+				Settings.get().sound = !soundSwitch->getBooleanSwitch();
 				Settings.get().RGBbrightness = rgbSlider->getSliderValue();
 				Settings.store();
-//			Playback.updateGain();
+				Piezo.setMute(Settings.get().sound);
 				popped = true;
 				LoopManager::addListener(this);
 				return;

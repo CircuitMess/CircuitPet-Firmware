@@ -6,9 +6,19 @@
 #include "src/Intro.h"
 #include "src/Stats/StatsManager.h"
 #include "src/Clock/ClockMaster.h"
+#include <Settings.h>
+#include "src/UserHWTest.h"
+#include "src/JigHWTest/JigHWTest.h"
+#include <Audio/Piezo.h>
 
 extern "C" {
 #include <bootloader_random.h>
+}
+
+
+bool checkJig(){
+ //TODO - add jig detection
+ return false;
 }
 
 Display* display;
@@ -40,6 +50,15 @@ void setup(){
 	display = CircuitPet.getDisplay();
 	baseSprite = display->getBaseSprite();
 
+	if(checkJig()){
+		CircuitPet.fadeIn(0);
+		printf("Jig\n");
+		auto test = new JigHWTest(display);
+		test->start();
+		for(;;);
+	}
+
+
 	baseSprite->clear(TFT_BLACK);
 	display->commit();
 
@@ -49,11 +68,27 @@ void setup(){
 	StatMan.begin();
 	StatMan.setPaused(true); //stats timekeeping will be unpaused when home menu starts
 
-	auto intro = new Intro(baseSprite);
-	LoopManager::loop();
-	intro->start();
+	if(!Settings.get().hwTested){
+		auto test = new UserHWTest(baseSprite, [](){
+			Settings.get().hwTested = true;
+			Settings.store();
+			CircuitPet.fadeOut();
 
-	CircuitPet.fadeIn();
+			auto intro = new Intro(baseSprite);
+			LoopManager::resetTime();
+			intro->start();
+			display->commit();
+			CircuitPet.fadeIn();
+		});
+		test->start();
+		CircuitPet.fadeIn();
+	}else{
+		Piezo.setMute(Settings.get().sound);
+		auto intro = new Intro(baseSprite);
+		LoopManager::loop();
+		intro->start();
+		CircuitPet.fadeIn();
+	}
 }
 
 uint32_t t = 0;
@@ -71,5 +106,4 @@ void loop(){
 
 	display->commit();
 }
-
 

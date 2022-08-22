@@ -28,16 +28,13 @@ void CharacterSprite::push(){
 }
 
 void CharacterSprite::setCharLevel(uint8_t charLevel){
-	uint8_t nextLevel;
-	if(charLevel <= 3){
-		nextLevel = 1;
-	}else if(charLevel <= 5){
-		nextLevel = 4;
-	}else{
-		nextLevel = 6;
-	}
-	if(CharacterSprite::charLevel == nextLevel) return;
-	CharacterSprite::charLevel = nextLevel;
+	if(CharacterSprite::charLevel == charLevel) return;
+
+	uint8_t curr = CharacterSprite::charLevel;
+	CharacterSprite::charLevel = charLevel;
+
+	if(getGIFLevel(curr) == getGIFLevel(charLevel)) return;
+
 	registerNextAnim();
 	startNextAnim();
 }
@@ -73,11 +70,12 @@ void CharacterSprite::startNextAnim(){
 }
 
 File CharacterSprite::getAnimFile(uint8_t charLevel, bool rusty, Anim anim){
+	uint8_t level = getGIFLevel(charLevel);
 	char path[50];
 	if(rusty){
-		sprintf(path, "/Home/rusty/%02d_%s.gif", charLevel, animNames[(uint8_t)anim]);
+		sprintf(path, "/Home/rusty/%02d_%s.gif", level, animNames[(uint8_t)anim]);
 	}else{
-		sprintf(path, "/Home/%02d_%s.gif", charLevel, animNames[(uint8_t)anim]);
+		sprintf(path, "/Home/%02d_%s.gif", level, animNames[(uint8_t)anim]);
 	}
 	return SPIFFS.open(path);
 }
@@ -93,4 +91,16 @@ void CharacterSprite::setPos(int16_t x, int16_t y){
 	this->x = x;
 	this->y = y;
 	gif->setXY(x, y);
+}
+
+uint8_t CharacterSprite::getGIFLevel(uint8_t level){
+	uint8_t nextLevel;
+	if(level <= 3){
+		nextLevel = 1;
+	}else if(level <= 5){
+		nextLevel = 4;
+	}else{
+		nextLevel = 6;
+	}
+	return nextLevel;
 }

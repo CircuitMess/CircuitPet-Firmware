@@ -2,6 +2,7 @@
 #include "Duck.h"
 #include "Game4.h"
 #include <Input/Input.h>
+#include <CircuitPet.h>
 
 Game4::Duck::Duck(std::shared_ptr<GameObject> duckGoRc, std::shared_ptr<GameObject> duckGoCc, Game4* game4) : gameObjectRc(duckGoRc), gameObjectCc(duckGoCc),
 																									   game4(game4){
@@ -68,6 +69,7 @@ void Game4::Duck::buttonPressed(uint i){
 	if(isDone) return;
 
 	if(i == BTN_LEFT){
+		Audio.play({{500, 400, 100}});
 		if(isJumping){
 			multiplier = 10.0f;
 		}else{
@@ -102,6 +104,8 @@ void Game4::Duck::walk(){
 
 void Game4::Duck::jump(){
 	if(isJumping) return;
+
+	Audio.play({{400, 800, 100}});
 	isJumping = true;
 	velocity = 2 * maxHeight * game4->getSpeed() / posXForMaxHeight;
 	gravity = -2 * maxHeight * pow(game4->getSpeed(), 2) / pow(posXForMaxHeight, 2);
