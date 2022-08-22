@@ -77,7 +77,7 @@ void setup(){
 			auto intro = new Intro(baseSprite);
 			LoopManager::resetTime();
 			intro->start();
-
+			display->commit();
 			CircuitPet.fadeIn();
 		});
 		test->start();
