@@ -71,13 +71,14 @@ void Game::loop(uint micros){
 	onRender(CircuitPet.getDisplay()->getBaseSprite());
 	if(popped) goto poppedLabel;
 
-	collision.drawDebug(CircuitPet.getDisplay()->getBaseSprite());
+	// collision.drawDebug(CircuitPet.getDisplay()->getBaseSprite());
 
 	return;
 
 	poppedLabel:
-	StatMan.update(returnStats());
+	auto stats = returnStats();
 	State::pop();
+	StatMan.update(stats);
 }
 
 void Game::onStart(){ }

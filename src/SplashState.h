@@ -25,6 +25,7 @@ private:
 	uint startTime;
 	bool splashDone = false;
 	Game* game;
+	bool startedLoading = false;
 	const char* instructPath;
 	const char* splashPath;
 

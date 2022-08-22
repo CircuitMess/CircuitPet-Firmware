@@ -82,11 +82,14 @@ Intro::Intro(Sprite* base) : gif(base, CompressedFile::open(SPIFFS.open("/intro.
 }
 
 void Intro::onStart(){
-	gif.start();
 	gif.setLoop(false);
 	gif.setLoopDoneCallback([](){
 		instance->exit = true;
 	});
+	gif.nextFrame();
+	gif.push();
+	base->push();
+	gif.start();
 
 	LoopManager::addListener(this);
 }
@@ -99,6 +102,11 @@ void Intro::onStop(){
 }
 
 void Intro::loop(uint micros){
+
+	if(firstLoop){
+		firstLoop = false;
+		gif.reset();
+	}
 	if(exit){
 		RGB.setColor(Pixel::Black);
 		delay(500);

@@ -6,6 +6,8 @@
 #include "src/Intro.h"
 #include "src/Stats/StatsManager.h"
 #include "src/Clock/ClockMaster.h"
+#include <Settings.h>
+#include "src/UserHWTest.h"
 #include "src/JigHWTest/JigHWTest.h"
 
 extern "C" {
@@ -64,11 +66,26 @@ void setup(){
 
 	StatMan.begin();
 
-	auto intro = new Intro(baseSprite);
-	LoopManager::loop();
-	intro->start();
+	if(!Settings.get().hwTested){
+		auto test = new UserHWTest(baseSprite, [](){
+			Settings.get().hwTested = true;
+			Settings.store();
+			CircuitPet.fadeOut();
 
-	CircuitPet.fadeIn();
+			auto intro = new Intro(baseSprite);
+			LoopManager::resetTime();
+			intro->start();
+			display->commit();
+			CircuitPet.fadeIn();
+		});
+		test->start();
+		CircuitPet.fadeIn();
+	}else{
+		auto intro = new Intro(baseSprite);
+		LoopManager::loop();
+		intro->start();
+		CircuitPet.fadeIn();
+	}
 }
 
 uint32_t t = 0;

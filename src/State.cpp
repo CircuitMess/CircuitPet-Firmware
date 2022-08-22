@@ -38,3 +38,7 @@ bool State::isStarted() const{
 State* State::getParent() const{
 	return parent;
 }
+
+void State::setParent(State* parent){
+	State::parent = parent;
+}

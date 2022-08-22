@@ -12,16 +12,13 @@ SplashState::SplashState(Sprite* base, const MenuItem& menuItem) : base(base), i
 }
 
 void SplashState::onStart(){
-	game->load();
+	File splash = CompressedFile::open(SPIFFS.open(splashPath), 10, 5);
+	base->drawIcon(splash, 0, 0, 160, 128);
+
 	startTime = millis();
 	LoopManager::resetTime();
 	LoopManager::addListener(this);
 	Input::getInstance()->addListener(this);
-
-	File splash = CompressedFile::open(SPIFFS.open(splashPath), 10, 5);
-	base->drawIcon(splash, 0, 0, 160, 128);
-	base->push();
-	splash.close();
 }
 
 void SplashState::onStop(){
@@ -30,23 +27,27 @@ void SplashState::onStop(){
 }
 
 void SplashState::loop(uint micros){
+	if(!startedLoading){
+		startedLoading = true;
+		game->load();
+	}
+
 	if(!splashDone && game->isLoaded() && (millis() - startTime >= minSplashTime)){
 		splashDone = true;
 		File instruct = CompressedFile::open(SPIFFS.open(instructPath), 10, 5);
 		base->drawIcon(instruct, 0, 0, 160, 128);
-		base->push();
-		instruct.close();
 	}
 }
 
 void SplashState::buttonPressed(uint i){
 	if(!splashDone) return;
-	Game* game = this->game;
-	State* p = this->getParent();
+
+	game->setParent(getParent());
+	volatile auto game = this->game;
+
 	stop();
 	delete this;
 
 	LoopManager::resetTime();
-	game->push(p);
-
+	game->start();
 }
