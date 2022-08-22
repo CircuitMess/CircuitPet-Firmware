@@ -73,7 +73,7 @@ void Game1::onLoad(){
 	addObject(bg);
 	bg->getRenderComponent()->setLayer(0);
 
-	auto scoreRc = std::make_unique<SpriteRC>(PixelDim{ 50, 7 });
+	auto scoreRc = std::make_unique<SpriteRC>(PixelDim{ 60, 7 });
 	scoreSprite = scoreRc->getSprite();
 	auto scoreGo = std::make_shared<GameObject>(
 			move(scoreRc),
