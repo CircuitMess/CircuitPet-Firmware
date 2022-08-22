@@ -166,6 +166,7 @@ void Game4::Game4::buttonPressed(uint i){
 	if(isDone) return;
 
 	if(i == BTN_BACK){
+		Audio.play(Sound { Chirp { 400, 350, 50 }});
 		pop();
 	}
 }
@@ -259,9 +260,15 @@ void Game4::Game4::duckHit(){
 		speed = 0.0f;
 		spawnRate = 10000.0f;
 		duck->death();
+		Audio.play({{ 400, 300, 200 },
+					{ 0,   0,   50 },
+					{ 300, 200, 200 },
+					{ 0,   0,   50 },
+					{ 200, 50,  400 }});
 		return;
 	}
 	duck->invincible = true;
+	Audio.play({{100, 100, 50}});
 }
 
 float Game4::Game4::getSpeed(){
@@ -269,6 +276,7 @@ float Game4::Game4::getSpeed(){
 }
 
 void Game4::Game4::scoreUp(){
+	Audio.play({{900, 900, 50}});
 	RGB.blink(Pixel::Green);
 	score++;
 	scoreSprite->clear(TFT_TRANSPARENT);
