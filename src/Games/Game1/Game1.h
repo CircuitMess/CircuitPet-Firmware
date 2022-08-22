@@ -38,6 +38,7 @@ private:
 	bool done = false;
 
 	std::shared_ptr<AnimRC> duckAnim;
+	std::shared_ptr<Sprite> scoreSprite;
 	std::shared_ptr<GameObject> indicatorGO;
 	std::shared_ptr<GameObject> oilCanGO;
 	std::shared_ptr<GameObject> barGO;
