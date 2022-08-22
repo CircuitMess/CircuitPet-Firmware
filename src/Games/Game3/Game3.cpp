@@ -79,7 +79,10 @@ void Game3::onLoop(float deltaTime){
 		spawnRandom();
 		timeToSpawn -= spawnRate;
 	}
-	for(const auto object: movingObjects){
+
+	if(movingObjects.empty()) return;
+
+	for(const auto &object: movingObjects){
 		int y = deltaTime * object.second + object.first->getPos().y;
 		int x = object.first->getPos().x;
 		object.first->setPos({ x, y });
@@ -136,13 +139,13 @@ void Game3::spawnItem(Game3::Template temp){
 	go->setPos({ randPos, -temp.dim.y });
 	Item item{ go, temp.value };
 	collision.addPair(*duck->getGameObject(), *item.go, [this, item, speed](){
+		movingObjects.erase(std::make_pair(item.go, speed));
 		if(duck->isEatingBad()){
 			collision.removePair(*duck->getGameObject(), *item.go);
 			return;
 		}
 
 		collisionHandler(item);
-		movingObjects.erase(std::make_pair(item.go, speed));
 	});
 	collision.addPair(*collectorBot, *item.go, [this, item, speed](){
 		movingObjects.erase(std::make_pair(item.go, speed));
