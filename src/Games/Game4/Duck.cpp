@@ -13,6 +13,7 @@ Game4::Duck::Duck(std::shared_ptr<GameObject> duckGoRc, std::shared_ptr<GameObje
 
 Game4::Duck::~Duck(){
 	Input::getInstance()->removeListener(this);
+	animRc->stop();
 }
 
 void Game4::Duck::update(float deltaTime){

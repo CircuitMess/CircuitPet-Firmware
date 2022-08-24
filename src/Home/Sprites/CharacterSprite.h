@@ -40,6 +40,8 @@ private:
 	void startNextAnim(); //starts queued nextAnim, then clears it
 	File getAnimFile(uint8_t charLevel, bool rustLevel, Anim anim);
 
+	uint8_t getGIFLevel(uint8_t level);
+
 	int16_t x = 0, y = 0;
 
 	bool canChange = false;
