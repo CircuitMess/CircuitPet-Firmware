@@ -83,7 +83,7 @@ void setup(){
 		test->start();
 		CircuitPet.fadeIn();
 	}else{
-		Piezo.setMute(Settings.get().sound);
+		Piezo.setMute(!Settings.get().sound);
 		auto intro = new Intro(baseSprite);
 		LoopManager::loop();
 		intro->start();
