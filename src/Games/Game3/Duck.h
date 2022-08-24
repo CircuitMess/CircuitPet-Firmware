@@ -17,8 +17,8 @@ public:
 	void loop(float deltaTime);
 	void startEating(int value);
 	void filled(Game3* game);
+	void killed(Game3* game);
 
-	bool isEating() const;
 	bool isEatingBad() const;
 
 private:
@@ -28,7 +28,7 @@ private:
 	const uint16_t width = 48;
 	const uint16_t height = 77;
 	float velocity = 0.0f;
-	const float speed = 50.0f;
+	const float speed = 55.0f;
 	const float beakRadius = 8;
 	const glm::vec2 beakOffset = glm::vec2{width/2, 22 };
 	bool eating = false;
