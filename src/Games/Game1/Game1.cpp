@@ -80,10 +80,18 @@ void Game1::onLoad(){
 			nullptr
 	);
 	addObject(scoreGo);
-	scoreGo->setPos({ 5, 5 });
-	scoreSprite->clear(TFT_BLACK);
-	scoreSprite->setTextColor(TFT_WHITE);
-	scoreSprite->setCursor(2,2);
+	scoreGo->setPos({ 2, 2 });
+	scoreSprite->clear(TFT_TRANSPARENT);
+
+	if(StatMan.getLevel() <= 2){
+		scoreSprite->setTextColor(TFT_WHITE);
+	}else if(StatMan.getLevel() <= 4){
+		scoreSprite->setTextColor(TFT_BLACK);
+	}else{
+		scoreSprite->setTextColor(TFT_WHITE);
+	}
+
+	scoreSprite->setCursor(0, 0);
 	scoreSprite->printf("Tries: 0");
 }
 
@@ -127,9 +135,8 @@ void Game1::buttonPressed(uint i){
 		RGB.blinkTwice(bar->getColor(indicator->getDifference()));
 		Serial.println(indicator->getDifference());
 		addPoints(indicator->getDifference());
-		scoreSprite->clear(TFT_BLACK);
-		scoreSprite->setTextColor(TFT_WHITE);
-		scoreSprite->setCursor(2, 2);
+		scoreSprite->clear(TFT_TRANSPARENT);
+		scoreSprite->setCursor(0, 0);
 		scoreSprite->printf("Tries: %d", tries);
 	}
 }
