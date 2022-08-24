@@ -18,6 +18,7 @@ Duck::Duck(File walk, File eat, File eatBad, File win) : walk(walk), eat(eat), e
 
 Duck::~Duck(){
 	Input::getInstance()->removeListener(this);
+	anim->stop();
 }
 
 void Duck::loop(float deltaTime){

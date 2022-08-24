@@ -245,18 +245,23 @@ void DuckScreen::buttonPressed(uint i){
 	switch(i){
 		case BTN_LEFT:
 			if(menu.isShaking()) return;
+			Audio.play({{500, 500, 50}});
 			selection = menu.prev();
 			break;
 		case BTN_RIGHT:
 			if(menu.isShaking()) return;
+			Audio.play({{500, 500, 50}});
 			selection = menu.next();
 			break;
 		case BTN_A:{
 			if(hider.getState() != MenuHider::Shown) return;
 			if(menuItems[selection].levelRequired > StatMan.getLevel()){
+				Audio.play({{300, 300, 50}, {0, 0, 50}, {300, 300, 50}});
 				menu.shake();
 				return;
 			}
+
+			Audio.play({{500, 700, 50}});
 			if(selection == 6){ //settings
 				menuItems[selection].primary();
 			}else{

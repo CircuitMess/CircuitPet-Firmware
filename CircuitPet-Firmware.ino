@@ -9,6 +9,7 @@
 #include <Settings.h>
 #include "src/UserHWTest.h"
 #include "src/JigHWTest/JigHWTest.h"
+#include <Audio/Piezo.h>
 
 extern "C" {
 #include <bootloader_random.h>
@@ -81,6 +82,7 @@ void setup(){
 		test->start();
 		CircuitPet.fadeIn();
 	}else{
+		Piezo.setMute(Settings.get().sound);
 		auto intro = new Intro(baseSprite);
 		LoopManager::loop();
 		intro->start();
