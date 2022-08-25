@@ -28,7 +28,7 @@ SettingsScreen::SettingsScreen::SettingsScreen(Display& display) : screen(displa
 	shutDownSlider->setIsSelected(true);
 	shutDownSlider->setIndex(Settings.get().shutdownTime);
 	brightnessSlider->setSliderValue(Settings.get().screenBrightness);
-	soundSwitch->setBooleanSwitch(!Settings.get().sound);
+	soundSwitch->setBooleanSwitch(Settings.get().sound);
 	rgbSlider->setSliderValue(Settings.get().RGBbrightness);
 	screen.pack();
 }
@@ -245,7 +245,7 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 				Settings.get().sound = soundSwitch->getBooleanSwitch();
 				Settings.get().RGBbrightness = rgbSlider->getSliderValue();
 				Settings.store();
-				Piezo.setMute(Settings.get().sound);
+				Piezo.setMute(!Settings.get().sound);
 				popped = true;
 				LoopManager::addListener(this);
 				return;
@@ -263,10 +263,10 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 				RGB.setColor(Pixel::Black);
 			}else{
 				Settings.get().shutdownTime = shutDownSlider->getIndex();
-				Settings.get().sound = !soundSwitch->getBooleanSwitch();
+				Settings.get().sound = soundSwitch->getBooleanSwitch();
 				Settings.get().RGBbrightness = rgbSlider->getSliderValue();
 				Settings.store();
-				Piezo.setMute(Settings.get().sound);
+				Piezo.setMute(!Settings.get().sound);
 				popped = true;
 				LoopManager::addListener(this);
 				return;

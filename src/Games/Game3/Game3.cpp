@@ -71,8 +71,6 @@ void Game3::onLoad(){
 
 void Game3::onLoop(float deltaTime){
 	if(dead){
-		delay(500);
-		pop();
 		return;
 	}
 
@@ -82,7 +80,10 @@ void Game3::onLoop(float deltaTime){
 		spawnRandom();
 		timeToSpawn -= spawnRate;
 	}
-	for(const auto object: movingObjects){
+
+	if(movingObjects.empty()) return;
+
+	for(const auto &object: movingObjects){
 		int y = deltaTime * object.second + object.first->getPos().y;
 		int x = object.first->getPos().x;
 		object.first->setPos({ x, y });
@@ -118,7 +119,7 @@ void Game3::addTemplate(std::string file, PixelDim dim, int value){
 
 void Game3::spawnRandom(){
 	int randNum = rand() % (101);
-	if(randNum <= 50){
+	if(randNum <= 65){
 		int pick = rand() % foods.size();
 		spawnItem(foods[pick]);
 	}else{
@@ -181,6 +182,7 @@ void Game3::collisionHandler(Item item){
 		drawHearts();
 	}
 	if(lives <= 0){
+		duck->killed(this);
 		Audio.play({{ 400, 300, 200 },
 					{ 0,   0,   50 },
 					{ 300, 200, 200 },
@@ -271,14 +273,14 @@ rgb hsv2rgb(hsv in){
 
 
 void Game3::drawBar(){
-	float fillPercent = ((float) hungerMeter / (float) hungerMeterMax) * 118.0f;
+	float fillPercent = ((float) hungerMeter / (float) hungerMeterMax) * 121.0f;
 
 	float difference = abs(118 - fillPercent);
 	double hue = (118.0f - difference) / 100.0 * 60.0 / 255.0 * 360;
 	rgb rgbColor0 = hsv2rgb({ hue, 1.0, 1.0 });
 	uint16_t c0 = lgfx::color565(rgbColor0.r * 255.0, rgbColor0.g * 255.0, rgbColor0.b * 255.0);
 
-	hungerBar->fillRect(2, 118 - fillPercent, 4, fillPercent, c0);
+	hungerBar->fillRect(2, 121 - fillPercent, 4, fillPercent, c0);
 }
 
 Stats Game3::returnStats(){

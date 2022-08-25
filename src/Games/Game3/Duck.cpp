@@ -71,16 +71,22 @@ void Duck::buttonReleased(uint i){
 
 void Duck::filled(Game3* game){
 	anim->setAnim(win);
+	eatingBad = true;
 	anim->setLoopDoneCallback([game](uint32_t){
-		delay(500);
+		delay(300);
 		game->pop();
 	});
 }
 
-bool Duck::isEating() const{
-	return eating;
-}
-
 bool Duck::isEatingBad() const{
 	return eatingBad;
+}
+
+void Duck::killed(Game3* game){
+	anim->setAnim(eatBad);
+	anim->setLoopMode(GIF::Single);
+	anim->setLoopDoneCallback([game](uint32_t){
+		delay(300);
+		game->pop();
+	});
 }
