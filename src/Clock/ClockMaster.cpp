@@ -1,12 +1,19 @@
 #include "ClockMaster.h"
 #include <SPIFFS.h>
 #include <Loop/LoopManager.h>
+#include <CircuitPet.h>
 
+nvs_handle ClockMaster::handle;
 ClockMaster Clock;
 
 static const char* tag = "ClockMaster";
 
 void ClockMaster::begin(){
+	auto err = nvs_open("ClockMaster", NVS_READWRITE, &handle);
+	if(err != ESP_OK){
+		ESP_LOGW(tag, "Clock storage initialization error: %s\n", esp_err_to_name(err));
+	}
+
 	lastRTCTime = syncTime();
 	read();
 
@@ -18,44 +25,60 @@ void ClockMaster::loop(uint micros){
 
 	if(syncTimeMicros >= syncTimeInterval){
 		syncTimeMicros = 0;
-		uint64_t newTime = syncTime();
+		time_t newTime = syncTime();
 
-		int64_t delta = newTime - lastRTCTime - syncTimeInterval / 1000; // TODO - change if RTC chip's time resolution is larger/smaller
+		int delta = newTime - lastRTCTime - syncTimeInterval / 1000000;
+
 		if(abs(delta) > 0){
-			ESP_LOGI(tag, "RTC - millis difference over last 60 seconds: %ld\n", delta);
+			ESP_LOGI(tag, "RTC - millis difference over last 60 seconds: %d\n", delta);
 		}
+		lastRTCTime = newTime;
 	}
 
-	uint64_t rtcTime = syncTime();
-	uint64_t millisTime = millis();
+	time_t rtcTime = syncTime();
+	time_t millisTime = millis() / 1000;
 	bool writeNeeded = false;
 
 	for(auto l : listeners){
-		uint64_t delta;
+		uint32_t delta;
 		if(l->persistent){
-			if(rtcTime < l->lastTick) continue;
+
+			//if battery power was cut, the recorded lastTick will be greater than current rtcTime, so we reset it
+			if(rtcTime < l->lastTick){
+				l->lastTick = rtcTime;
+				l->lastTickMillis = millisTime;
+				write();
+				continue;
+			}
 			delta = rtcTime - l->lastTick;
 		}else{
 			delta = millisTime - l->lastTick;
 		}
 
+
 		if(delta >= l->tickInterval){
+			if(l->lastTick == 0){
+				//in case of first listener tick, delta will be much higher since lastTick == 0
+				l->func();
+			}else{
+				for(int i = 0; i < (delta / l->tickInterval); i++){
+					l->func();
+				}
+			}
+
 			if(l->persistent){
-				if(l->lastTickMillis != 0 && millisTime - l->lastTickMillis <= 0.5 * l->tickInterval){
+				if(l->lastTickMillis != 0 && l->lastTickMillis >= millisTime && millisTime - l->lastTickMillis <= 0.5 * l->tickInterval){
 					//ignore tick because of discrepancy between RTC and internal clock, probably because of short tick interval and RTC syncing edge cases
 					ESP_LOGW(tag, "RTC - millis difference too great, %s tick ignored\n", l->ID);
 					continue;
 				}
 				persistentListeners[l->ID].lastTick = l->lastTick = rtcTime;
 				writeNeeded = true;
+			}else{
+				l->lastTick = millisTime;
 			}
 
-			for(int i = 0; i < (delta / l->tickInterval); i++){
-				l->func();
-			}
-
-			l->lastTickMillis = millis();
-			l->lastTick = (l->persistent ? rtcTime : millisTime);
+			l->lastTickMillis = millisTime;
 		}
 	}
 
@@ -66,7 +89,10 @@ void ClockMaster::loop(uint micros){
 
 
 void ClockMaster::addListener(ClockListener* listener){
-	listener->lastTick = millis();
+	if(!listener->persistent){
+		listener->lastTick = millis();
+	}
+	listener->lastTickMillis = millis();
 	listeners.push_back(listener);
 
 	if(listener->persistent){
@@ -95,32 +121,56 @@ void ClockMaster::removeListener(ClockListener* listener){
 }
 
 void ClockMaster::write(){
-
-	storage.seek(0);
-	for(auto key : persistentListeners){
-		storage.write((uint8_t*)&key.second.ID, 10);
-		storage.write((uint8_t*)&key.second.lastTick, 8);
+	auto size = (sizeof(time_t) + 10) * persistentListeners.size();
+	auto data = (uint8_t*)malloc(size);
+	auto it = persistentListeners.begin();
+	for(int i = 0; i < persistentListeners.size(); i++){
+		memcpy(data + (sizeof(time_t) + 10) * i, (uint8_t*)&it->second.ID, 10);
+		memcpy(data + (10) * i, (uint8_t*)&it->second.lastTick, sizeof(time_t));
+		it++;
+	}
+	auto err = nvs_set_blob(handle, "ClockMaster", data, size);
+	if(err != ESP_OK){
+		ESP_LOGW(tag, "Clock data write failed");
+		return;
 	}
 }
 
 void ClockMaster::read(){
-	storage.close();
-	storage = SPIFFS.open("/clock.bin", "r");
 
-	while(storage.available()){
+	size_t size;
+
+	auto err = nvs_get_blob(handle, "ClockMaster", nullptr, &size);
+	if(err != ESP_OK){
+		ESP_LOGW(tag, "Clock data size read failed: %s", esp_err_to_name(err));
+		return;
+	}
+
+
+	auto data = (uint8_t*)malloc(size);
+
+	err = nvs_get_blob(handle, "ClockMaster", data, &size);
+	if(err != ESP_OK){
+		ESP_LOGW(tag, "Clock data read failed: %s", esp_err_to_name(err));
+		return;
+	}
+
+	if(!data || !size || (size % (sizeof(time_t) + 10)) != 0){
+		ESP_LOGW(tag, "Clock data read failed - data invalid");
+		return;
+	}
+
+	persistentListeners.clear();
+
+	for(int i = 0; i < size / (sizeof(time_t) + 10); ++i){
 		PersistentListener listener;
-		size_t read = storage.read((uint8_t*)&listener.ID, 10);
-		read += storage.read((uint8_t*)&listener.lastTick, 8);
-
-		if(read < 18) return;
+		memcpy((uint8_t*)&listener.ID, data + (sizeof(time_t) + 10) * i, 10);
+		memcpy((uint8_t*)&listener.lastTick, data + (10) * i, sizeof(time_t));
 
 		persistentListeners[listener.ID] = listener;
 	}
-	storage = SPIFFS.open("/clock.bin", "w");
 }
 
-uint64_t ClockMaster::syncTime(){
-	//TODO - add time fetching from RTC
-	return millis();
+time_t ClockMaster::syncTime(){
+	return CircuitPet.getUnixTime();
 }
-

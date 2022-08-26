@@ -66,7 +66,6 @@ void setup(){
 	baseSprite->setTextSize(0);
 
 	StatMan.begin();
-	StatMan.setPaused(true); //stats timekeeping will be unpaused when home menu starts
 
 	if(!Settings.get().hwTested){
 		auto test = new UserHWTest(baseSprite, [](){

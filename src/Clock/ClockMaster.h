@@ -8,10 +8,11 @@
 #include <FS.h>
 #include "ClockListener.h"
 #include <string>
+#include <nvs.h>
 
 struct PersistentListener{
 	char ID[10];
-	uint64_t lastTick;
+	time_t lastTick;
 };
 
 extern ClockMaster Clock;
@@ -28,17 +29,17 @@ private:
 	std::vector<ClockListener*> listeners;
 	std::map <std::string, PersistentListener> persistentListeners;
 
-	File storage;
 	void write();
 	void read();
 
-	uint64_t lastRTCTime = 0;
+	time_t lastRTCTime = 0;
 
-	uint64_t syncTime();
+	time_t syncTime();
 
 	uint32_t syncTimeMicros = 0;
-	const uint32_t syncTimeInterval = 60000000;
+	const uint32_t syncTimeInterval = 60000000; //[us]
 
+	static nvs_handle handle;
 };
 
 

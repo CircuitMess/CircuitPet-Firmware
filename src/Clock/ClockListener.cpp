@@ -1,6 +1,6 @@
 #include "ClockListener.h"
 
-ClockListener::ClockListener(uint64_t tickInterval, bool single, bool persistent, const char* id, std::function<void()> func)
+ClockListener::ClockListener(time_t tickInterval, bool single, bool persistent, const char* id, std::function<void()> func)
 		: tickInterval(tickInterval), single(single), persistent(persistent), func(func){
 	strncpy(ID, id, 10);
 }

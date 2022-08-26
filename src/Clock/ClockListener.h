@@ -10,14 +10,21 @@ class ClockListener {
 friend ClockMaster;
 
 public:
-	ClockListener(uint64_t tickInterval, bool single, bool persistent, const char* id, std::function<void()> func);
+	/**
+	 * @param tickInterval Interval after which the function will be called, in seconds.
+	 * @param single True - function will be called once, False - function will be called repeatedly,
+	 * @param persistent RTC persistency after device is reset. Saves last known time to non-volatile memory.
+	 * @param id Character string ID.
+	 * @param func Function to be called.
+	 */
+	ClockListener(time_t tickInterval, bool single, bool persistent, const char* id, std::function<void()> func);
 	void reset();
 
 private:
-	uint64_t lastTick = 0; //[ms]
+	time_t lastTick = 0; //[s]
 	uint32_t lastTickMillis = 0; //[ms] used as a failsafe when listener is triggered immediately after a sync
 
-	const uint64_t tickInterval;
+	const time_t tickInterval;
 	const bool single; // event is periodic or triggered only once
 	const bool persistent; // persists after shutdown
 	char ID[10]; //used to identify persistent listeners

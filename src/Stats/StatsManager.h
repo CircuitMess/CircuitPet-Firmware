@@ -5,6 +5,7 @@
 #include <Util/WithListeners.h>
 #include "Stats.hpp"
 #include "../Clock/ClockListener.h"
+#include <nvs.h>
 
 class StatsManager : public WithListeners<StatsChangedListener> {
 public:
@@ -25,6 +26,11 @@ public:
 	const Stats& get() const;
 	uint8_t getLevel() const;
 
+	/**
+	 * Removes clock registration, periodic stats decrement.
+	 * Is paused by default!
+	 * @param pause
+	 */
 	void setPaused(bool pause);
 
 
@@ -44,6 +50,8 @@ private:
 	ClockListener timedUpdateListener;
 
 	static const Stats hourlyDecrement;
+
+	static nvs_handle handle;
 };
 
 extern StatsManager StatMan;
