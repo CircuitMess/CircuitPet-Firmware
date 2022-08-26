@@ -43,11 +43,17 @@ void SettingsScreen::DiscreteSlider::drawControl(){
 		getSprite()->setCursor(getTotalX() + 120, getTotalY() + 2);
 		getSprite()->println("OFF");
 		return;
+	}else if(shutDownTime[index] >= 60){
+		getSprite()->setCursor(getTotalX() + 115, getTotalY() + 2);
+		getSprite()->println(shutDownTime[index] / 60);
+		getSprite()->setCursor(getTotalX() + 127, getTotalY() + 2);
+		getSprite()->println("min");
+	}else{
+		getSprite()->setCursor(getTotalX() + 112, getTotalY() + 2);
+		getSprite()->println(shutDownTime[index]);
+		getSprite()->setCursor(getTotalX() + 124, getTotalY() + 2);
+		getSprite()->println(" sec");
 	}
-	getSprite()->setCursor(getTotalX() + 115, getTotalY() + 2);
-	getSprite()->println(shutDownTime[index]);
-	getSprite()->setCursor(getTotalX() + 127, getTotalY() + 2);
-	getSprite()->println("min");
 
 }
 

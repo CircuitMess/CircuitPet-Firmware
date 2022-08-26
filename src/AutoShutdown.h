@@ -15,7 +15,7 @@ private:
 
 	uint32_t activity = 0;
 
-	static const uint8_t minutes[];
+	static const uint16_t sleepTimes[];
 
 };
 

@@ -4,7 +4,7 @@
 #include <Settings.h>
 #include <CircuitPet.h>
 
-const uint8_t AutoShutdown::minutes[] = { 0, 1, 5, 15, 30 };
+const uint16_t AutoShutdown::sleepTimes[] = { 0, 15, 30, 60, 3 * 60 };
 
 void AutoShutdown::begin(){
 	LoopManager::addListener(this);
@@ -23,9 +23,9 @@ void AutoShutdown::loop(uint micros){
 
 	if(index == 0) return;
 
-	auto delay = minutes[index] * 60 * 1000;
+	auto delay = sleepTimes[index] * 1000;
 	if(millis() - activity >= delay){
-		CircuitPet.fadeOut();
-		CircuitPet.shutdown();
+		CircuitPet.sleep();
+		activity = millis();
 	}
 }

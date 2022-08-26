@@ -15,7 +15,7 @@ SettingsScreen::SettingsScreen* SettingsScreen::SettingsScreen::instance = nullp
 
 SettingsScreen::SettingsScreen::SettingsScreen(Display& display) : screen(display), scrollLayout(new ScrollLayout(&screen)),
 																   screenLayout(new LinearLayout(scrollLayout, VERTICAL)),
-																   shutDownSlider(new DiscreteSlider(screenLayout, "Auto shutdown", { 0, 1, 5, 15, 30 })),
+																   shutDownSlider(new DiscreteSlider(screenLayout, "Sleep time", { 0, 15, 30, 60, 3 * 60 })),
 																   brightnessSlider(new SliderElement(screenLayout, "Brightness")),
 																   soundSwitch(new BooleanElement(screenLayout, "Sound")),
 																   rgbSlider(new SliderElement(screenLayout, "RGB brightness")),
