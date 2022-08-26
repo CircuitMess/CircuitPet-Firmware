@@ -9,6 +9,7 @@
 #include <Settings.h>
 #include "src/UserHWTest.h"
 #include "src/JigHWTest/JigHWTest.h"
+#include "src/AutoShutdown.h"
 #include <Audio/Piezo.h>
 
 extern "C" {
@@ -66,6 +67,9 @@ void setup(){
 	baseSprite->setTextSize(0);
 
 	StatMan.begin();
+
+	auto shutdown = new AutoShutdown();
+	shutdown->begin();
 
 	if(!Settings.get().hwTested){
 		auto test = new UserHWTest(baseSprite, [](){
