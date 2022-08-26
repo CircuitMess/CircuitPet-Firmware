@@ -137,6 +137,38 @@ void SettingsScreen::SettingsScreen::draw(){
 //	screen.getSprite()->print("Version 1.0");
 
 	scrollLayout->draw();
+
+	if(resetConfirm){
+		auto base = screen.getSprite();
+
+		File frame = SPIFFS.open("/frame.raw");
+		base->drawIcon(frame, 16, 16, 128, 96, 1, TFT_TRANSPARENT);
+
+		base->setTextColor(TFT_BLACK);
+		base->setCursor(42, 27);
+		base->print("Are you sure?");
+		base->setCursor(34, 42);
+		base->print("This will reset");
+		base->setCursor(52, 52);
+		base->print("ALL data!");
+
+		base->setCursor(26, 76);
+		base->print("Confirm");
+
+		base->setCursor(98, 76);
+		base->print("Cancel");
+
+		for(int i = 0; i < 4; i++){
+			int dy = (i == 1 || i == 2) ? 4 : 0;
+
+			if(i == 0){
+				base->fillCircle(48 + i * 20, 94 + dy, 6, TFT_BLACK);
+			}else{
+				base->drawCircle(48 + i * 20, 94 + dy, 6, TFT_BLACK);
+			}
+		}
+	}
+
 	screen.commit();
 }
 
@@ -162,6 +194,18 @@ void SettingsScreen::SettingsScreen::buildUI(){
 }
 
 void SettingsScreen::SettingsScreen::buttonPressed(uint id){
+	if(resetConfirm){
+		if(id == BTN_LEFT){
+			nvs_flash_erase();
+			CircuitPet.fadeOut();
+			ESP.restart();
+		}else{
+			resetConfirm = false;
+			draw();
+			return;
+		}
+	}
+
 	switch(id){
 		case BTN_LEFT:
 			Audio.play({{500, 500, 50}});
@@ -237,9 +281,9 @@ void SettingsScreen::SettingsScreen::buttonPressed(uint id){
 				hwTest->push(this);
 				break;
 			}else if(selectedSetting == 5){
-				nvs_flash_erase();
-				CircuitPet.fadeOut();
-				ESP.restart();
+				resetConfirm = true;
+				draw();
+				return;
 			}else if(selectedSetting == 6){
 				Settings.get().shutdownTime = shutDownSlider->getIndex();
 				Settings.get().sound = soundSwitch->getBooleanSwitch();

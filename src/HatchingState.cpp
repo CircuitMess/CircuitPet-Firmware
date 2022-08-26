@@ -50,14 +50,12 @@ void HatchingState::loop(uint micros){
 			File frame = SPIFFS.open("/frame.raw");
 			base->drawIcon(frame, 16, 16, 128, 96, 1, TFT_TRANSPARENT);
 
-			//TODO - use prettier graphics here
 			base->setTextColor(TFT_BLACK);
-			base->setTextDatum(lgfx::textdatum::BC_DATUM);
-			base->setCursor(40, 52);
+			base->setCursor(40, 46);
 			base->print("Press any key");
-			base->setCursor(48, 65);
+			base->setCursor(48, 59);
 			base->print("to receive");
-			base->setCursor(32, 78);
+			base->setCursor(32, 72);
 			base->print("your CircuitPet!");
 		}
 	}
