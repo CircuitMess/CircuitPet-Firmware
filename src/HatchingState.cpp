@@ -47,13 +47,18 @@ void HatchingState::loop(uint micros){
 		blinkTime += micros;
 		if(blinkTime >= 1000000) blinkTime = 0;
 		if(micros % 1000000 < 750000){
+			File frame = SPIFFS.open("/frame.raw");
+			base->drawIcon(frame, 16, 16, 128, 96, 1, TFT_TRANSPARENT);
+
 			//TODO - use prettier graphics here
 			base->setTextColor(TFT_BLACK);
-			base->setCursor(0, base->height() - 40);
 			base->setTextDatum(lgfx::textdatum::BC_DATUM);
+			base->setCursor(40, 52);
 			base->print("Press any key");
-			base->setCursor(0, base->height() - 20);
-			base->print("to receive your CircuitPet");
+			base->setCursor(48, 65);
+			base->print("to receive");
+			base->setCursor(32, 78);
+			base->print("your CircuitPet!");
 		}
 	}
 }
