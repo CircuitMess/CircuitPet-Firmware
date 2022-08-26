@@ -14,6 +14,8 @@ public:
 	void loop(uint micros) override;
 	State getState() const;
 
+	bool allowAction();
+
 private:
 	Menu* menu;
 

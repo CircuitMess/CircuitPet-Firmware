@@ -71,3 +71,7 @@ void MenuHider::loop(uint deltaMicros){
 MenuHider::State MenuHider::getState() const{
 	return state;
 }
+
+bool MenuHider::allowAction(){
+	return state == Shown || (state == Showing && transition <= 0.8f);
+}

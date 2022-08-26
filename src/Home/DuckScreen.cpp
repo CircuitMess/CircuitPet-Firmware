@@ -254,7 +254,7 @@ void DuckScreen::buttonPressed(uint i){
 			selection = menu.next();
 			break;
 		case BTN_A:{
-			if(hider.getState() != MenuHider::Shown) return;
+			if(!hider.allowAction()) return;
 			if(menuItems[selection].levelRequired > StatMan.getLevel()){
 				Audio.play({{300, 300, 50}, {0, 0, 50}, {300, 300, 50}});
 				menu.shake();
