@@ -206,6 +206,7 @@ void DuckScreen::loop(uint micros){
 
 		statsSprite->setHappiness(currentStats.happiness);
 		statsSprite->setOilLevel(currentStats.oilLevel);
+		statsSprite->setXPLevel();
 	}
 
 	//playing random duck animations while idling

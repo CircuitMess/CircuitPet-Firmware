@@ -7,7 +7,7 @@
 class StatSprite {
 public:
 	enum Type {
-		Happiness, OilLevel, Battery
+		Happiness, OilLevel, Battery, XPLevel
 	};
 	StatSprite(Sprite* parent, Type type, uint8_t level);
 	void setLevel(uint8_t level);

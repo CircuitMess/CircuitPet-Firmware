@@ -119,7 +119,8 @@ hsv rgb2hsv(rgb in){
 const char* StatSprite::paths[] = {
 		"/Stats/Happiness.raw",
 		"/Stats/OilLevel.raw",
-		"/Stats/Battery.raw"
+		"/Stats/Battery.raw",
+		"/Stats/Happiness.raw" //TODO: replace with XP path
 };
 
 const char* StatSprite::barPath = "/Stats/Bar.raw";
