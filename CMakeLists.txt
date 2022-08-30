@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 project(CircuitPet-Firmware)
 set(PORT /dev/ttyUSB0)
-set(DEVICE cm:esp32:chatter)
+set(DEVICE cm:esp32:circuitpet)
 set(CMAKE_CXX_STANDARD 17)
 
 set(ROOT ${CMAKE_SOURCE_DIR})
