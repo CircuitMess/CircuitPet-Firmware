@@ -63,6 +63,12 @@ uint8_t StatsManager::getLevel() const{
 	return levelupsNum + 1;
 }
 
+uint8_t StatsManager::getExpPercentage() const{
+	if(getLevel() == 1) return (uint8_t)stats.experience/levelupThresholds[0];
+	uint8_t prevThreshold = levelupThresholds[getLevel()-2];
+	return  (uint8_t)((stats.experience-prevThreshold)* 100/(levelupThresholds[getLevel()-1]-prevThreshold)) ;
+}
+
 void StatsManager::setPaused(bool pause){
 	pause ? Clock.removeListener(&timedUpdateListener) : Clock.addListener(&timedUpdateListener);
 }
