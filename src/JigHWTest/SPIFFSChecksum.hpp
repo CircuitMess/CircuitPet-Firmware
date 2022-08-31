@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 struct {
-	String name;
+	const char* name;
 	uint32_t sum;
 } static const SPIFFSChecksums[] PROGMEM = {
 		{ "/arrowDown.bin", 2327 },

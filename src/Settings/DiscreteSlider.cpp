@@ -1,8 +1,8 @@
 #include "DiscreteSlider.h"
 
 
-SettingsScreen::DiscreteSlider::DiscreteSlider(ElementContainer* parent, String name, std::vector <uint8_t> shutDownTime) : SettingsElement(parent, name),
-																															shutDownTime(shutDownTime){
+SettingsScreen::DiscreteSlider::DiscreteSlider(ElementContainer* parent, const char* name, std::vector <uint8_t> shutDownTime) : SettingsElement(parent, name),
+																																 shutDownTime(shutDownTime){
 
 }
 

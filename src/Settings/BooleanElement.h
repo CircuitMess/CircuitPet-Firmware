@@ -6,7 +6,7 @@
 namespace SettingsScreen {
 class BooleanElement : public SettingsElement {
 public:
-	BooleanElement(ElementContainer* parent, String name);
+	BooleanElement(ElementContainer* parent, const char* name);
 
 	void toggle() override;
 

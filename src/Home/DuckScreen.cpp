@@ -282,7 +282,9 @@ void DuckScreen::statsChanged(const Stats& stats, bool leveledUp){
 	}
 
 	if(leveledUp){
-		File file = SPIFFS.open(String("/LevelUp/") + StatMan.getLevel() + ".raw");
+		char path[20];
+		sprintf(path, "/LevelUp/%d.raw", StatMan.getLevel());
+		File file = SPIFFS.open(path);
 		luFile = file;
 
 		luState = FadeIn;

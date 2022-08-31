@@ -108,7 +108,7 @@ void Game3::buttonPressed(uint i){
 	}
 }
 
-void Game3::addTemplate(std::string file, PixelDim dim, int value){
+void Game3::addTemplate(const char* file, PixelDim dim, int value){
 	Template temp{ file, dim, value };
 	if(value > 0){
 		foods.push_back(temp);

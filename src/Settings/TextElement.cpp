@@ -1,7 +1,7 @@
 #include "TextElement.h"
 
 
-SettingsScreen::TextElement::TextElement(ElementContainer *partent, String name) : SettingsElement(partent, name){
+SettingsScreen::TextElement::TextElement(ElementContainer *partent, const char* name) : SettingsElement(partent, name){
 
 }
 

@@ -8,7 +8,8 @@ OSSprite::OSSprite(Sprite* parent, uint8_t level) : sprite(parent, osWidth+logoW
 }
 
 void OSSprite::setLevel(uint8_t level){
-	String path = String("/OS/Level") + level + ".raw";
+	char path[20];
+	sprintf(path, "/OS/Level%d.raw", level);
 	fs::File osFile = SPIFFS.open(path);
 	fs::File logoFile = SPIFFS.open("/OS/Logo.raw");
 

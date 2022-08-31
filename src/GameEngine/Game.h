@@ -33,7 +33,7 @@ protected:
 	virtual void onRender(Sprite* canvas);
 	virtual Stats returnStats();
 
-	File getFile(std::string path);
+	File getFile(const char* path);
 
 	void addObject(std::shared_ptr<GameObject> obj);
 	void removeObject(std::shared_ptr<GameObject> obj);

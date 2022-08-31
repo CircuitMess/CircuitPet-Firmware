@@ -6,7 +6,7 @@
 #include "../../GameEngine/Rendering/SpriteRC.h"
 #include "../../Stats/StatsManager.h"
 
-std::string bgPath[6] = { "/Bg/Level1.raw",
+const char* bgPath[6] = { "/Bg/Level1.raw",
 						  "/Bg/Level2.raw",
 						  "/Bg/Level3.raw",
 						  "/Bg/Level4.raw",

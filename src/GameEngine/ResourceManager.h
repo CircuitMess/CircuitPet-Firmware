@@ -32,7 +32,7 @@ public:
 	ResourceManager(const char* root);
 	void load(const std::vector<ResDescriptor>& descriptors);
 
-	File getResource(std::string path);
+	File getResource(const char* path);
 
 private:
 	std::map<std::string, File> resources;

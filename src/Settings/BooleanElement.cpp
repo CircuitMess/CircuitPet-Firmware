@@ -1,6 +1,6 @@
 #include "BooleanElement.h"
 
-SettingsScreen::BooleanElement::BooleanElement(ElementContainer* parent, String name)
+SettingsScreen::BooleanElement::BooleanElement(ElementContainer* parent, const char* name)
 		: SettingsElement(parent, name){
 
 }

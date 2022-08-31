@@ -21,7 +21,7 @@ protected:
 
 private:
 	void buttonPressed(uint i) override;
-	void addTemplate(std::string file, PixelDim dim, int value);
+	void addTemplate(const char* file, PixelDim dim, int value);
 	void spawnRandom();
 	void drawHearts();
 	void drawBar();
@@ -32,7 +32,7 @@ private:
 	};
 
 	struct Template {
-		std::string path;
+		const char* path;
 		PixelDim dim;
 		int value;
 	};

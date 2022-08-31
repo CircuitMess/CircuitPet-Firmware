@@ -6,7 +6,7 @@
 namespace SettingsScreen {
 class DiscreteSlider : public SettingsElement {
 public:
-	DiscreteSlider(ElementContainer* parent, String name, std::vector <uint8_t> shutDownTime);
+	DiscreteSlider(ElementContainer* parent, const char* name, std::vector <uint8_t> shutDownTime);
 
 	void toggle() override;
 

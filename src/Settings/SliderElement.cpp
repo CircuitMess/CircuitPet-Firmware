@@ -1,6 +1,6 @@
 #include "SliderElement.h"
 
-SettingsScreen::SliderElement::SliderElement(ElementContainer* partent, String name) : SettingsElement(partent, name){
+SettingsScreen::SliderElement::SliderElement(ElementContainer* partent, const char* name) : SettingsElement(partent, name){
 
 }
 

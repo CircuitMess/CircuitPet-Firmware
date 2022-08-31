@@ -8,7 +8,7 @@
 DeathState* DeathState::instance = nullptr;
 
 DeathState::DeathState(Sprite* base) : explosion(base, SPIFFS.open("/death.g565")), bg(base, StatMan.getLevel()),
-									   duck(base, SPIFFS.open(DeathState::getPath())), base(base){
+									   duck(base, SPIFFS.open(paths[DeathState::getLevel()])), base(base){
 	instance = this;
 }
 
@@ -72,14 +72,12 @@ void DeathState::loop(uint micros){
 	}
 }
 
-String DeathState::getPath(){
-	String path = "/Home/rusty/0";
+uint8_t DeathState::getLevel(){
 	if(StatMan.getLevel() == 6){
-		path += "6_general.gif";
+		return 6;
 	}else if(StatMan.getLevel() >= 4){
-		path += "4_general.gif";
+		return 4;
 	}else{
-		path += "1_general.gif";
+		return 1;
 	}
-	return path;
 }

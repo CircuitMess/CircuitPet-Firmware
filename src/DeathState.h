@@ -21,7 +21,8 @@ protected:
 
 private:
 
-	static String getPath();
+	static uint8_t getLevel();
+	const char* paths[3] = { "/Home/rusty/06_general.gif", "/Home/rusty/04_general.gif", "/Home/rusty/01_general.gif" };
 	static DeathState* instance;
 
 	AnimatedSprite explosion;

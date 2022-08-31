@@ -6,7 +6,7 @@
 namespace SettingsScreen {
 class TextElement : public SettingsElement {
 public:
-	TextElement(ElementContainer* partent, String name);
+	TextElement(ElementContainer* partent, const char* name);
 
 	void toggle() override;
 

@@ -7,7 +7,7 @@ namespace SettingsScreen {
 class SettingsElement : public CustomElement {
 public:
 
-	SettingsElement(ElementContainer* parent, String name);
+	SettingsElement(ElementContainer* parent, const char* name);
 
 	void setIsSelected(bool isSelected);
 
@@ -19,7 +19,7 @@ public:
 
 private:
 	bool selected = false;
-	String name;
+	const char* name;
 
 protected:
 	virtual void drawControl() = 0;

@@ -7,7 +7,7 @@
 namespace SettingsScreen {
 class SliderElement : public SettingsElement {
 public:
-	SliderElement(ElementContainer* partent, String name);
+	SliderElement(ElementContainer* partent, const char* name);
 
 	void toggle() override;
 

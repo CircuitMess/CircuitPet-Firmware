@@ -47,7 +47,7 @@ bool Game::isLoaded() const{
 	return loaded;
 }
 
-File Game::getFile(std::string path){
+File Game::getFile(const char* path){
 	return resMan.getResource(std::move(path));
 }
 

@@ -1,6 +1,6 @@
 #include "SettingsElement.h"
 
-SettingsScreen::SettingsElement::SettingsElement(ElementContainer* parent, String name) : CustomElement(parent, 160, 18), name(name){
+SettingsScreen::SettingsElement::SettingsElement(ElementContainer* parent, const char* name) : CustomElement(parent, 160, 18), name(name){
 
 }
 

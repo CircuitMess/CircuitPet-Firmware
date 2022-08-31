@@ -50,7 +50,7 @@ void ResourceManager::load(const std::vector<ResDescriptor>& descriptors){
 	}
 }
 
-File ResourceManager::getResource(std::string path){
+File ResourceManager::getResource(const char* path){
 	auto file = resources.find(path);
 	if(file == resources.end()) return { };
 	file->second.seek(0);
