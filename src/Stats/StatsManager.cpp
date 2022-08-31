@@ -69,7 +69,7 @@ void StatsManager::setPaused(bool pause){
 
 void StatsManager::store(){
 	auto size = sizeof(Stats) + sizeof(gameOverCount) + sizeof(hatched);
-	auto data = (uint8_t*)malloc(size);
+	uint8_t data[size];
 
 	memcpy(data, (uint8_t*)&stats, sizeof(Stats));
 	memcpy(data + sizeof(Stats), &gameOverCount, 1);
@@ -85,7 +85,7 @@ void StatsManager::store(){
 
 void StatsManager::load(){
 	auto size = sizeof(Stats) + sizeof(gameOverCount) + sizeof(hatched);
-	auto data = (uint8_t*)malloc(size);
+	uint8_t data[size];
 
 	auto err = nvs_get_blob(handle, "StatsMan", data, &size);
 	if(err != ESP_OK){

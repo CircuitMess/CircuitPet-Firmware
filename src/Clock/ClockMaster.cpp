@@ -122,7 +122,7 @@ void ClockMaster::removeListener(ClockListener* listener){
 
 void ClockMaster::write(){
 	auto size = (sizeof(time_t) + 10) * persistentListeners.size();
-	auto data = (uint8_t*)malloc(size);
+	uint8_t data[size];
 	auto it = persistentListeners.begin();
 	for(int i = 0; i < persistentListeners.size(); i++){
 		memcpy(data + (sizeof(time_t) + 10) * i, (uint8_t*)&it->second.ID, 10);
@@ -147,7 +147,7 @@ void ClockMaster::read(){
 	}
 
 
-	auto data = (uint8_t*)malloc(size);
+	uint8_t data[size];
 
 	err = nvs_get_blob(handle, "ClockMaster", data, &size);
 	if(err != ESP_OK){
