@@ -3,7 +3,7 @@
 
 #include <Input/InputListener.h>
 #include "State.h"
-#include <Display/GIFAnimatedSprite.h>
+#include <Display/AnimatedSprite.h>
 
 class HatchingState : public State, private LoopListener, private InputListener {
 public:
@@ -17,8 +17,10 @@ protected:
 
 
 private:
-	GIFAnimatedSprite gif;
+	AnimatedSprite gif;
 	Sprite* base;
+
+	static HatchingState* instance;
 
 	bool exit = false;
 	bool accepted = false;

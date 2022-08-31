@@ -5,20 +5,27 @@
 #include <FS/RamFile.h>
 #include "Stats/StatsManager.h"
 #include <Input/Input.h>
+#include <FS/CompressedFile.h>
 
-HatchingState::HatchingState(Sprite* base) : gif(base, SPIFFS.open("/hatching.gif")), base(base){
+HatchingState* HatchingState::instance = nullptr;
 
+HatchingState::HatchingState(Sprite* base) : gif(base, CompressedFile::open(SPIFFS.open("/hatch.g565.hs"), 8, 4), false), base(base){
+	instance = this;
 }
 
 void HatchingState::onStart(){
 	LoopManager::resetTime();
 
-	gif.start();
-	gif.stop();
-	gif.setLoopMode(GIF::Single);
-	gif.setLoopDoneCallback([this](uint32_t){
-		exit = true;
+	gif.setLoop(false);
+	gif.setLoopDoneCallback([](){
+		instance->exit = true;
 	});
+	gif.nextFrame();
+	gif.push();
+	base->push();
+	gif.start();
+
+
 	LoopManager::addListener(this);
 	Input::getInstance()->addListener(this);
 }
@@ -41,7 +48,7 @@ void HatchingState::loop(uint micros){
 		return;
 	}
 
-	gif.push();
+
 
 	if(!accepted){
 		blinkTime += micros;
@@ -58,6 +65,11 @@ void HatchingState::loop(uint micros){
 			base->setCursor(32, 72);
 			base->print("your CircuitPet!");
 		}
+	}else{
+		if(gif.checkFrame()){
+			gif.nextFrame();
+		}
+		gif.push();
 	}
 }
 
