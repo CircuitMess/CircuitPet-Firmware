@@ -21,6 +21,7 @@ protected:
 
 private:
 
+	static String getPath();
 	static DeathState* instance;
 
 	AnimatedSprite explosion;
