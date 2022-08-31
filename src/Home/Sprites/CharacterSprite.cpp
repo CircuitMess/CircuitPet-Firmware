@@ -3,13 +3,15 @@
 #include <SPIFFS.h>
 
 const char* animNames[] = { "general", "scratch", "look", "stretch", "wave", "dance", "knock" };
-
+bool CharacterSprite::canChange = false;
 CharacterSprite::CharacterSprite(Sprite* parentSprite, uint8_t charLevel, bool rusty, Anim currentAnim) : parentSprite(parentSprite),
 																										  charLevel(charLevel), rusty(rusty),
 																										  currentAnim(currentAnim),
-																										  gif(std::make_unique<GIFAnimatedSprite>(parentSprite, getAnimFile(charLevel, rusty, currentAnim))){
-	gif->setLoopMode(GIF::Infinite);
+																										  gif(std::make_unique<AnimatedSprite>(parentSprite, getAnimFile(charLevel, rusty, currentAnim))){
+	gif->setLoop(true);
 	gif->setXY(x, y);
+	canChange = false;
+	gif->setMaskingColor(TFT_TRANSPARENT);
 }
 
 void CharacterSprite::loop(uint micros){
@@ -23,6 +25,10 @@ void CharacterSprite::push(){
 	if(firstPush){
 		firstPush = false;
 		gif->start();
+	}
+
+	if(gif->checkFrame()){
+		gif->nextFrame();
 	}
 	gif->push();
 }
@@ -56,9 +62,10 @@ void CharacterSprite::setAnim(Anim anim){
 void CharacterSprite::startNextAnim(){
 	if(!nextAnim) return;
 	gif.reset();
-	gif = std::make_unique<GIFAnimatedSprite>(parentSprite, getAnimFile(nextAnim->charLevel, nextAnim->rusty, nextAnim->anim));
+	gif = std::make_unique<AnimatedSprite>(parentSprite, getAnimFile(nextAnim->charLevel, nextAnim->rusty, nextAnim->anim));
 
-	gif->setLoopMode(GIF::Infinite);
+	gif->setLoop(true);
+	gif->setMaskingColor(TFT_TRANSPARENT);
 	gif->setXY(x, y);
 	gif->setLoopDoneCallback(nullptr);
 
@@ -73,17 +80,17 @@ File CharacterSprite::getAnimFile(uint8_t charLevel, bool rusty, Anim anim){
 	uint8_t level = getGIFLevel(charLevel);
 	char path[50];
 	if(rusty){
-		sprintf(path, "/Home/rusty/%02d_%s.gif", level, animNames[(uint8_t)anim]);
+		sprintf(path, "/Home/rusty/%02d_%s.g565", level, animNames[(uint8_t)anim]);
 	}else{
-		sprintf(path, "/Home/%02d_%s.gif", level, animNames[(uint8_t)anim]);
+		sprintf(path, "/Home/%02d_%s.g565", level, animNames[(uint8_t)anim]);
 	}
 	return SPIFFS.open(path);
 }
 
 void CharacterSprite::registerNextAnim(){
 	nextAnim = CharacterAnim { charLevel, rusty, currentAnim };
-	gif->setLoopDoneCallback([this](uint32_t){
-		canChange = true;
+	gif->setLoopDoneCallback([](){
+		CharacterSprite::canChange = true;
 	});
 }
 
@@ -104,3 +111,4 @@ uint8_t CharacterSprite::getGIFLevel(uint8_t level){
 	}
 	return nextLevel;
 }
+

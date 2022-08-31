@@ -1,7 +1,7 @@
 #ifndef CIRCUITPET_FIRMWARE_CHARACTERSPRITE_H
 #define CIRCUITPET_FIRMWARE_CHARACTERSPRITE_H
 
-#include <Display/GIFAnimatedSprite.h>
+#include <Display/AnimatedSprite.h>
 #include <experimental/optional>
 
 enum class Anim : uint8_t{
@@ -28,7 +28,7 @@ public:
 
 private:
 	Sprite* parentSprite;
-	std::unique_ptr<GIFAnimatedSprite> gif;
+	std::unique_ptr<AnimatedSprite> gif;
 
 	uint8_t charLevel; //0-3
 	bool rusty; //0-1
@@ -44,7 +44,7 @@ private:
 
 	int16_t x = 0, y = 0;
 
-	bool canChange = false;
+	static bool canChange;
 	bool firstPush = true;
 };
 

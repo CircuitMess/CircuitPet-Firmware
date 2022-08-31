@@ -13,8 +13,8 @@
 #define FILE_GOBLET "/goblet.raw"
 
 struct CompParams {
-	uint8_t lookahead = 0;
 	uint8_t expansion = 0;
+	uint8_t lookahead = 0;
 
 	explicit operator bool() const{
 		return lookahead && expansion;

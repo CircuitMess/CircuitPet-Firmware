@@ -6,18 +6,18 @@
 #include "../../GameEngine/Rendering/SpriteRC.h"
 #include "../../Stats/StatsManager.h"
 
-const char* bgPath[6] = { "/Bg/Level1.raw",
-						  "/Bg/Level2.raw",
-						  "/Bg/Level3.raw",
-						  "/Bg/Level4.raw",
-						  "/Bg/Level5.raw",
-						  "/Bg/Level6.raw"
+const char* bgPath[6] = { "/Bg/Level1.hs",
+						  "/Bg/Level2.hs",
+						  "/Bg/Level3.hs",
+						  "/Bg/Level4.hs",
+						  "/Bg/Level5.hs",
+						  "/Bg/Level6.hs"
 };
 
 Game1::Game1() : Game("", {
 		{ "/Games/Game1/Arrow.raw",       {}, true },
 		{ "/Games/Game1/EmptyCan.raw",    {}, true },
-		{ bgPath[StatMan.getLevel() - 1], {}, true },
+		{ bgPath[StatMan.getLevel() - 1], {8, 4}, true },
 		{ "/Games/Game1/FullCan.raw",     {}, true },
 		{ "/Games/Game1/OilyDone.gif",    {}, false },
 		{ "/Games/Game1/OilyIdle.gif",    {}, true },
