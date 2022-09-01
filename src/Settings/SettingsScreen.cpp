@@ -104,11 +104,6 @@ void SettingsScreen::SettingsScreen::onStart(){
 
 		instance->draw();
 	});
-	backgroundBuffer = static_cast<Color*>(malloc(160 * 128 * 2));
-	if(backgroundBuffer == nullptr){
-		Serial.println("SettingsScreen background unpack error");
-		return;
-	}
 
 	fs::File bgFile = SPIFFS.open("/Bg/settings.raw");
 	bgFile.read(reinterpret_cast<uint8_t*>(backgroundBuffer), 160 * 128 * 2);
@@ -124,7 +119,6 @@ void SettingsScreen::SettingsScreen::onStop(){
 	Input::getInstance()->removeButtonHeldRepeatCallback(BTN_LEFT);
 	RGB.setColor({ 0, 0, 0 });
 
-	free(backgroundBuffer);
 	screen.pack();
 }
 
