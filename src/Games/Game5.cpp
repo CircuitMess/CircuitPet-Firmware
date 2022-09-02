@@ -37,7 +37,7 @@ Game5::Game5() : Game("/Games/5", {
 		{ danceGIFs[2],          {}, false },
 		{ danceGIFs[3],          {}, false },
 		{ "/fail.gif",            {}, false },
-		{ "/idle.gif",            {}, true },
+		{ "/idle.gif",            {}, false },
 		{ "/win.gif",            {}, false },
 		{ "/starFull.raw",            {}, true },
 		{ "/starEmpty.raw",            {}, true },
