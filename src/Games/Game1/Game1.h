@@ -9,6 +9,7 @@
 #include "Indicator.h"
 #include "OilCan.h"
 #include "Bar.h"
+#include <Display/AnimatedSprite.h>
 
 class Game1 : public Game, private InputListener {
 public:
@@ -44,6 +45,12 @@ private:
 	std::shared_ptr<GameObject> barGO;
 	std::shared_ptr<GameObject> duckGo;
 	std::shared_ptr<GameObject> bg;
+
+	AnimatedSprite* doneGif = nullptr;
+	bool alldone = false;
+
+
+	static Game1* instance;
 };
 
 

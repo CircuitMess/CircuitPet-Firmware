@@ -5,6 +5,8 @@
 #include "../../GameEngine/Rendering/StaticRC.h"
 #include "../../GameEngine/Rendering/SpriteRC.h"
 #include "../../Stats/StatsManager.h"
+#include <FS/CompressedFile.h>
+#include <SPIFFS.h>
 
 const char* bgPath[6] = { "/Bg/Level1.hs",
 						  "/Bg/Level2.hs",
@@ -14,16 +16,18 @@ const char* bgPath[6] = { "/Bg/Level1.hs",
 						  "/Bg/Level6.hs"
 };
 
+Game1* Game1::instance = nullptr;
+
 Game1::Game1() : Game("", {
 		{ "/Games/Game1/Arrow.raw",       {}, true },
 		{ "/Games/Game1/EmptyCan.raw",    {}, true },
 		{ bgPath[StatMan.getLevel() - 1], {8, 4}, true },
 		{ "/Games/Game1/FullCan.raw",     {}, true },
-		{ "/Games/Game1/OilyDone.gif",    {}, false },
 		{ "/Games/Game1/OilyIdle.gif",    {}, true },
-		{ "/Games/Game1/OilyJump.gif",    {}, true },
+		{ "/Games/Game1/OilyJump.gif",    {}, true },}){
 
-}){}
+	instance = this;
+}
 
 void Game1::onLoad(){
 	auto spriteBar = std::make_unique<SpriteRC>(PixelDim{ 9, 120 });
@@ -96,20 +100,31 @@ void Game1::onLoad(){
 }
 
 void Game1::onLoop(float deltaTime){
+	if(alldone){
+		delay(700);
+		pop();
+		return;
+	}
+
 	indicator->move(deltaTime);
 	if(oilCan->move(deltaTime)){
-		duckGo->setPos({ 23, 16 }); //manually set for the gif to fit
-		duckAnim->setAnim(getFile("/Games/Game1/OilyDone.gif"));
-		duckAnim->setLoopDoneCallback([this](uint32_t i){
-			delay(700);
-			pop();
-			return;
-		});
+		removeObject(duckGo);
+		doneGif = new AnimatedSprite(CircuitPet.getDisplay()->getBaseSprite(), CompressedFile::open(SPIFFS.open("/Games/Game1/OilyDone.g565.hs"), 8, 4));
+		doneGif->setXY(23, 16);
+		doneGif->setLoop(false);
+		doneGif->setLoopDoneCallback([](){instance->alldone = true;});
+		doneGif->start();
 	};
 }
 
 void Game1::onRender(Sprite* canvas){
-
+	if(doneGif){
+		if(doneGif->checkFrame()){
+			doneGif->nextFrame();
+		}
+		doneGif->push();
+		Serial.println("donegif push");
+	}
 }
 
 void Game1::onStart(){
@@ -120,6 +135,7 @@ void Game1::onStart(){
 void Game1::onStop(){
 	Input::getInstance()->removeListener(this);
 	duckAnim->stop();
+	delete doneGif;
 }
 
 void Game1::buttonPressed(uint i){

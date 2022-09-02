@@ -49,7 +49,7 @@ bool Game::isLoaded() const{
 }
 
 File Game::getFile(const char* path){
-	return resMan.getResource(std::move(path));
+	return resMan.getResource(path);
 }
 
 void Game::addObject(std::shared_ptr<GameObject> obj){

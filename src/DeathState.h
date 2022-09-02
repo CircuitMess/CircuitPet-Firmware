@@ -6,8 +6,6 @@
 #include <Display/GIFAnimatedSprite.h>
 #include <Display/AnimatedSprite.h>
 #include "Home/Sprites/BgSprite.h"
-#include <Display/AnimatedSprite.h>
-
 
 class DeathState : public State, private LoopListener{
 public:
