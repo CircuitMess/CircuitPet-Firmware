@@ -12,7 +12,7 @@ void StatsSprite::setPos(int16_t x, int16_t y){
 	oilLevel.setPos(x-7,y);
 	happiness.setPos(x - 3 + spacing, y);
 	battery.setPos(x + 2*spacing + 6, y);
-	xpLevel.setPos(x-7,y+9);
+	xpLevel.setPos(x-5,y+9);
 }
 
 void StatsSprite::push(){
