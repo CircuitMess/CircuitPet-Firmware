@@ -24,6 +24,7 @@ void CharacterSprite::loop(uint micros){
 void CharacterSprite::push(){
 	if(firstPush){
 		firstPush = false;
+		gif->nextFrame();
 		gif->start();
 	}
 
@@ -70,6 +71,7 @@ void CharacterSprite::startNextAnim(){
 	gif->setLoopDoneCallback(nullptr);
 
 	if(!firstPush){
+		gif->nextFrame();
 		gif->start();
 	}
 

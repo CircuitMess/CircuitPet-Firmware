@@ -16,9 +16,9 @@ Game3::Game3() : Game("/Games/Game3", {
 		{ "/BarFrame.raw",   {}, true },
 		{ "/Heart.raw",      {}, true },
 		{ "/DuckWalk.gif",   {}, true },
-		{ "/DuckEatBad.gif", {}, true },
-		{ "/DuckWin.gif",    {}, true },
-		{ "/DuckEat.gif",    {}, true }
+		{ "/DuckEatBad.gif", {}, false },
+		{ "/DuckWin.gif",    {}, false },
+		{ "/DuckEat.gif",    {}, false }
 }){}
 
 void Game3::onLoad(){
