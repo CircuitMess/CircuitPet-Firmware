@@ -289,6 +289,8 @@ void DuckScreen::statsChanged(const Stats& stats, bool leveledUp){
 		luState = FadeIn;
 		luMicros = 0;
 		luApplied = false;
+
+		statsSprite->setXPLevel();
 		return;
 	}
 

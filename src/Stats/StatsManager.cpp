@@ -64,9 +64,11 @@ uint8_t StatsManager::getLevel() const{
 }
 
 uint8_t StatsManager::getExpPercentage() const{
-	if(getLevel() == 1) return (uint8_t)stats.experience/levelupThresholds[0];
+	if(getLevel() == 1) return (uint8_t)(((float)stats.experience*100)/levelupThresholds[0]);
+	if(getLevel() == 6) return 100;
+
 	uint8_t prevThreshold = levelupThresholds[getLevel()-2];
-	return  (uint8_t)((stats.experience-prevThreshold)* 100/(levelupThresholds[getLevel()-1]-prevThreshold)) ;
+	return  (uint8_t)((float)(stats.experience-prevThreshold)* 100/(levelupThresholds[getLevel()-1]-prevThreshold)) ;
 }
 
 void StatsManager::setPaused(bool pause){
