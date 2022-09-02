@@ -52,11 +52,12 @@ private:
 	uint8_t scrollCount = 0;
 	int selectedSetting = 0;
 
+	File bg;
+
 	void buildUI();
 	void buttonPressed(uint id) override;
 	void buttonReleased(uint id) override;
 
-	Color backgroundBuffer[160 * 128];
 	bool cycleRGB = false;
 	bool popped = false;
 
