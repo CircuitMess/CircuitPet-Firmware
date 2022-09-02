@@ -83,7 +83,6 @@ void Game::loop(uint micros){
 	State::setParent(scoreScreen);
 	scoreScreen->setParent(fosterParent);
 	State::pop();
-	StatMan.update(stats);
 }
 
 void Game::onStart(){ }

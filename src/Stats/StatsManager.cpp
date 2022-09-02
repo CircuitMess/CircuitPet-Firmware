@@ -54,9 +54,13 @@ const Stats& StatsManager::get() const{
 }
 
 uint8_t StatsManager::getLevel() const{
+	return getLevel(stats.experience);
+}
+
+uint8_t StatsManager::getLevel(uint16_t exp) const{
 	const uint8_t levelupsNum = sizeof(levelupThresholds) / sizeof(uint16_t);
 	for(uint8_t i = 0; i < levelupsNum; i++){
-		if(stats.experience < levelupThresholds[i]){
+		if(exp < levelupThresholds[i]){
 			return i + 1;
 		}
 	}
@@ -64,11 +68,16 @@ uint8_t StatsManager::getLevel() const{
 }
 
 uint8_t StatsManager::getExpPercentage() const{
-	if(getLevel() == 1) return (uint8_t)(((float)stats.experience*100)/levelupThresholds[0]);
-	if(getLevel() == 6) return 100;
+	return getExpPercentage(stats.experience);
+}
 
-	uint8_t prevThreshold = levelupThresholds[getLevel()-2];
-	return  (uint8_t)((float)(stats.experience-prevThreshold)* 100/(levelupThresholds[getLevel()-1]-prevThreshold)) ;
+
+uint8_t StatsManager::getExpPercentage(uint16_t exp) const{
+	if(getLevel(exp) == 1) return (uint8_t)(((float)exp*100)/levelupThresholds[0]);
+	if(getLevel(exp) == 6) return 100;
+
+	uint8_t prevThreshold = levelupThresholds[getLevel(exp)-2];
+	return  (uint8_t)((float)(exp-prevThreshold)* 100/(levelupThresholds[getLevel(exp)-1]-prevThreshold));
 }
 
 void StatsManager::setPaused(bool pause){
