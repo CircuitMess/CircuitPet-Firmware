@@ -1,11 +1,12 @@
 
 #include "StatsSprite.h"
 #include "../../Stats/StatsManager.h"
-StatsSprite::StatsSprite(Sprite* parent, uint8_t oilLevel,  uint8_t happiness, uint8_t battery):
-	oilLevel(parent, StatSprite::OilLevel, oilLevel),
-	happiness(parent, StatSprite::Happiness, happiness),
-	battery(parent, StatSprite::Battery, battery),
-	xpLevel(parent, StatSprite::XPLevel, StatMan.getExpPercentage()){
+
+StatsSprite::StatsSprite(Sprite* parent, uint8_t oilLevel, uint8_t happiness, uint8_t battery) :
+		oilLevel(parent, StatSprite::OilLevel, oilLevel),
+		happiness(parent, StatSprite::Happiness, happiness),
+		battery(parent, StatSprite::Battery, battery),
+		xpLevel(parent, StatSprite::XPLevel, StatMan.getExpPercentage(), true){
 }
 
 void StatsSprite::setPos(int16_t x, int16_t y){
