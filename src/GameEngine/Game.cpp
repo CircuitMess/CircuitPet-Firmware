@@ -4,6 +4,7 @@
 #include <Loop/LoopManager.h>
 #include <CircuitPet.h>
 #include "../Stats/StatsManager.h"
+#include "../ScoreScreen.h"
 
 Game::Game(const char* root, std::vector<ResDescriptor> resources) : resMan(root), resources(std::move(resources)),
 loadTask("loadTask", [](Task* t){
@@ -77,8 +78,11 @@ void Game::loop(uint micros){
 
 	poppedLabel:
 	auto stats = returnStats();
+	auto fosterParent = this->getParent();
+	auto scoreScreen = new ScoreScreen(stats);
+	State::setParent(scoreScreen);
+	scoreScreen->setParent(fosterParent);
 	State::pop();
-	StatMan.update(stats);
 }
 
 void Game::onStart(){ }

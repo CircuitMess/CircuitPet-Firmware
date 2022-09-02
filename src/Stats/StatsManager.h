@@ -25,6 +25,9 @@ public:
 
 	const Stats& get() const;
 	uint8_t getLevel() const;
+	uint8_t getLevel(uint16_t exp) const;
+	uint8_t getExpPercentage() const;
+	uint8_t getExpPercentage(uint16_t exp) const;
 
 	/**
 	 * Removes clock registration, periodic stats decrement.

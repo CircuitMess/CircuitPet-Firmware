@@ -15,11 +15,13 @@ public:
 	void setOilLevel(uint8_t level);
 	void setHappiness(uint8_t level);
 	void setBattery(uint8_t level);
+	void setXPLevel();
 
 private:
 	StatSprite happiness;
 	StatSprite oilLevel;
 	StatSprite battery;
+	StatSprite xpLevel;
 
 	constexpr static uint8_t spacing = 33;
 };
