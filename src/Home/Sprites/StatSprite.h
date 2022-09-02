@@ -22,11 +22,13 @@ private:
 	constexpr static uint8_t iconWidth = 15;
 	constexpr static uint8_t iconHeight = 10;
 	constexpr static uint8_t barWidth = 24;
+	constexpr static uint8_t longBarWidth = 97;
 	constexpr static uint8_t barHeight = 7;
 	static const char* paths[];
 	static const char* barPath;
 
 	void drawLevel();
+	void drawLongLevel();
 };
 
 
