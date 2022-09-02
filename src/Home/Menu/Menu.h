@@ -15,30 +15,33 @@ class Launcher;
 
 
 
+struct MenuItemData {
+	const char* image;
+	const char* imageLocked;
+	uint8_t levelRequired;
+	const char* splashPath;
+	const char* instructPath;
+	std::function<Game*()> primary;
+};
+
 struct MenuItem {
-	String text;
 	GameImage image;
 	GameImage imageLocked;
 	uint8_t levelRequired;
 	const char* splashPath;
 	const char* instructPath;
 	std::function<Game*()> primary;
-	std::function<void()> secondary;
-	bool loaded = false;
 
-	MenuItem(String text, uint8_t levelRequired, const GameImage& image = GameImage(), const GameImage& imageLocked = GameImage(),const char* splashPath = "",
-			 const char* instructPath = "", std::function<Game*()> primary = {}, std::function<void()> secondary = {});
-
+	MenuItem(MenuItemData data, Sprite* base);
 };
 
 class Menu : public LoopListener {
 public:
 	Menu(Sprite* canvas);
-	Menu(Sprite* canvas, std::vector<MenuItem>& items);
 	~Menu();
 
 	void setCanvas(Sprite* canvas);
-	void setItems(std::vector<MenuItem>& items);
+	void setItems(const std::vector<MenuItemData>& itemsData);
 
 	void push();
 	void loop(uint micros);

@@ -18,7 +18,6 @@ public:
 	virtual ~GameImage();
 
 	explicit operator bool() const;
-	Color* getBuffer() const;
 
 	void setCanvas(Sprite* canvas);
 
@@ -34,7 +33,7 @@ private:
 
 	int16_t x;
 	int16_t y;
-	Color* buffer = nullptr;
+	Color buffer[size * size];
 
 	Sprite* canvas = nullptr;
 };

@@ -6,14 +6,12 @@
 GameImage::GameImage(){}
 
 GameImage::GameImage(Sprite* canvas, const char* imgPath) : canvas(canvas){
-	buffer = static_cast<Color*>(malloc(size * size * 2));
 	fs::File itemFile = SPIFFS.open(imgPath);
 	if(!itemFile) printf("failed\n");
 	itemFile.read((uint8_t *)buffer, size*size*2);
 }
 
 GameImage::GameImage(const GameImage& other){
-	buffer = static_cast<Color*>(malloc(size * size * 2));
 	memcpy(buffer, other.buffer, size * size * 2);
 	this->canvas = other.canvas;
 }
@@ -23,16 +21,11 @@ GameImage& GameImage::operator=(const GameImage& other){
 
 	this->canvas = other.canvas;
 	free(buffer);
-	buffer = static_cast<Color*>(malloc(size * size * 2));
-	if(other.buffer != nullptr){
-		memcpy(buffer, other.buffer, size * size * 2);
-	}
+	memcpy(buffer, other.buffer, size * size * 2);
 	return *this;
 }
 
 GameImage::~GameImage(){
-	free(buffer);
-	buffer = nullptr;
 }
 
 GameImage::operator bool() const{
@@ -58,10 +51,6 @@ int16_t GameImage::getY() const{
 
 void GameImage::setY(int16_t y){
 	GameImage::y = y;
-}
-
-Color* GameImage::getBuffer() const{
-	return buffer;
 }
 
 void GameImage::setCanvas(Sprite* canvas){

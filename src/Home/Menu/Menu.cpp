@@ -2,36 +2,33 @@
 #include <Display/Sprite.h>
 #include <Loop/LoopManager.h>
 #include <SPIFFS.h>
-#include <SD.h>
 #include <FS/RamFile.h>
 #include "../../Stats/StatsManager.h"
 
-MenuItem::MenuItem(String text, uint8_t levelRequired, const GameImage& image, const GameImage& imageLocked, const char* splashPath, const char* instructPath,
-				   std::function<Game*()> primary, std::function<void()> secondary) :
-		text(std::move(text)), levelRequired(levelRequired), image(image), imageLocked(imageLocked), splashPath(splashPath),
-		instructPath(instructPath), primary(primary), secondary(secondary){}
+MenuItem::MenuItem(MenuItemData data, Sprite* base) : levelRequired(data.levelRequired), splashPath(data.splashPath), instructPath(data.instructPath),
+													  primary(data.primary),
+													  image(base, data.image), imageLocked(base, data.imageLocked){
+}
 
 
 Menu::Menu(Sprite* canvas) : canvas(canvas), origin((canvas->width() - width) / 2){
 	borderFile = RamFile::open(SPIFFS.open(borderPath));
 }
 
-Menu::Menu(Sprite* canvas, std::vector<MenuItem>& items) : Menu(canvas){
-	setItems(items);
-}
-
 Menu::~Menu(){
 
 }
 
-void Menu::setItems(std::vector<MenuItem>& items){
-	this->items = items;
+void Menu::setItems(const std::vector<MenuItemData>& itemsData){
+	items.clear();
 
-	for(auto& item: this->items){
+	for(auto& data: itemsData){
+		MenuItem item(data, canvas);
 		item.image.setX(-width);
 		item.image.setY(originY);
 		item.imageLocked.setX(-width);
 		item.imageLocked.setY(originY);
+		items.push_back(std::move(item));
 	}
 
 	repos();
@@ -335,3 +332,4 @@ bool Menu::isShaking(){
 	if(state == shaking) return true;
 	return false;
 }
+

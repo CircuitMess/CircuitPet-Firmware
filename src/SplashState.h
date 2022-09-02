@@ -12,7 +12,7 @@
 
 class SplashState : public State, private LoopListener, private InputListener {
 public:
-	SplashState(Sprite* base, const MenuItem& menuItem);
+	SplashState(Sprite* base, const MenuItemData& menuItem);
 	void loop(uint micros) override;
 
 protected:

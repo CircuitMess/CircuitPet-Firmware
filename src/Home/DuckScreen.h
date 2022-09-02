@@ -50,7 +50,8 @@ private:
 
 	uint8_t selection = 0;
 
-	std::vector<MenuItem> menuItems;
+
+	static const std::vector<MenuItemData> menuItems;
 
 	constexpr static uint8_t osX = 125;
 	constexpr static uint8_t osY = 1;

@@ -15,7 +15,7 @@ ScoreScreen::ScoreScreen(Stats stats) : base(CircuitPet.getDisplay()->getBaseSpr
 	targetStats = stats + currentStats;
 	prevStats = currentStats;
 
-	frameFile = RamFile::open(SPIFFS.open("/frame.raw"));
+	frameFile = SPIFFS.open("/frame.raw");
 }
 
 void ScoreScreen::onStart(){

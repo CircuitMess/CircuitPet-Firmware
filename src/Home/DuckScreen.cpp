@@ -15,10 +15,18 @@
 #include "../RGBIndicator.h"
 #include <Battery/BatteryService.h>
 
+const std::vector<MenuItemData> DuckScreen::menuItems = {
+		{ "/MenuIcons/Icon1.raw",    "/MenuIcons/Icon1.raw",    1, "/GameScreens/Splash1.raw", "/GameScreens/Inst1.raw", [](){ return new Game1(); }},
+		{ "/MenuIcons/Icon2.raw",    "/MenuIcons/Locked2.raw",  2, "/GameScreens/Splash2.raw", "/GameScreens/Inst2.raw", [](){ return new Game2(); }},
+		{ "/MenuIcons/Icon3.raw",    "/MenuIcons/Locked3.raw",  3, "/GameScreens/Splash3.raw", "/GameScreens/Inst3.raw", [](){ return new Game3(); }},
+		{ "/MenuIcons/Icon4.raw",    "/MenuIcons/Locked4.raw",  4, "/GameScreens/Splash4.raw", "/GameScreens/Inst4.raw", [](){ return new Game4::Game4(); }},
+		{ "/MenuIcons/Icon5.raw",    "/MenuIcons/Locked5.raw",  5, "/GameScreens/Splash5.raw", "/GameScreens/Inst5.raw", [](){ return new Game5(); }},
+		{ "/MenuIcons/Icon6.raw",    "/MenuIcons/Locked6.raw",  6, "/GameScreens/Splash6.raw", "/GameScreens/Inst6.raw", [](){ return new Game6(); }},
+		{ "/MenuIcons/settings.raw", "/MenuIcons/settings.raw", 1, "",                         "",                       {}}
+};
+
 DuckScreen::DuckScreen(Sprite* base) : State(), base(base),
 									   menu(base), hider(&menu){
-
-
 }
 
 void DuckScreen::onStart(){
@@ -38,19 +46,6 @@ void DuckScreen::onStart(){
 	characterSprite->setCharLevel(StatMan.getLevel());
 	characterSprite->setAnim(Anim::General);
 
-	menuItems = {
-			{ "Oily",1, GameImage(base, "/MenuIcons/Icon1.raw"), GameImage(base, "/MenuIcons/Icon1.raw"),"/GameScreens/Splash1.raw","/GameScreens/Inst1.raw", [](){return new Game1();}},
-			{ "Flappy",2, GameImage(base, "/MenuIcons/Icon2.raw"),GameImage(base, "/MenuIcons/Locked2.raw"), "/GameScreens/Splash2.raw","/GameScreens/Inst2.raw", [](){return new Game2();} },
-			{ "Eaty", 3,GameImage(base, "/MenuIcons/Icon3.raw"),GameImage(base, "/MenuIcons/Locked3.raw"), "/GameScreens/Splash3.raw","/GameScreens/Inst3.raw", []() {return new Game3();}},
-			{ "Jump & Duck",4, GameImage(base, "/MenuIcons/Icon4.raw"), GameImage(base, "/MenuIcons/Locked4.raw"),"/GameScreens/Splash4.raw","/GameScreens/Inst4.raw", [](){return new Game4::Game4();} },
-			{ "Disco danceoff", 5,GameImage(base, "/MenuIcons/Icon5.raw"), GameImage(base, "/MenuIcons/Locked5.raw"), "/GameScreens/Splash5.raw","/GameScreens/Inst5.raw", [](){return new Game5();} },
-			{ "Space duck", 6,GameImage(base, "/MenuIcons/Icon6.raw"), GameImage(base, "/MenuIcons/Locked6.raw"),"/GameScreens/Splash6.raw","/GameScreens/Inst6.raw", [](){return new Game6();}},
-			{ "Settings", 1,  GameImage(base, "/MenuIcons/settings.raw"), GameImage(base, "/MenuIcons/settings.raw"), "", "", [this](){
-				auto settings = new SettingsScreen::SettingsScreen(*CircuitPet.getDisplay());
-				settings->push(this);
-				return nullptr;
-			}}
-	};
 
 	menu.setItems(menuItems);
 
@@ -79,7 +74,8 @@ void DuckScreen::onStop(){
 	osSprite.reset();
 	statsSprite.reset();
 	characterSprite.reset();
-	menuItems.clear();
+
+	menu.setItems({});
 
 	OilRGBIndicator.stop();
 }
@@ -264,7 +260,8 @@ void DuckScreen::buttonPressed(uint i){
 
 			Audio.play({{500, 700, 50}});
 			if(selection == 6){ //settings
-				menuItems[selection].primary();
+				auto settings = new SettingsScreen::SettingsScreen(*CircuitPet.getDisplay());
+				settings->push(this);
 			}else{
 				splashState = new SplashState(base, menuItems[selection]);
 				splashState->push(this);

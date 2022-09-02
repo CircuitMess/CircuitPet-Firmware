@@ -123,7 +123,6 @@ void Game1::onRender(Sprite* canvas){
 			doneGif->nextFrame();
 		}
 		doneGif->push();
-		Serial.println("donegif push");
 	}
 }
 

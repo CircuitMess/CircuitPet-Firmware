@@ -7,7 +7,7 @@
 #include <FS/CompressedFile.h>
 
 
-SplashState::SplashState(Sprite* base, const MenuItem& menuItem) : base(base), instructPath(menuItem.instructPath), splashPath(menuItem.splashPath){
+SplashState::SplashState(Sprite* base, const MenuItemData& menuItem) : base(base), instructPath(menuItem.instructPath), splashPath(menuItem.splashPath){
 	game = menuItem.primary();
 }
 
