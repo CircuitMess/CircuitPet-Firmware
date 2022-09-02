@@ -133,7 +133,6 @@ void Game1::buttonPressed(uint i){
 	if(i == BTN_LEFT){
 		tries++;
 		RGB.blinkTwice(bar->getColor(indicator->getDifference()));
-		Serial.println(indicator->getDifference());
 		addPoints(indicator->getDifference());
 		scoreSprite->clear(TFT_TRANSPARENT);
 		scoreSprite->setCursor(0, 0);
