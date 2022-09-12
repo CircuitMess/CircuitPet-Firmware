@@ -130,6 +130,8 @@ void ClockMaster::write(){
 		ESP_LOGW(tag, "Clock data write failed");
 		return;
 	}
+
+	nvs_commit(handle);
 }
 
 void ClockMaster::read(){

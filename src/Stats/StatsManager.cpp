@@ -98,6 +98,8 @@ void StatsManager::store(){
 		ESP_LOGW(tag, "Clock data write failed");
 		return;
 	}
+
+	nvs_commit(handle);
 }
 
 void StatsManager::load(){
