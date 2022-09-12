@@ -20,8 +20,8 @@ Game1::Game1() : Game("", {
 		{ bgPath[StatMan.getLevel() - 1], {}, true },
 		{ "/Games/Game1/FullCan.raw",     {}, true },
 		{ "/Games/Game1/OilyDone.gif",    {}, false },
-		{ "/Games/Game1/OilyIdle.gif",    {}, true },
-		{ "/Games/Game1/OilyJump.gif",    {}, true },
+		{ "/Games/Game1/OilyIdle.gif",    {}, false },
+		{ "/Games/Game1/OilyJump.gif",    {}, false },
 
 }){}
 
