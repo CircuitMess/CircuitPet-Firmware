@@ -179,6 +179,7 @@ void DuckScreen::loop(uint micros){
 				characterSprite->setCharLevel(StatMan.getLevel());
 				bgSprite->setLevel(StatMan.getLevel());
 				osSprite->setLevel(StatMan.getLevel());
+				statsSprite->setXPLevel();
 				luApplied = true;
 
 				menu.repos();
@@ -295,7 +296,6 @@ void DuckScreen::statsChanged(const Stats& stats, bool leveledUp){
 		luMicros = 0;
 		luApplied = false;
 
-		statsSprite->setXPLevel();
 		return;
 	}
 
