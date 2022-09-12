@@ -42,8 +42,8 @@ UserHWTest::UserHWTest(Sprite* base, std::function<void()> doneFunc) : base(base
 		inputTested[i] = false;
 	}
 
-	bg = RamFile::open(SPIFFS.open("/Games/6/bg.raw"));
-	device = RamFile::open(SPIFFS.open("/Test.raw"));
+	bg = SPIFFS.open("/Games/6/bg.raw");
+	device = SPIFFS.open("/Test.raw");
 
 	base->setTextColor(C_RGB(182, 213, 60));
 	base->drawCenterString("Hardware Test", base->width() / 2, 1, &lgfx::fonts::Font0);
