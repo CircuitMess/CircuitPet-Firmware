@@ -7,7 +7,7 @@ static const char* tag = "StatsManager";
 nvs_handle StatsManager::handle;
 
 const uint16_t StatsManager::levelupThresholds[] = { 50, 150, 350, 750, 1550 }; //TODO - settati levelUp threshove
-const Stats StatsManager::hourlyDecrement = { 2, 5, 0 };
+const Stats StatsManager::hourlyDecrement = { 5, 3, 0 };
 
 StatsManager::StatsManager() : timedUpdateListener(3600, false, true, "StatsMan", [this](){ timedUpdate(); }){
 }
@@ -145,9 +145,9 @@ void StatsManager::load(){
 void StatsManager::timedUpdate(){
 	stats -= hourlyDecrement;
 
-	if(stats.happiness == 0 && gameOverCount <= 24){
+	if(stats.oilLevel == 0 && gameOverCount <= 24){
 		gameOverCount++;
-	}else if(stats.happiness > 0){
+	}else if(stats.oilLevel > 0){
 		gameOverCount = 0;
 	}
 
