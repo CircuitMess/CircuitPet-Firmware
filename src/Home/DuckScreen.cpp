@@ -22,6 +22,12 @@ DuckScreen::DuckScreen(Sprite* base) : State(), base(base),
 }
 
 void DuckScreen::onStart(){
+	if(StatMan.hasDied()){
+		dead = true;
+		LoopManager::addListener(this);
+		return;
+	}
+
 	Input::getInstance()->addListener(this);
 
 	//load resources
@@ -84,13 +90,6 @@ void DuckScreen::onStop(){
 }
 
 void DuckScreen::loop(uint micros){
-
-	if(Battery.charging()){
-		statsSprite->setBattery((millis() % 2001) / 20);
-	}else{
-		statsSprite->setBattery(Battery.getPercentage());
-	}
-
 	if(dead){
 		volatile auto temp = base;
 		stop();
@@ -99,6 +98,12 @@ void DuckScreen::loop(uint micros){
 		auto duck = new DeathState(temp);
 		duck->start();
 		return;
+	}
+
+	if(Battery.charging()){
+		statsSprite->setBattery((millis() % 2001) / 20);
+	}else{
+		statsSprite->setBattery(Battery.getPercentage());
 	}
 
 	if(luState != None){
@@ -278,6 +283,8 @@ void DuckScreen::statsChanged(const Stats& stats, bool leveledUp){
 	if(StatMan.hasDied()){
 		dead = true;
 		return;
+	}else{
+		dead = false;
 	}
 
 	if(leveledUp){
