@@ -39,6 +39,7 @@ private:
 	Stats stats;
 	static const uint16_t levelupThresholds[];
 
+	static constexpr uint8_t gameOverHours = 24;
 	uint8_t gameOverCount = 0;
 	bool hatched = false;
 

@@ -35,6 +35,8 @@ void StatsManager::reset(){
 }
 
 void StatsManager::update(Stats delta){
+	if(hasDied() || !hatched) return;
+
 	uint8_t oldLevel = getLevel();
 	stats += delta;
 	ESP_LOGI(tag, "%d, %d, %d\n", stats.happiness, stats.experience, stats.oilLevel);
@@ -49,7 +51,7 @@ void StatsManager::update(Stats delta){
 }
 
 bool StatsManager::hasDied() const{
-	return gameOverCount > 24; //dies after 24hrs of zero happiness
+	return gameOverCount > gameOverHours; //dies after 24hrs of zero happiness
 }
 
 
@@ -145,9 +147,11 @@ void StatsManager::load(){
 }
 
 void StatsManager::timedUpdate(){
+	if(hasDied() || !hatched) return;
+
 	stats -= hourlyDecrement;
 
-	if(stats.oilLevel == 0 && gameOverCount <= 24){
+	if(stats.oilLevel == 0 && gameOverCount <= gameOverHours){
 		gameOverCount++;
 	}else if(stats.oilLevel > 0){
 		gameOverCount = 0;
