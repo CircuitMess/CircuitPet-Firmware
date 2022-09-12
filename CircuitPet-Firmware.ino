@@ -43,6 +43,8 @@ void setup(){
 	srand(esp_random());
 	bootloader_random_disable();
 
+	LoopManager::reserve(12);
+
 	CircuitPet.begin(false);
 	Input* input = CircuitPet.getInput();
 

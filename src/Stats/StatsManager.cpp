@@ -18,6 +18,8 @@ void StatsManager::begin(){
 		ESP_LOGW(tag, "Clock storage initialization error: %s\n", esp_err_to_name(err));
 	}
 
+	reserve(6);
+
 	load();
 
 	Clock.addListener(&timedUpdateListener);

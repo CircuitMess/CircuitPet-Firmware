@@ -18,7 +18,7 @@
 DuckScreen::DuckScreen(Sprite* base) : State(), base(base),
 									   menu(base), hider(&menu){
 
-
+	menuItems.reserve(7);
 }
 
 void DuckScreen::onStart(){

@@ -14,7 +14,8 @@ void ClockMaster::begin(){
 		ESP_LOGW(tag, "Clock storage initialization error: %s\n", esp_err_to_name(err));
 	}
 
-	lastRTCTime = syncTime();
+	listeners.reserve(6);
+
 	read();
 
 	LoopManager::addListener(this);
