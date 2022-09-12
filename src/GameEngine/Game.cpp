@@ -77,12 +77,21 @@ void Game::loop(uint micros){
 	return;
 
 	poppedLabel:
-	auto stats = returnStats();
-	auto fosterParent = this->getParent();
+	stop();
+
+	Stats stats = returnStats();
+
+	if(stats.oilLevel + stats.happiness + stats.experience == 0){
+		State::pop();
+		return;
+	}
+
+	volatile auto parent = getParent();
+	delete this;
+
 	auto scoreScreen = new ScoreScreen(stats);
-	State::setParent(scoreScreen);
-	scoreScreen->setParent(fosterParent);
-	State::pop();
+	scoreScreen->setParent(parent);
+	scoreScreen->start();
 }
 
 void Game::onStart(){ }
