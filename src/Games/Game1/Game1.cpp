@@ -98,7 +98,7 @@ void Game1::onLoad(){
 void Game1::onLoop(float deltaTime){
 	indicator->move(deltaTime);
 	if(oilCan->move(deltaTime)){
-		duckGo->setPos({ 23, 16 }); //manually set for the gif to fit
+		duckGo->setPos({ 23, 39 }); //manually set for the gif to fit
 		duckAnim->setAnim(getFile("/Games/Game1/OilyDone.gif"));
 		duckAnim->setLoopDoneCallback([this](uint32_t i){
 			delay(700);
