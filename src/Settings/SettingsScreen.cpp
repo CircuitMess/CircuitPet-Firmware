@@ -10,6 +10,7 @@
 #include <Loop/LoopManager.h>
 #include <nvs_flash.h>
 #include <Audio/Piezo.h>
+#include <FS/RamFile.h>
 
 SettingsScreen::SettingsScreen* SettingsScreen::SettingsScreen::instance = nullptr;
 
@@ -105,9 +106,7 @@ void SettingsScreen::SettingsScreen::onStart(){
 		instance->draw();
 	});
 
-	fs::File bgFile = SPIFFS.open("/Bg/settings.raw");
-	bgFile.read(reinterpret_cast<uint8_t*>(backgroundBuffer), 160 * 128 * 2);
-	bgFile.close();
+	bg = RamFile::open(SPIFFS.open("/Bg/settings.raw"));
 
 	draw();
 }
@@ -120,10 +119,11 @@ void SettingsScreen::SettingsScreen::onStop(){
 	RGB.setColor({ 0, 0, 0 });
 
 	screen.pack();
+	bg.close();
 }
 
 void SettingsScreen::SettingsScreen::draw(){
-	screen.getSprite()->drawIcon(backgroundBuffer, 0, 0, 160, 128, 1);
+	screen.getSprite()->drawIcon(bg, 0, 0, 160, 128, 1);
 //	screen.getSprite()->setTextColor(TFT_WHITE);
 //	screen.getSprite()->setTextSize(1);
 //	screen.getSprite()->setTextFont(1);

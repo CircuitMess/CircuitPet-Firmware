@@ -56,7 +56,7 @@ private:
 	void buttonPressed(uint id) override;
 	void buttonReleased(uint id) override;
 
-	Color backgroundBuffer[160 * 128];
+	File bg;
 	bool cycleRGB = false;
 	bool popped = false;
 
