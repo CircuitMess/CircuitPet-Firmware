@@ -18,8 +18,29 @@ extern "C" {
 
 
 bool checkJig(){
- //TODO - add jig detection
- return false;
+	char buf[7];
+	int wp = 0;
+
+	uint32_t start = millis();
+	while(millis() - start < 1000){
+		while(Serial.available()){
+			buf[wp] = Serial.read();
+			wp = (wp + 1) % 7;
+
+			for(int i = 0; i < 7; i++){
+				int match = 0;
+				static const char* target = "JIGTEST";
+
+				for(int j = 0; j < 7; j++){
+					match += buf[(i+j) % 7] == target[j];
+				}
+
+				if(match == 7) return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 Display* display;
