@@ -26,6 +26,7 @@ void DeathState::onStart(){
 }
 
 void DeathState::onStop(){
+	StatMan.setHatched(false);
 	explosion.stop();
 	LoopManager::removeListener(this);
 }
