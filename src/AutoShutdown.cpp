@@ -1,5 +1,6 @@
 #include <Loop/LoopManager.h>
 #include "AutoShutdown.h"
+#include "Clock/ClockMaster.h"
 #include <Input/Input.h>
 #include <Settings.h>
 #include <CircuitPet.h>
@@ -27,5 +28,7 @@ void AutoShutdown::loop(uint micros){
 	if(millis() - activity >= delay){
 		CircuitPet.sleep();
 		activity = millis();
+		LoopManager::resetTime();
+		Clock.loop(0);
 	}
 }
