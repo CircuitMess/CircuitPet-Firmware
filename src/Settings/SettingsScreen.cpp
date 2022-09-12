@@ -18,7 +18,7 @@ SettingsScreen::SettingsScreen::SettingsScreen(Display& display) : screen(displa
 																   shutDownSlider(new DiscreteSlider(screenLayout, "Sleep time", { 0, 15, 30, 60, 3 * 60 })),
 																   brightnessSlider(new SliderElement(screenLayout, "Brightness")),
 																   soundSwitch(new BooleanElement(screenLayout, "Sound")),
-																   rgbSlider(new SliderElement(screenLayout, "RGB brightness")),
+																   rgbSlider(new SliderElement(screenLayout, "LED brightness")),
 																   hwTest(new TextElement(screenLayout, "Hardware test")),
 																   factoryReset(new TextElement(screenLayout, "Factory reset")),
 																   save(new TextElement(screenLayout, "Save")),
