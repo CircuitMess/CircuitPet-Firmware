@@ -20,6 +20,7 @@ extern ClockMaster Clock;
 class ClockMaster : private LoopListener{
 public:
 	void begin();
+	void updatePersistent();
 	void loop(uint micros) override;
 
 	void addListener(ClockListener* listener);
@@ -32,12 +33,8 @@ private:
 	void write();
 	void read();
 
-	time_t lastRTCTime = 0;
-
-	time_t syncTime();
-
-	uint32_t syncTimeMicros = 0;
-	const uint32_t syncTimeInterval = 60000000; //[us]
+	uint32_t updateTime;
+	static constexpr uint32_t updateInterval = 1000; // [ms]
 
 	static nvs_handle handle;
 };

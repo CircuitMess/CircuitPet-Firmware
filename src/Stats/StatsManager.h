@@ -29,14 +29,6 @@ public:
 	uint8_t getExpPercentage() const;
 	uint8_t getExpPercentage(uint16_t exp) const;
 
-	/**
-	 * Removes clock registration, periodic stats decrement.
-	 * Is paused by default!
-	 * @param pause
-	 */
-	void setPaused(bool pause);
-
-
 private:
 	void store();
 	void load();

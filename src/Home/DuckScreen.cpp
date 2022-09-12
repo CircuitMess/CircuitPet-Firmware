@@ -62,7 +62,6 @@ void DuckScreen::onStart(){
 
 	currentStats = targetStats = prevStats = StatMan.get();
 	StatMan.addListener(this);
-	StatMan.setPaused(false);
 
 	randInterval = rand() % 4000000 + 2000000;
 
@@ -278,7 +277,6 @@ void DuckScreen::statsChanged(const Stats& stats, bool leveledUp){
 
 	if(StatMan.hasDied()){
 		dead = true;
-		StatMan.setPaused(true);
 		return;
 	}
 

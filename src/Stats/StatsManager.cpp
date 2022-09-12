@@ -19,6 +19,8 @@ void StatsManager::begin(){
 	}
 
 	load();
+
+	Clock.addListener(&timedUpdateListener);
 }
 
 void StatsManager::reset(){
@@ -78,10 +80,6 @@ uint8_t StatsManager::getExpPercentage(uint16_t exp) const{
 
 	uint8_t prevThreshold = levelupThresholds[getLevel(exp)-2];
 	return  (uint8_t)((float)(exp-prevThreshold)* 100/(levelupThresholds[getLevel(exp)-1]-prevThreshold));
-}
-
-void StatsManager::setPaused(bool pause){
-	pause ? Clock.removeListener(&timedUpdateListener) : Clock.addListener(&timedUpdateListener);
 }
 
 void StatsManager::store(){

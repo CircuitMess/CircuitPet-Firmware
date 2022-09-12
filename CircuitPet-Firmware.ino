@@ -46,8 +46,6 @@ void setup(){
 	CircuitPet.begin(false);
 	Input* input = CircuitPet.getInput();
 
-	Clock.begin();
-
 	display = CircuitPet.getDisplay();
 	baseSprite = display->getBaseSprite();
 
@@ -66,7 +64,11 @@ void setup(){
 	baseSprite->setTextFont(0);
 	baseSprite->setTextSize(0);
 
+
+	Clock.begin();
 	StatMan.begin();
+
+	Clock.updatePersistent();
 
 	auto shutdown = new AutoShutdown();
 	shutdown->begin();

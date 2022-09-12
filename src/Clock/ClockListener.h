@@ -21,7 +21,6 @@ public:
 
 private:
 	time_t lastTick = 0; //[s]
-	uint32_t lastTickMillis = 0; //[ms] used as a failsafe when listener is triggered immediately after a sync
 
 	const time_t tickInterval;
 	const bool persistent; // persists after shutdown
