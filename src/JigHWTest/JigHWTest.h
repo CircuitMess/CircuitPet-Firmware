@@ -42,7 +42,7 @@ private:
 
 	static uint32_t calcChecksum(fs::File& file);
 
-	static const int16_t referenceVoltage = 3597;
+	static const int16_t referenceVoltage = 4000;
 };
 
 #endif //CIRCUITPET_FIRMWARE_JIGHWTEST_H
