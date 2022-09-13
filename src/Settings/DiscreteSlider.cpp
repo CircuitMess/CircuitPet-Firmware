@@ -11,14 +11,12 @@ void SettingsScreen::DiscreteSlider::toggle(){
 }
 
 void SettingsScreen::DiscreteSlider::selectNext(){
-	Serial.println("SelectNext");
 	if(shutDownTime.empty()) return;
 	index += 1;
 	index = min(index, (int)shutDownTime.size() - 1);
 }
 
 void SettingsScreen::DiscreteSlider::selectPrev(){
-	Serial.println("SelectPrev");
 	if(shutDownTime.empty()) return;
 	index -= 1;
 	index = max(index, 0);
