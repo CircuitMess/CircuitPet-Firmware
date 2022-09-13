@@ -148,29 +148,29 @@ bool JigHWTest::BatteryCalib(){
 		return true;
 	}
 
-	constexpr uint16_t numReadings = 100;
+	constexpr uint16_t numReadings = 50;
 	constexpr uint16_t readDelay = 50;
-	int32_t val = 0;
+	uint32_t reading = 0;
 
 	for(int i = 0; i < numReadings; i++){
-		val += analogRead(PIN_BATT);
+		reading += analogRead(PIN_BATT);
 		delay(readDelay);
 	}
-	val /= numReadings;
+	reading /= numReadings;
 
-	val = Battery.mapReading(val);
 
-	constexpr int16_t ref = 3597;
+	uint32_t mapped = Battery.mapReading(reading);
 
-	int16_t offset = ref - val;
+	int16_t offset = referenceVoltage - mapped;
+
+	test->log("reading", reading);
+	test->log("mapped", mapped);
+	test->log("offset", offset);
 
 	if(abs(offset) >= 1000){
-		test->log("offset too big, read voltage: ", (uint32_t)val);
+		test->log("offset too big, read voltage: ", (uint32_t)reading);
 		return false;
 	}
-
-	test->log("reading", val);
-	test->log("offset", offset);
 
 	uint16_t offsetLow = offset & 0b01111111;
 	uint16_t offsetHigh = offset >> 7;
@@ -184,15 +184,22 @@ bool JigHWTest::BatteryCalib(){
 }
 
 bool JigHWTest::BatteryCheck(){
-	uint16_t voltage = Battery.getVoltage();
-	uint8_t percentage = Battery.getPercentage();
-	uint8_t level = Battery.getLevel();
+	constexpr uint16_t numReadings = 50;
+	constexpr uint16_t readDelay = 10;
+	uint32_t reading = 0;
+
+	for(int i = 0; i < numReadings; i++){
+		reading += analogRead(PIN_BATT);
+		delay(readDelay);
+	}
+	reading /= numReadings;
+
+	uint32_t voltage = Battery.mapReading(reading) + Battery.getVoltOffset();
 	if(voltage < referenceVoltage - 100 || voltage > referenceVoltage + 100){
-		test->log("level", (uint32_t)level);
-		test->log("percentage", (uint32_t)percentage);
-		test->log("voltage", (uint32_t)voltage);
+		test->log("raw", reading);
+		test->log("mapped", Battery.mapReading(reading));
 		test->log("offset", Battery.getVoltOffset());
-		test->log("raw", (uint32_t)(voltage - Battery.getVoltOffset()));
+		test->log("mapped+offset", voltage);
 		return false;
 	}
 
