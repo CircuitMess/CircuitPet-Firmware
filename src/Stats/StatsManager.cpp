@@ -60,6 +60,7 @@ const Stats& StatsManager::get() const{
 }
 
 uint8_t StatsManager::getLevel() const{
+	return 6;
 	return getLevel(stats.experience);
 }
 

@@ -130,7 +130,7 @@ void loop(){
 	baseSprite->setTextColor(TFT_WHITE);
 	baseSprite->setCursor(1, 119);
 	auto s = StatMan.get();
-	baseSprite->printf("%d; 1: %d 2: %d, 3: %d, 4: %d, \n", CircuitPet.reads, CircuitPet.mistakes[0],  CircuitPet.mistakes[1], CircuitPet.mistakes[2], CircuitPet.mistakes[3]);
+	baseSprite->printf("%d;1:%d,2:%d,3:%d,4:%d \n", CircuitPet.reads, CircuitPet.mistakes[0],  CircuitPet.mistakes[1], CircuitPet.mistakes[2], CircuitPet.mistakes[3]);
 	t = t2;
 
 	display->commit();
