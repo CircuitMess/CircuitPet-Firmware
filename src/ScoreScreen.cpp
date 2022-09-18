@@ -26,6 +26,8 @@ void ScoreScreen::onStart(){
 	happiness.setPos(35, 65);
 	xp.setPos(31, 85);
 
+	base->drawIcon(frameFile, 16, 16, 128, 96);
+
 	Input::getInstance()->addListener(this);
 	LoopManager::resetTime();
 	LoopManager::addListener(this);
@@ -72,7 +74,6 @@ void ScoreScreen::loop(uint micros){
 	}
 
 
-	base->drawIcon(frameFile, 16, 16, 128, 96);
 	oil.push();
 	happiness.push();
 	xp.push();
@@ -94,7 +95,6 @@ void ScoreScreen::loop(uint micros){
 }
 
 void ScoreScreen::exit(){
-	auto s = stats;
+	StatMan.update(stats);
 	State::pop();
-	StatMan.update(s);
 }

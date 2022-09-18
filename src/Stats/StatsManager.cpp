@@ -35,10 +35,15 @@ void StatsManager::reset(){
 }
 
 void StatsManager::update(Stats delta){
-	if(hasDied() || !hatched) return;
+	if(!hatched) return;
 
 	uint8_t oldLevel = getLevel();
 	stats += delta;
+
+	if(stats.oilLevel > 0){
+		gameOverCount = 0;
+	}
+
 	ESP_LOGI(tag, "%d, %d, %d\n", stats.happiness, stats.experience, stats.oilLevel);
 
 	bool levelUp = (oldLevel != getLevel());
