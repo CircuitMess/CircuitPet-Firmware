@@ -6,6 +6,7 @@
 #include <Input/Input.h>
 #include <Loop/LoopManager.h>
 #include <FS/RamFile.h>
+#include "Home/DuckScreen.h"
 
 ScoreScreen::ScoreScreen(Stats stats) : base(CircuitPet.getDisplay()->getBaseSprite()), stats(stats), oil(base, StatSprite::OilLevel, StatMan.get().oilLevel),
 										happiness(base, StatSprite::Happiness, StatMan.get().happiness),
@@ -92,6 +93,7 @@ void ScoreScreen::loop(uint micros){
 }
 
 void ScoreScreen::exit(){
+	StatMan.addListener(static_cast<DuckScreen*>(getParent()));
 	StatMan.update(stats);
 	State::pop();
 }

@@ -13,7 +13,7 @@
 #include "../Stats/StatsChangedListener.h"
 #include "../SplashState.h"
 
-class DuckScreen : public LoopListener, public State, private InputListener, private StatsChangedListener {
+class DuckScreen : public LoopListener, public State, private InputListener, public StatsChangedListener {
 public:
 	DuckScreen(Sprite* base);
 	void loop(uint micros) override;
