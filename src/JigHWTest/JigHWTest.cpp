@@ -85,7 +85,7 @@ void JigHWTest::start(){
 			   { 1000, 1000, 500 },
 			   { 1200, 1200, 500 }
 	};
-	Audio.play(s);
+//	Audio.play(s);
 }
 
 void JigHWTest::log(const char* property, const char* value){
