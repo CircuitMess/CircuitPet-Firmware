@@ -6,7 +6,7 @@ StatsManager StatMan;
 static const char* tag = "StatsManager";
 nvs_handle StatsManager::handle;
 
-const uint16_t StatsManager::levelupThresholds[] = { 50, 100, 200, 300, 450 };
+const uint16_t StatsManager::levelupThresholds[] = { 50, 200, 1000, 4000, 10000 };
 const Stats StatsManager::hourlyDecrement = { 5, 3, 0 };
 
 StatsManager::StatsManager() : timedUpdateListener(3600, true, "StatsMan", [this](){ timedUpdate(); }){

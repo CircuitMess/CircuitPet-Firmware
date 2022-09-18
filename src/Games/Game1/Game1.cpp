@@ -177,5 +177,5 @@ Stats Game1::returnStats(){
 	if(!done) return Game::returnStats();
 
 	float success = (float)(minTries) /(float)(tries); // 0 - 1.0
-	return Stats({ (uint8_t)(25*success), (uint8_t)(60*success), (uint8_t )(40*success) });
+	return Stats({ (uint8_t)(25.0*success), (uint8_t)(60.0*success), (uint16_t)(50.0*success) });
 }

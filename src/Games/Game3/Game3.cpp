@@ -284,5 +284,6 @@ void Game3::drawBar(){
 }
 
 Stats Game3::returnStats(){
-	return Stats({(uint8_t)(hungerMeter / 6), (uint8_t)(hungerMeter / 8),(uint8_t )(hungerMeter/10)});
+	float success = (float)hungerMeter / (float)hungerMeterMax;
+	return Stats({ (uint8_t)(30.0 * success), (uint8_t)(20.0 * success), (uint16_t)(400.0 * success) });
 }

@@ -418,5 +418,6 @@ void Game6::gameOver(){
 }
 
 Stats Game6::returnStats(){
-	return Stats({ (uint8_t) (score * 5), (uint8_t) (score * 5), 0 });
+	float success = (float)(score) / (float)(maxScore);
+	return Stats({ (uint8_t)(50.0 * success), (uint8_t)(25.0 * success), 0 });
 }
