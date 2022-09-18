@@ -28,6 +28,19 @@ void ScoreScreen::onStart(){
 
 	base->drawIcon(frameFile, 16, 16, 128, 96);
 
+	base->setTextColor(TFT_BLACK);
+	base->setTextDatum(lgfx::textdatum::top_left);
+	base->setCursor(35, 28);
+	base->print("Stats increased!");
+
+	base->setTextDatum(lgfx::textdatum::top_left);
+	base->setCursor(100, 45);
+	base->printf("+ %d", stats.oilLevel);
+	base->setCursor(100, 65);
+	base->printf("+ %d", stats.happiness);
+	base->setCursor(100, 85);
+	base->printf("+ %d", stats.experience);
+
 	Input::getInstance()->addListener(this);
 	LoopManager::resetTime();
 	LoopManager::addListener(this);
@@ -63,6 +76,7 @@ void ScoreScreen::loop(uint micros){
 
 			currentStats.oilLevel = prevStats.oilLevel + ((float)((int)(targetStats.oilLevel) - (int)(prevStats.oilLevel))) * ease;
 			currentStats.happiness = prevStats.happiness + ((float)((int)(targetStats.happiness) - (int)(prevStats.happiness))) * ease;
+			currentStats.experience = prevStats.experience + ((float)((int)(targetStats.experience) - (int)(prevStats.experience))) * ease;
 		}
 
 		happiness.setLevel(currentStats.happiness);
@@ -72,26 +86,9 @@ void ScoreScreen::loop(uint micros){
 		easeDone = true;
 		t = ::micros();
 	}
-
-
 	oil.push();
 	happiness.push();
 	xp.push();
-
-	base->setTextColor(TFT_BLACK);
-	base->setTextDatum(lgfx::textdatum::top_left);
-	base->setCursor(35, 28);
-	base->print("Stats increased!");
-
-	base->setTextDatum(lgfx::textdatum::top_left);
-	base->setCursor(100, 45);
-	base->printf("+ %d", stats.oilLevel);
-	base->setCursor(100, 65);
-	base->printf("+ %d", stats.happiness);
-	base->setCursor(100, 85);
-	base->printf("+ %d", stats.experience);
-
-
 }
 
 void ScoreScreen::exit(){

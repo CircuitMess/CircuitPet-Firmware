@@ -96,7 +96,7 @@ uint8_t StatsManager::getExpPercentage(uint16_t exp) const{
 
 
 	uint16_t prevThreshold = 0;
-	for(uint8_t i = 0; i < getLevel(exp) - 2; i++){
+	for(uint8_t i = 0; i < getLevel(exp) - 1; i++){
 		prevThreshold += levelupThresholds[i];
 	}
 
