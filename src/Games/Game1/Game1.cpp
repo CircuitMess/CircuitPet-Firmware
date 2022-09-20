@@ -99,7 +99,7 @@ void Game1::onRender(Sprite* canvas){
 
 	base->setTextFont(0);
 	base->setTextSize(0);
-	base->setCursor(0, 0);
+	base->setCursor(1, 2);
 	base->printf("Tries: %d", tries);
 }
 
