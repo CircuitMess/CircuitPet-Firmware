@@ -50,10 +50,11 @@ void initLog(){
 	esp_log_level_set("*", ESP_LOG_NONE);
 
 	const static auto tags = { "*" };
-
+#ifdef DEBUG
 	for(const char* tag : tags){
 		esp_log_level_set(tag, ESP_LOG_VERBOSE);
 	}
+#endif
 }
 
 void setup(){
