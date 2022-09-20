@@ -6,6 +6,10 @@
 nvs_handle ClockMaster::handle;
 ClockMaster Clock;
 
+ClockMaster::ClockMaster(){
+	times.reserve(updateCount * 2);
+}
+
 static const char* tag = "ClockMaster";
 
 void ClockMaster::begin(){
@@ -61,7 +65,44 @@ void ClockMaster::loop(uint micros){
 	if(millis() - updateTime < updateInterval) return;
 	updateTime = millis();
 
-	auto currentTime = CircuitPet.getUnixTime();
+	times.push_back(CircuitPet.getUnixTime());
+	if(times.size() < updateCount) return;
+
+	processTime();
+}
+
+void ClockMaster::processTime(){
+	while(times.size() > updateCount){
+		times.erase(times.begin());
+	}
+
+	while(times.size() < updateCount){
+		times.push_back(CircuitPet.getUnixTime());
+	}
+
+	for(int k = 0; k < updateCount/2; k++){
+		for(int i = 0; i < updateCount; i++){
+			for(int j = 0; j < updateCount; j++){
+				if(abs(difftime(times[i], times[j])) <= 5.0f){
+					times[i] = times[j];
+				}
+			}
+		}
+	}
+
+	uint8_t votes[updateCount] = {0};
+	for(int i = 0; i < updateCount; ++i){
+		for(int j = 0; j < updateCount; ++j){
+			if(i == j) continue;
+			if(abs(difftime(times[i], times[j])) <= 2.0f){
+				votes[i]++;
+			}
+		}
+	}
+
+	size_t chosen = *std::max_element(votes, votes+updateCount);
+	auto currentTime = times[chosen];
+	times.clear();
 
 	bool needsWrite = false;
 
