@@ -299,7 +299,7 @@ void DuckScreen::statsChanged(const Stats& stats, bool leveledUp){
 		return;
 	}
 
-	characterSprite->setRusty(stats.oilLevel < rustThreshold);
+	if(characterSprite)	characterSprite->setRusty(stats.oilLevel < rustThreshold);
 
 	targetStats = stats;
 	prevStats = currentStats;

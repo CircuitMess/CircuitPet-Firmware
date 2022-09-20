@@ -10,7 +10,6 @@
 #include "../Common/Score.h"
 
 class Game6 : public Game, private InputListener {
-protected:
 public:
 	Game6();
 
@@ -26,6 +25,7 @@ private:
 	std::unique_ptr<Hearts> hearts;
 	std::unique_ptr<Score> scoreDisplay;
 	int score = 0;
+	constexpr static int maxScore = 52;
 
 	enum {
 		Intro, Running, DeathAnim, DeathPause, Win

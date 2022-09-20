@@ -6,6 +6,7 @@
 #include <Input/Input.h>
 #include <Loop/LoopManager.h>
 #include <FS/RamFile.h>
+#include "Home/DuckScreen.h"
 
 ScoreScreen::ScoreScreen(Stats stats) : base(CircuitPet.getDisplay()->getBaseSprite()), stats(stats), oil(base, StatSprite::OilLevel, StatMan.get().oilLevel),
 										happiness(base, StatSprite::Happiness, StatMan.get().happiness),
@@ -25,6 +26,21 @@ void ScoreScreen::onStart(){
 	oil.setPos(35, 45);
 	happiness.setPos(35, 65);
 	xp.setPos(31, 85);
+
+	base->drawIcon(frameFile, 16, 16, 128, 96);
+
+	base->setTextColor(TFT_BLACK);
+	base->setTextDatum(lgfx::textdatum::top_left);
+	base->setCursor(35, 28);
+	base->print("Stats increased!");
+
+	base->setTextDatum(lgfx::textdatum::top_left);
+	base->setCursor(100, 45);
+	base->printf("+ %d", stats.oilLevel);
+	base->setCursor(100, 65);
+	base->printf("+ %d", stats.happiness);
+	base->setCursor(100, 85);
+	base->printf("+ %d", stats.experience);
 
 	Input::getInstance()->addListener(this);
 	LoopManager::resetTime();
@@ -61,6 +77,7 @@ void ScoreScreen::loop(uint micros){
 
 			currentStats.oilLevel = prevStats.oilLevel + ((float)((int)(targetStats.oilLevel) - (int)(prevStats.oilLevel))) * ease;
 			currentStats.happiness = prevStats.happiness + ((float)((int)(targetStats.happiness) - (int)(prevStats.happiness))) * ease;
+			currentStats.experience = prevStats.experience + ((float)((int)(targetStats.experience) - (int)(prevStats.experience))) * ease;
 		}
 
 		happiness.setLevel(currentStats.happiness);
@@ -70,31 +87,13 @@ void ScoreScreen::loop(uint micros){
 		easeDone = true;
 		t = ::micros();
 	}
-
-
-	base->drawIcon(frameFile, 16, 16, 128, 96);
 	oil.push();
 	happiness.push();
 	xp.push();
-
-	base->setTextColor(TFT_BLACK);
-	base->setTextDatum(lgfx::textdatum::top_left);
-	base->setCursor(35, 28);
-	base->print("Stats increased!");
-
-	base->setTextDatum(lgfx::textdatum::top_left);
-	base->setCursor(100, 45);
-	base->printf("+ %d", stats.oilLevel);
-	base->setCursor(100, 65);
-	base->printf("+ %d", stats.happiness);
-	base->setCursor(100, 85);
-	base->printf("+ %d", stats.experience);
-
-
 }
 
 void ScoreScreen::exit(){
-	auto s = stats;
+	StatMan.addListener(static_cast<DuckScreen*>(getParent()));
+	StatMan.update(stats);
 	State::pop();
-	StatMan.update(s);
 }

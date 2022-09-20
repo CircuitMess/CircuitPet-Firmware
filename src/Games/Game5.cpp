@@ -325,5 +325,6 @@ void Game5::updateTracks(float delta){
 }
 
 Stats Game5::returnStats(){
-	return Stats({(uint8_t)(score/90), (uint8_t)(score/90), (uint8_t)(score/150)});
+	float success = (float)(score) / (float)(goal);
+	return Stats({(uint8_t)(40.0*success), (uint8_t)(20.0*success), (uint16_t)(2500.0*success)});
 }

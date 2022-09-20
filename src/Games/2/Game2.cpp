@@ -100,6 +100,8 @@ void Game2::onLoop(float deltaTime){
 			score++;
 			obstacle.passed = true;
 			scoreDisplay->setScore(score);
+
+			speedX+=1;
 		}
 	}
 
@@ -160,7 +162,7 @@ void Game2::updateDuck(float delta){
 }
 
 void Game2::updateObstacles(float delta){
-	auto move = [delta](ObjPtr& obj){
+	auto move = [delta, this](ObjPtr& obj){
 		glm::vec2 pos = obj->getPos();
 		pos.x -= delta * speedX;
 		obj->setPos(pos);
@@ -263,5 +265,6 @@ void Game2::die(){
 }
 
 Stats Game2::returnStats(){
-	return Stats({ (uint8_t )(score > 25 ? 50 : score * 2),(uint8_t ) (score > 50 ? 100 : score * 2), (uint8_t )(score > 15 ? 15 : score) });
+	float success = (float)min((int)scoreCutoff, score) / (float)(scoreCutoff);
+	return Stats({ (uint8_t)(25.0f * success), (uint8_t)(20.0f * success),  (uint16_t)(200.0f * success) });
 }

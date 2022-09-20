@@ -286,5 +286,6 @@ void Game4::Game4::scoreUp(){
 }
 
 Stats Game4::Game4::returnStats(){
-	return Stats({(uint8_t )(score/2), (uint8_t )score, (uint8_t )(min(25,score))});
+	float success = (float)(score)/(float)(scoreMax);
+	return Stats({(uint8_t)(35.0*success), (uint8_t)(20.0*success), (uint16_t)(1000.0*success)});
 }

@@ -25,7 +25,7 @@ protected:
 
 private:
 	static constexpr float gravity = 140.0f;
-	static constexpr float speedX = 60.0f;
+	float speedX = 60.0f;
 	static constexpr float flapSpeedY = 80.0f;
 	static constexpr float duckPosX = 30;
 	static constexpr float obstacleSpacing = 50;
@@ -46,6 +46,7 @@ private:
 	glm::vec2 velocity = { speedX, 0 };
 
 	int score = 0;
+	static constexpr uint8_t scoreCutoff = 50;
 
 	struct ObstaclePair {
 		ObjPtr top;

@@ -6,7 +6,7 @@ StatsManager StatMan;
 static const char* tag = "StatsManager";
 nvs_handle StatsManager::handle;
 
-const uint16_t StatsManager::levelupThresholds[] = { 50, 150, 350, 750, 1550 }; //TODO - settati levelUp threshove
+const uint16_t StatsManager::levelupThresholds[] = { 50, 200, 1000, 4000, 10000 };
 const Stats StatsManager::hourlyDecrement = { 5, 3, 0 };
 
 StatsManager::StatsManager() : timedUpdateListener(3600, true, "StatsMan", [this](){ timedUpdate(); }){
@@ -35,10 +35,15 @@ void StatsManager::reset(){
 }
 
 void StatsManager::update(Stats delta){
-	if(hasDied() || !hatched) return;
+	if(!hatched) return;
 
 	uint8_t oldLevel = getLevel();
 	stats += delta;
+
+	if(stats.oilLevel > 0){
+		gameOverCount = 0;
+	}
+
 	ESP_LOGI(tag, "%d, %d, %d\n", stats.happiness, stats.experience, stats.oilLevel);
 
 	bool levelUp = (oldLevel != getLevel());
@@ -66,8 +71,10 @@ uint8_t StatsManager::getLevel() const{
 
 uint8_t StatsManager::getLevel(uint16_t exp) const{
 	const uint8_t levelupsNum = sizeof(levelupThresholds) / sizeof(uint16_t);
+	uint16_t requiredXP = 0;
 	for(uint8_t i = 0; i < levelupsNum; i++){
-		if(exp < levelupThresholds[i]){
+		requiredXP += levelupThresholds[i];
+		if(exp < requiredXP){
 			return i + 1;
 		}
 	}
@@ -80,11 +87,21 @@ uint8_t StatsManager::getExpPercentage() const{
 
 
 uint8_t StatsManager::getExpPercentage(uint16_t exp) const{
-	if(getLevel(exp) == 1) return (uint8_t)(((float)exp*100)/levelupThresholds[0]);
-	if(getLevel(exp) == 6) return 100;
+	if(getLevel(exp) == 1){
+		return (uint8_t)(((float)exp*100)/levelupThresholds[0]);
+	}
 
-	uint8_t prevThreshold = levelupThresholds[getLevel(exp)-2];
-	return  (uint8_t)((float)(exp-prevThreshold)* 100/(levelupThresholds[getLevel(exp)-1]-prevThreshold));
+	if(getLevel(exp) == 6){
+		return 100;
+	}
+
+
+	uint16_t prevThreshold = 0;
+	for(uint8_t i = 0; i < getLevel(exp) - 1; i++){
+		prevThreshold += levelupThresholds[i];
+	}
+
+	return  (uint8_t)((float)(exp-prevThreshold)* 100.0/(levelupThresholds[getLevel(exp)-1]));
 }
 
 void StatsManager::store(){

@@ -17,9 +17,9 @@ JigHWTest::JigHWTest(Display* display) : display(display), canvas(display->getBa
 	test = this;
 
 	tests.push_back({ JigHWTest::RTCTest, "RTC", [](){}});
+	tests.push_back({JigHWTest::SPIFFSTest, "SPIFFS", [](){ }});
 	tests.push_back({ JigHWTest::BatteryCalib, "Bat calib", [](){}});
 	tests.push_back({JigHWTest::BatteryCheck, "Bat check", [](){}});
-	tests.push_back({JigHWTest::SPIFFSTest, "SPIFFS", [](){ }});
 }
 
 void JigHWTest::start(){
@@ -85,7 +85,7 @@ void JigHWTest::start(){
 			   { 1000, 1000, 500 },
 			   { 1200, 1200, 500 }
 	};
-	Audio.play(s);
+//	Audio.play(s);
 }
 
 void JigHWTest::log(const char* property, const char* value){
