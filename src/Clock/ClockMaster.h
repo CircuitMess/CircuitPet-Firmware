@@ -27,6 +27,9 @@ public:
 	void addListener(ClockListener* listener);
 	void removeListener(ClockListener* listener);
 
+	uint32_t mistakes[30]= {0};
+	uint32_t reads = 0;
+
 private:
 	std::vector<ClockListener*> listeners;
 	std::map <std::string, PersistentListener> persistentListeners;

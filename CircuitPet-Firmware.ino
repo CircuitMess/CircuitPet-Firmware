@@ -129,9 +129,10 @@ void loop(){
 	baseSprite->setTextFont(0);
 	baseSprite->setTextSize(0);
 	baseSprite->setTextColor(TFT_WHITE);
-	baseSprite->setCursor(1, 119);
-	auto s = StatMan.get();
-	baseSprite->printf("%d;1:%d,2:%d,3:%d,4:%d \n", CircuitPet.reads, CircuitPet.mistakes[0],  CircuitPet.mistakes[1], CircuitPet.mistakes[2], CircuitPet.mistakes[3]);
+	baseSprite->setCursor(1, 110);
+	baseSprite->printf("%d;1:%d,2:%d,3:%d,4:%d \n", CircuitPet.reads, CircuitPet.mistakes[1],  CircuitPet.mistakes[2], CircuitPet.mistakes[3], CircuitPet.mistakes[4]);
+	baseSprite->setCursor(1, 120);
+	baseSprite->printf("%d;1:%d,2:%d,3:%d,4:%d \n", Clock.reads, Clock.mistakes[1],  Clock.mistakes[2], Clock.mistakes[3], Clock.mistakes[4]);
 	t = t2;
 
 	display->commit();

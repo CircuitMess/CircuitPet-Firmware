@@ -102,6 +102,19 @@ void ClockMaster::processTime(){
 
 	size_t chosen = *std::max_element(votes, votes+updateCount);
 	auto currentTime = times[chosen];
+
+	////
+	int wrong = 0;
+	for(int i = 0; i < updateCount; i++){
+		if(i == chosen) continue;
+		if(abs(difftime(times[i], times[chosen])) > 2.0f){
+			wrong++;
+		}
+	}
+	mistakes[wrong]++;
+	reads++;
+	////
+
 	times.clear();
 
 	bool needsWrite = false;
