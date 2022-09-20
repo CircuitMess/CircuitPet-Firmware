@@ -83,6 +83,7 @@ void ClockMaster::processTime(){
 	for(int k = 0; k < updateCount/2; k++){
 		for(int i = 0; i < updateCount; i++){
 			for(int j = 0; j < updateCount; j++){
+				if(i == j) continue;
 				if(abs(difftime(times[i], times[j])) <= 5.0f){
 					times[i] = times[j];
 				}
