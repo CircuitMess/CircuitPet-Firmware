@@ -17,6 +17,7 @@ JigHWTest::JigHWTest(Display* display) : display(display), canvas(display->getBa
 	test = this;
 
 	tests.push_back({ JigHWTest::RTCTest, "RTC", [](){}});
+	tests.push_back({ JigHWTest::Time, "Time", [](){}});
 	tests.push_back({JigHWTest::SPIFFSTest, "SPIFFS", [](){ }});
 	tests.push_back({ JigHWTest::BatteryCalib, "Bat calib", [](){}});
 	tests.push_back({JigHWTest::BatteryCheck, "Bat check", [](){}});
@@ -136,6 +137,45 @@ bool JigHWTest::RTCTest(){
 	}else{
 		test->log("time passage (expected 1s or 2s)", (uint32_t)diff);
 		return false;
+	}
+
+	return true;
+}
+
+bool JigHWTest::Time(){
+	static constexpr size_t count = 1000;
+
+	I2C_BM8563_DateTypeDef dateStruct;
+	I2C_BM8563_TimeTypeDef timeStruct;
+	time_t lastTime;
+
+	auto rtc = CircuitPet.getRTC();
+	for(int i = 0; i < count; i++){
+		rtc.getDate(&dateStruct);
+		rtc.getTime(&timeStruct);
+
+		std::tm t { timeStruct.seconds,
+					timeStruct.minutes,
+					timeStruct.hours,
+					dateStruct.date,
+					dateStruct.month - 1,
+					dateStruct.year - 1900};
+
+		auto time = mktime(&t);
+
+		if(i == 0){
+			lastTime = time;
+			continue;
+		}
+
+		auto diff = abs(difftime(time, lastTime));
+		if(diff > 10.0f){
+			test->log("reading", i);
+			test->log("diff", diff);
+			return false;
+		}
+
+		lastTime = time;
 	}
 
 	return true;

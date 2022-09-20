@@ -36,6 +36,7 @@ private:
 	void log(const char *property, const String& value);
 
 	static bool RTCTest();
+	static bool Time();
 	static bool BatteryCalib();
 	static bool BatteryCheck();
 	static bool SPIFFSTest();
