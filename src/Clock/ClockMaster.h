@@ -38,7 +38,7 @@ private:
 
 	uint32_t updateTime;
 	static constexpr uint32_t updateInterval = 50; // [ms]<
-	static constexpr uint32_t updateCount = 20;
+	static constexpr uint32_t updateCount = 50;
 	std::vector<time_t> times;
 
 	static nvs_handle handle;
