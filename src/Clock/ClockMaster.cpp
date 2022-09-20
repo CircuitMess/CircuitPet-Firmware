@@ -8,6 +8,7 @@ ClockMaster Clock;
 
 ClockMaster::ClockMaster(){
 	times.reserve(updateCount * 2);
+	listeners.reserve(6);
 }
 
 static const char* tag = "ClockMaster";
@@ -17,8 +18,6 @@ void ClockMaster::begin(){
 	if(err != ESP_OK){
 		ESP_LOGW(tag, "Clock storage initialization error: %s\n", esp_err_to_name(err));
 	}
-
-	listeners.reserve(6);
 
 	read();
 
