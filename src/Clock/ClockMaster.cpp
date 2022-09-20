@@ -25,7 +25,34 @@ void ClockMaster::begin(){
 }
 
 void ClockMaster::updatePersistent(){
-	auto currentTime = CircuitPet.getUnixTime();
+	while(times.size() < updateCount){
+		times.push_back(CircuitPet.getUnixTime());
+	}
+
+	for(int k = 0; k < updateCount/2; k++){
+		for(int i = 0; i < updateCount; i++){
+			for(int j = 0; j < updateCount; j++){
+				if(i == j) continue;
+				if(abs(difftime(times[i], times[j])) <= 5.0f){
+					times[i] = times[j];
+				}
+			}
+		}
+	}
+
+	uint8_t votes[updateCount] = {0};
+	for(int i = 0; i < updateCount; ++i){
+		for(int j = 0; j < updateCount; ++j){
+			if(i == j) continue;
+			if(abs(difftime(times[i], times[j])) <= 2.0f){
+				votes[i]++;
+			}
+		}
+	}
+
+	size_t chosen = *std::max_element(votes, votes+updateCount);
+	auto currentTime = times[chosen];
+	times.clear();
 
 	bool needsWrite = false;
 
