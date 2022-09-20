@@ -19,6 +19,7 @@ extern ClockMaster Clock;
 
 class ClockMaster : private LoopListener{
 public:
+	ClockMaster();
 	void begin();
 	void updatePersistent();
 	void loop(uint micros) override;
@@ -33,8 +34,12 @@ private:
 	void write();
 	void read();
 
+	void processTime();
+
 	uint32_t updateTime;
-	static constexpr uint32_t updateInterval = 1000; // [ms]
+	static constexpr uint32_t updateInterval = 50; // [ms]<
+	static constexpr uint32_t updateCount = 20;
+	std::vector<time_t> times;
 
 	static nvs_handle handle;
 };
