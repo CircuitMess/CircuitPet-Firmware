@@ -5,6 +5,28 @@ set(DEVICE cm:esp32:circuitpet)
 set(CMAKE_CXX_STANDARD 17)
 
 set(ROOT ${CMAKE_SOURCE_DIR})
+set(ARDUINO-CLI arduino-cli)
+set(ARDUINO-CLI-UPLOAD arduino-cli)
+
+if(EXISTS /mnt/c/windows)
+    set(WSL2 1)
+    #as wsl2 does not have usb port access, we use the arduino cli on wls2 for building, and the windows tool for uploading
+    #WSL container needs the following:
+    # install the CLI tool
+    # curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=~/local/bin sh
+    # add cm to its packages
+    # run arduino-cli config init
+    # edit the arduino-cli.yaml, add the following to board_manager > additional_urls
+    # https://raw.githubusercontent.com/CircuitMess/Arduino-Packages/master/package_circuitmess.com_esp32_index.json
+    # run arduino-cli core update-index
+    # run arduino-cli core install cm:esp32
+    # change package to use python 3
+    # run sed -i -e 's/=python /=python3 /g' ~/.arduino15/packages/cm/hardware/esp32/*/platform.txt
+    # install pyserial
+    # run sudo apt install python3-pip
+    # run pip install pyserial
+endif()
+
 if (WIN32 OR CYGWIN)
     set(Arduino15 $ENV{APPDATA}/../Local/Arduino15)
     set(ArduinoLibs $ENV{USERPROFILE}/OneDrive/Documents/Arduino/libraries)
@@ -20,6 +42,11 @@ if (WIN32 OR CYGWIN)
 else ()
     set(Arduino15 ~/.arduino15)
     set(ArduinoLibs ~/Arduino/libraries)
+    if (WSL2)
+        set(ARDUINO-CLI /home/rdpeake/local/bin/arduino-cli)
+        set(ARDUINO-CLI-UPLOAD arduino-cli.exe)
+        set(PORT COM10)
+    endif()
 endif ()
 
 include_directories(${Arduino15}/packages/cm/hardware/esp32/1.5.0/cores/esp32)
@@ -65,19 +92,35 @@ add_definitions(-DRADIOLIB_BUILD_ARDUINO)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
 set(BUILD ${ROOT}/build)
+set(UPLOAD_FOLDER ${BUILD})
+
+if (WSL2)
+    #save project output files internal to the wsl file system and let a post build move them back to the windows partition
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY /tmp/${CMAKE_PROJECT_NAME}/build)
+    #change the upload folder path to relative to the windows cli tool, not wsl namespace
+    string(REGEX REPLACE "^/mnt/([A-Za-z])" "\\1:" UPLOAD_FOLDER ${UPLOAD_FOLDER})
+endif()
 
 SET_SOURCE_FILES_PROPERTIES(${CMAKE_PROJECT_NAME}.ino PROPERTIES LANGUAGE CXX)
 
 add_custom_command(OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_PROJECT_NAME}.ino.elf
-        COMMAND arduino-cli compile --fqbn ${DEVICE} --output-dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} ${CMAKE_PROJECT_NAME}.ino
+        COMMAND ${ARDUINO-CLI} compile --fqbn ${DEVICE} --output-dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} ${CMAKE_PROJECT_NAME}.ino
         DEPENDS ${CMAKE_PROJECT_NAME}.ino ${SOURCES}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 add_custom_target(CMBuild
         SOURCES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_PROJECT_NAME}.ino.elf)
 
+if (WSL2)
+    #Copy the build output to a different location on wsl2
+    add_custom_command(
+            TARGET CMBuild POST_BUILD
+            COMMAND cp -r ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} ${ROOT}
+    )
+endif()
+
 add_custom_target(CMUpload ALL
-        COMMAND arduino-cli upload  -v --fqbn ${DEVICE} -p ${PORT} --input-dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+        COMMAND ${ARDUINO-CLI-UPLOAD} upload  -v --fqbn ${DEVICE} -p ${PORT} --input-dir ${UPLOAD_FOLDER}
         DEPENDS CMBuild
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
